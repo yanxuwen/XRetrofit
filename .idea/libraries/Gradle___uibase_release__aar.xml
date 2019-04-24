@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: :uibase-release:@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/uibase-release.aar/708d9ca0dbf9b0fa87f7a50129908182/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/uibase-release.aar/708d9ca0dbf9b0fa87f7a50129908182/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
