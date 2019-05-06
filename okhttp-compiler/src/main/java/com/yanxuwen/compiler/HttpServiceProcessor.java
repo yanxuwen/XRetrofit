@@ -102,12 +102,11 @@ public class HttpServiceProcessor extends AbstractProcessor {
             try {
                 PrintWriter pw = new PrintWriter(w);
                 pw.println("package " + ElementUtils.packageName + ";\n");
-                pw.println("import org.json.JSONObject;");
                 pw.println("import android.util.ArrayMap;");
                 pw.println("import java.util.Map;");
                 pw.println("import com.yanxuwen.http.OkHttpUtils;");
                 pw.println("import com.yanxuwen.http.DataCallBack;");
-                pw.println("import com.google.gson.Gson;");
+                pw.println("import com.alibaba.fastjson.JSONObject;");
                 pw.println("import com.yanxuwen.http.UrlUtils;");
                 pw.println("import com.yanxuwen.http.HttpDealMethod;");
                 pw.format("import %s;\n\n", serviceMeta.getPackageName());
@@ -230,7 +229,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                     requestBody = meta.getOrginName();
                 } else if (!meta.getTypeMirror().toString().equals("java.lang.String")) {
                     isGson = true;
-                    json_name = " gson.toJson(" + json_name + ")";
+                    json_name = " JSONObject.toJSONString(" + json_name + ")";
                 }
             } else if (meta.getTypeMirror().toString().startsWith("com.yanxuwen.http.DataCallBack")) {
                 //设置监听器
@@ -281,9 +280,6 @@ public class HttpServiceProcessor extends AbstractProcessor {
         pw.println("\n    @Override");
         pw.format("    public void %s(%s) {\n", methodMeta.getName(), params.toString());
         setPwUrl(methodMeta, pw, str_query);
-        if (isGson) {
-            pw.println("        Gson gson = new Gson();");
-        }
         if (str_path != null) {
             pw.println(str_path.toString());
         }

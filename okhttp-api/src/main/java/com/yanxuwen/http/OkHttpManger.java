@@ -1,8 +1,6 @@
 package com.yanxuwen.http;
 
-import android.text.TextUtils;
-
-import com.google.gson.Gson;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -665,7 +663,7 @@ public class OkHttpManger {
         try {
             if (httpDealMethod != null){
                 String str = httpDealMethod.dealCallBack(json);
-                if (!TextUtils.isEmpty(str)){
+                if (str != null && !str.equals("")){
                     json = str;
                 }
             }
@@ -675,11 +673,10 @@ public class OkHttpManger {
                 } else if (dataCallBack.getType().equals(Object.class)) {
                     dataCallBack.postUISuccess(json);
                 } else {
-                    Gson gson = new Gson();
                     if (dataCallBack.getType() == null){
-                        dataCallBack.postUISuccess(gson.fromJson(json, String.class));
+                        dataCallBack.postUISuccess(JSONObject.parseObject(json, String.class));
                     } else {
-                        dataCallBack.postUISuccess(gson.fromJson(json, dataCallBack.getType()));
+                        dataCallBack.postUISuccess(JSONObject.parseObject(json, dataCallBack.getType()));
                     }
                 }
             }

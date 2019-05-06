@@ -1,12 +1,10 @@
 package com.yanxuwen.http;
 
 
-import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.yanxuwen.compiler.bean.MethodMeta;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -83,7 +81,7 @@ public class OkHttpUtils {
             params = dealParams.getParams();
         }
         //json为空，params不为空，当json来使用
-        if (TextUtils.isEmpty(json) && params != null) {
+        if ((json == null || json.equals("")) && params != null) {
             JSONObject jb = new JSONObject();
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 try {

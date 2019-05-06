@@ -27,8 +27,8 @@ public interface NetService {
 //    @POST("http://api.sdwhcn.com:5056/v1/auth/login")
 //    void post4(@Field("key")String name , @Query("tag")String tag , @Body String body, DataCallBack callBack);
 
-//    @POST("http://api.sdwhcn.com:5056/v1/auth/login")
-//    void post5(@Body RequestBody body, DataCallBack callBack);
+    @POST("http://api.sdwhcn.com:5056/v1/auth/login")
+    void post5(@Body Test body, DataCallBack callBack);
 
 //    @POST("http://a.szy.com:4480/health/dose/register/list/p/v1.0")
 //    void post6(@Body String body, DataCallBack callBack);

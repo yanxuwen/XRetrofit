@@ -1,6 +1,5 @@
 
 package com.yanxuwen.http;
-import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,12 +10,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
@@ -160,12 +156,10 @@ public class SslUtils {
     public static X509TrustManager UnSafeTrustManager = new X509TrustManager() {
         @Override
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            Log.i("okhttp","checkClientTrusted");
         }
 
         @Override
         public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-            Log.i("okhttp","checkClientTrusted");
         }
 
         @Override
