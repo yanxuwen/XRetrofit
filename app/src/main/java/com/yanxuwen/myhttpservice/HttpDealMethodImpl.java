@@ -1,7 +1,7 @@
 package com.yanxuwen.myhttpservice;
 
-import com.yanxuwen.http.DealParams;
-import com.yanxuwen.http.HttpDealMethod;
+import com.http.api.DealParams;
+import com.http.api.HttpDealMethod;
 
 import org.json.JSONException;
 import org.json.JSONObject;

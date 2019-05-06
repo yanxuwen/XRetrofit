@@ -1,14 +1,11 @@
 package com.yanxuwen.myhttpservice;
 
-import com.yanxuwen.compiler.annotation.Body;
-import com.yanxuwen.compiler.annotation.DealClass;
-import com.yanxuwen.compiler.annotation.NetServiceClass;
-import com.yanxuwen.compiler.annotation.POST;
-import com.yanxuwen.compiler.annotation.Param;
-import com.yanxuwen.http.DataCallBack;
-import com.yanxuwen.http.HttpDealMethod;
-
-import okhttp3.RequestBody;
+import com.http.api.DataCallBack;
+import com.http.api.HttpDealMethod;
+import com.http.compiler.annotation.Body;
+import com.http.compiler.annotation.DealClass;
+import com.http.compiler.annotation.NetServiceClass;
+import com.http.compiler.annotation.POST;
 
 @NetServiceClass("")
 @DealClass

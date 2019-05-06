@@ -5,9 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import com.yanxuwen.http.DataCallBack;
-import com.yanxuwen.http.NetError;
-
 public class MainActivity extends AppCompatActivity {
 
     private TextView tv_status;
