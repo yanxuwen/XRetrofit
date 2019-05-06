@@ -4,7 +4,10 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/MyHttpService.iml" filepath="$PROJECT_DIR$/MyHttpService.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp.iml" filepath="$PROJECT_DIR$/okhttp.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttp-api/okhttp-api.iml" filepath="$PROJECT_DIR$/okhttp-api/okhttp-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp-api/okhttp-api.iml" filepath="$PROJECT_DIR$/okhttp-api/okhttp-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/okhttp-compiler/okhttp-compiler.iml" filepath="$PROJECT_DIR$/okhttp-compiler/okhttp-compiler.iml" />
       <module fileurl="file://$PROJECT_DIR$/okhttp-compiler/okhttp-compiler.iml" filepath="$PROJECT_DIR$/okhttp-compiler/okhttp-compiler.iml" />
     </modules>
   </component>
