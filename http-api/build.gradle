@@ -34,7 +34,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api 'com.squareup.okhttp3:okhttp:3.10.0'
     api 'com.alibaba:fastjson:1.1.71.android'
-    api project(path: ':okhttp-compiler')
+    api project(path: ':http-compiler')
 }
 
 apply from: '../install.gradle'
