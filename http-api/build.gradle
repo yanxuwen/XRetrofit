@@ -1,10 +1,10 @@
 apply plugin: 'com.android.library'
 
 ext {
-    bintrayName = 'okhttp-api'
+    bintrayName = 'http-api'
     artifact = bintrayName
-    libraryName = 'okhttp api'
-    libraryDescription = 'this is a  okhttp-api'
+    libraryName = 'http api'
+    libraryDescription = 'this is a  http-api'
     libraryVersion = main_version
 }
 

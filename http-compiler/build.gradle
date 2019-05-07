@@ -1,10 +1,10 @@
 apply plugin: 'java'
 
 ext {
-    bintrayName = 'okhttp-compiler'
+    bintrayName = 'http-compiler'
     artifact = bintrayName
-    libraryName = 'okhttp compiler'
-    libraryDescription = 'this is a  okhttp-compiler'
+    libraryName = 'http compiler'
+    libraryDescription = 'this is a  http-compiler'
     libraryVersion = main_version
 }
 compileJava {
