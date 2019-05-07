@@ -1,6 +1,5 @@
 package com.http.compiler;
 
-import com.google.auto.service.AutoService;
 import com.http.compiler.annotation.NetServiceClass;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
@@ -18,7 +17,6 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
@@ -28,7 +26,6 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
-@AutoService(Processor.class)
 public class HttpServiceProcessor extends AbstractProcessor {
     private Types mTypeUtils;
     private Elements mElementUtils;
