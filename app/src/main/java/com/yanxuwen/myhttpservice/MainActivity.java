@@ -5,6 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.http.api.DataCallBack;
+import com.http.api.NetError;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView tv_status;
@@ -40,17 +43,17 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick(View view) {
         String json = "{\"pageNo\":1,\"pageSize\":20,\"studentId\":\"e94a938d8414f9ac005e\"}";
-//        HttpRequest.getNetService().post6(json, new DataCallBack<Test>(Test.class) {
-//
-//            @Override
-//            public void onHttpSuccess(Test result) {
-//                tv_status.setText(result.getRegisterList());
-//            }
-//
-//            @Override
-//            public void onHttpFail(NetError netError) {
-//                tv_status.setText(netError.getMessage());
-//            }
-//        });
+        HttpRequest.getNetService().post6(json, new DataCallBack<Test>(Test.class) {
+
+            @Override
+            public void onHttpSuccess(Test result) {
+                tv_status.setText(result.getRegisterList());
+            }
+
+            @Override
+            public void onHttpFail(NetError netError) {
+                tv_status.setText(netError.getMessage());
+            }
+        });
     }
 }

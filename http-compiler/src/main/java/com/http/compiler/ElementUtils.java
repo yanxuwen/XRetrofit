@@ -16,6 +16,7 @@ import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -36,8 +37,8 @@ import javax.tools.Diagnostic;
 public class ElementUtils {
     public static String packageName = "com.http";
 
-    public static String getImplName(Class<?> clazz){
-        return packageName+ "." + clazz.getSimpleName() +"$Impl";
+    public static String getImplName(Class<?> clazz) {
+        return packageName + "." + clazz.getSimpleName() + "$Impl";
     }
 
     public static List<ServiceMeta> parseServices(Set<? extends Element> routeElements, Elements elementUtils, Messager messager) {
@@ -45,10 +46,10 @@ public class ElementUtils {
         if (routeElements != null && !routeElements.isEmpty()) {
             Iterator var3 = routeElements.iterator();
 
-            while(var3.hasNext()) {
-                Element element = (Element)var3.next();
-                NetServiceClass service = (NetServiceClass)element.getAnnotation(NetServiceClass.class);
-                DealClass dealClass = (DealClass)element.getAnnotation(DealClass.class);
+            while (var3.hasNext()) {
+                Element element = (Element) var3.next();
+                NetServiceClass service = (NetServiceClass) element.getAnnotation(NetServiceClass.class);
+                DealClass dealClass = (DealClass) element.getAnnotation(DealClass.class);
                 if (service != null) {
                     TypeMirror tm = element.asType();
                     messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found class [" + tm.toString() + "] <<<");
@@ -57,60 +58,67 @@ public class ElementUtils {
                     meta.setBaseUrl(service.value());
                     meta.setPackageName(tm.toString());
                     meta.setSampleName(element.getSimpleName().toString());
-                    meta.setMethodMetas(parseMethod(teService.getEnclosedElements(),elementUtils,messager,dealClass != null));
+                    meta.setMethodMetas(parseMethod(meta,teService.getEnclosedElements(), elementUtils, messager, dealClass != null));
                     list.add(meta);
                 }
             }
         }
         return list;
     }
-    public static List<MethodMeta> parseMethod(List<? extends Element> routeElements, Elements elementUtils, Messager messager,boolean dealAll) {
+
+    public static List<MethodMeta> parseMethod(ServiceMeta serviceMeta,List<? extends Element> routeElements, Elements elementUtils, Messager messager, boolean dealAll) {
         List<MethodMeta> list = new ArrayList();
         if (routeElements != null && !routeElements.isEmpty()) {
             Iterator var3 = routeElements.iterator();
 
-            while(var3.hasNext()) {
-                Element element = (Element)var3.next();
+            while (var3.hasNext()) {
+                ExecutableElement element = (ExecutableElement) var3.next();
                 MethodMeta meta = new MethodMeta();
-                Headers apiHeaders = (Headers)element.getAnnotation(Headers.class);
+                Headers apiHeaders = (Headers) element.getAnnotation(Headers.class);
                 //设置头部
-                if (apiHeaders != null){
+                if (apiHeaders != null) {
                     Map<String, String> mapHeader = new HashMap<>();
                     String[] headers = apiHeaders.value();
                     if (headers != null) {
                         for (String str : headers) {
-                           String[] split = str.split(":");
-                           if (split != null && split.length >= 2){
-                               mapHeader.put(split[0],split[1]);
-                           }
+                            String[] split = str.split(":");
+                            if (split != null && split.length >= 2) {
+                                mapHeader.put(split[0], split[1]);
+                            }
                         }
                     }
                     meta.setHeaders(mapHeader);
                 }
-                GET apiGET = (GET)element.getAnnotation(GET.class);
-                POST apiPOST = (POST)element.getAnnotation(POST.class);
+                GET apiGET = (GET) element.getAnnotation(GET.class);
+                POST apiPOST = (POST) element.getAnnotation(POST.class);
                 int requestType = 0;
                 if (apiGET != null) {
                     requestType = MethodMeta.TYPE.TYPE_GET;
                     meta.setUrl(apiGET.value());
-                }  if (apiPOST != null) {
-                    requestType =  MethodMeta.TYPE.TYPE_POST;
+                }
+                if (apiPOST != null) {
+                    requestType = MethodMeta.TYPE.TYPE_POST;
                     meta.setUrl(apiPOST.value());
                 }
 
-                if (requestType != 0) {
-                    String method = element.getSimpleName().toString();
-                    messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found method [" + method + " " + element.asType().toString() + "] <<<");
-                    Deal apiDeal = (Deal)element.getAnnotation(Deal.class);
-                    if (dealAll || apiDeal != null){
-                        meta.setDeal(true);
-                    }
-                    meta.setRequestType(requestType);
-                    meta.setName(method);
-                    meta.setResult(element.asType());
-                    meta.setParams(parseParam(element,elementUtils,messager));
-                    list.add(meta);
+                String methodName = element.getSimpleName().toString();
+                messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found method [" + methodName + " " + element.asType().toString() + "] <<<");
+                Deal apiDeal = (Deal) element.getAnnotation(Deal.class);
+                if (dealAll || apiDeal != null) {
+                    meta.setDeal(true);
                 }
+                meta.setRequestType(requestType);
+                meta.setName(methodName);
+                meta.setResult(element.asType());
+                meta.setParams(parseParam(element, elementUtils, messager));
+                //设置方法属性
+                try {
+                    meta.setReturnType(element.getReturnType());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                list.add(meta);
             }
         }
 
@@ -120,10 +128,10 @@ public class ElementUtils {
     public static List<ParamMeta> parseParam(Element element, Elements elementUtils, Messager messager) {
         List<ParamMeta> list = new ArrayList();
         if (element != null && element instanceof ExecutableElement) {
-            Iterator var3 = ((ExecutableElement)element).getParameters().iterator();
+            Iterator var3 = ((ExecutableElement) element).getParameters().iterator();
 
-            while(var3.hasNext()) {
-                VariableElement ve = (VariableElement)var3.next();
+            while (var3.hasNext()) {
+                VariableElement ve = (VariableElement) var3.next();
                 TypeMirror tm = ve.asType();
                 String paramName = ve.getSimpleName().toString();
                 String orginName = paramName;
@@ -132,23 +140,23 @@ public class ElementUtils {
                     paramName = "java.lang.String json";
                     meta.setType(ParamMeta.TYPE.Body);
 
-                } else if (ve.getAnnotation(Field.class) != null){
+                } else if (ve.getAnnotation(Field.class) != null) {
                     paramName = ve.getAnnotation(Field.class).value();
                     meta.setType(ParamMeta.TYPE.Field);
 
-                } else if (ve.getAnnotation(Query.class) != null){
+                } else if (ve.getAnnotation(Query.class) != null) {
                     paramName = ve.getAnnotation(Query.class).value();
                     meta.setType(ParamMeta.TYPE.Query);
 
-                } else if (ve.getAnnotation(Path.class) != null){
+                } else if (ve.getAnnotation(Path.class) != null) {
                     paramName = ve.getAnnotation(Path.class).value();
                     meta.setType(ParamMeta.TYPE.Path);
 
-                } else if (ve.getAnnotation(Param.class) != null){
+                } else if (ve.getAnnotation(Param.class) != null) {
                     paramName = ve.getAnnotation(Param.class).value();
                     meta.setType(ParamMeta.TYPE.Param);
 
-                } else if (ve.getAnnotation(Header.class) != null){
+                } else if (ve.getAnnotation(Header.class) != null) {
                     paramName = ve.getAnnotation(Header.class).value();
                     meta.setType(ParamMeta.TYPE.Header);
                 }

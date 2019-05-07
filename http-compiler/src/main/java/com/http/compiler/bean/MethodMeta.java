@@ -5,6 +5,7 @@
 
 package com.http.compiler.bean;
 
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +31,14 @@ public class MethodMeta {
         this.headers = headers;
     }
 
+    public TypeMirror getReturnType() {
+        return returnType;
+    }
+
+    public void setReturnType(TypeMirror returnType) {
+        this.returnType = returnType;
+    }
+
     public @interface TYPE {
         int TYPE_GET = 1;
         int TYPE_POST = 2;
@@ -37,6 +46,7 @@ public class MethodMeta {
     private String url;
     private String name;
     private boolean deal;
+    private TypeMirror returnType;
     /**
      * 请求类型
      */

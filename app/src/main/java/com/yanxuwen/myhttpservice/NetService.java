@@ -27,11 +27,14 @@ public interface NetService {
     @POST("http://api.sdwhcn.com:5056/v1/auth/login")
     void post5(@Body Test body, DataCallBack callBack);
 
-//    @POST("http://a.szy.com:4480/health/dose/register/list/p/v1.0")
-//    void post6(@Body String body, DataCallBack callBack);
+    @POST("http://a.szy.com:4480/health/dose/register/list/p/v1.0")
+    void post6(@Body String body, DataCallBack callBack);
+
+    @POST("http://a.szy.com:4480/health/dose/register/list/p/v1.0")
+    Test post7(@Body String body);
 
 //    @POST("https://nuser.321go.com/sms/sendCode")
 //    void post7(@Param("mobile") String mobile,DataCallBack callBack);
 
-    public void setHttpDealMethod(HttpDealMethod httpDealMethod);
+    public void setHttpDealMethod(HttpDealMethod l);
 }
