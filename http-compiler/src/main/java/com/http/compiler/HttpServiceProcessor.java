@@ -46,7 +46,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
     @Override
     public SourceVersion getSupportedSourceVersion() {
         //支持的java版本
-        return SourceVersion.RELEASE_7;
+        return SourceVersion.RELEASE_8;
     }
 
     @Override
