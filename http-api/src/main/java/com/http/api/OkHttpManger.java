@@ -224,11 +224,11 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void get(String url, Map<String, String> headers, final DataCallBack dataCallBack) {
-        get(url, headers, null, dataCallBack);
+    public void get(String url, Map<String, String> headers, final DataCallBack dataCallBack,boolean syn) {
+        get(url, headers, null, dataCallBack,syn);
     }
 
-    public void get(String url, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    public void get(String url, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, final boolean syn) {
         final Request request = buildRequest(url, null, headers);
         Call call = getOkHttpClient().newCall(request);
         try {
@@ -237,15 +237,15 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string());
+                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
                     } catch (Exception e) {
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
                     }
 
@@ -265,11 +265,11 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack) {
-        post(url, params, headers, null, dataCallBack);
+    public void post(String url, Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url, params, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    public void post(String url, Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         RequestBody requestBody;
         if (params == null) {
             params = new HashMap<>();
@@ -292,16 +292,16 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string());
+                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
 
                     } catch (Exception e) {
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
                     }
 
@@ -320,11 +320,11 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, String json, Map<String, String> headers, final DataCallBack dataCallBack) {
-        post(url, json, headers, null, dataCallBack);
+    public void post(String url, String json, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url, json, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, String json, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    public void post(String url, String json, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         final String realURL = UrlUtils.urlJoint(url, null);
         final Request request = buildJsonPostRequest(realURL, json, headers);
         Call call = getOkHttpClient().newCall(request);
@@ -334,16 +334,16 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string());
+                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
 
                     } catch (Exception e) {
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
                     }
 
@@ -364,11 +364,11 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, final DataCallBack dataCallBack) {
-        post(url, requestBody, headers, null, dataCallBack);
+    public void post(String url, RequestBody requestBody, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url, requestBody, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    public void post(String url, RequestBody requestBody, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         String realURL = UrlUtils.urlJoint(url, null);
         //结果返回
         final Request request = buildRequest(realURL, requestBody, headers);
@@ -379,16 +379,16 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string());
+                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
 
                     } catch (Exception e) {
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
                     }
 
@@ -409,7 +409,7 @@ public class OkHttpManger {
      * @param fileKey      文件传入服务器的键"image"
      * @filePath: 文件路径
      */
-    public void upLoadFile(String url, String filePath, String fileKey, Map<String, String> headers, final DataCallBack dataCallBack) {
+    public void upLoadFile(String url, String filePath, String fileKey, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
         File file = new File(filePath);
         RequestBody fileBody = RequestBody.create(MediaType.parse("application/octet-stream"), file);
         RequestBody requestBody = new MultipartBody.Builder()
@@ -426,22 +426,22 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,null, response.body().string());
+                        postUISuccess(dataCallBack,null, response.body().string(),syn);
                     } catch (Exception e) {
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
                     }
 
                 }
             });
         } catch (Exception e) {
-            postUIFail(dataCallBack, e);
+            postUIFail(dataCallBack, e,syn);
             e.printStackTrace();
         }
     }
@@ -456,7 +456,7 @@ public class OkHttpManger {
      * @param files        上传的文件
      * @param fileKeys     上传的文件key集合
      */
-    public void upLoadFile(String url, File[] files, String[] fileKeys, Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack) {
+    public void upLoadFile(String url, File[] files, String[] fileKeys, Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
         if (params == null) {
             params = new HashMap<>();
         }
@@ -491,24 +491,24 @@ public class OkHttpManger {
 
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     try {
-                        postUISuccess(dataCallBack,null, response.body().string());
+                        postUISuccess(dataCallBack,null, response.body().string(),syn);
 
                     } catch (Exception e) {
                         e.printStackTrace();
-                        postUIFail(dataCallBack, e);
+                        postUIFail(dataCallBack, e,syn);
                     }
 
                 }
             });
 
         } catch (Exception e) {
-            postUIFail(dataCallBack, e);
+            postUIFail(dataCallBack, e,syn);
             e.printStackTrace();
         }
     }
@@ -520,14 +520,14 @@ public class OkHttpManger {
      * @param destFileDir  本地存储的文件夹路径
      * @param dataCallBack 自定义回调接口
      */
-    private void downLoadFile(final String url, final String destFileDir, Map<String, String> headers, final DataCallBack dataCallBack) {
+    private void downLoadFile(final String url, final String destFileDir, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
         String realURL = UrlUtils.urlJoint(url, null);
         Request request = buildRequest(realURL, null, headers);
         Call call = getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                postUIFail(dataCallBack, e);
+                postUIFail(dataCallBack, e,syn);
 
             }
 
@@ -546,14 +546,14 @@ public class OkHttpManger {
                     }
                     fos.flush();
                 } catch (IOException e) {
-                    postUIFail(dataCallBack, e);
+                    postUIFail(dataCallBack, e,syn);
                     e.printStackTrace();
                 } finally {
                     if (is != null) {
                         try {
                             is.close();
                         } catch (IOException e) {
-                            postUIFail(dataCallBack, e);
+                            postUIFail(dataCallBack, e,syn);
                             e.printStackTrace();
                         }
                     }
@@ -561,13 +561,13 @@ public class OkHttpManger {
                         try {
                             fos.close();
                         } catch (IOException e) {
-                            postUIFail(dataCallBack, e);
+                            postUIFail(dataCallBack, e,syn);
                             e.printStackTrace();
                         }
                     }
 
                 }
-                postUISuccess(dataCallBack, null,response.body().toString());
+                postUISuccess(dataCallBack, null,response.body().toString(),syn);
 
             }
         });
@@ -646,20 +646,20 @@ public class OkHttpManger {
         return contentTypeFor;
     }
 
-    private void postUIFail(final DataCallBack dataCallBack, Exception e) {
+    private void postUIFail(final DataCallBack dataCallBack, Exception e,boolean syn) {
         if (dataCallBack != null) {
             if (e instanceof SocketTimeoutException) {
                 //超时
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()));
+                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()),syn);
             } else if (e instanceof ConnectException) {
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()));
+                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()),syn);
             } else {
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.ERROR, "错误", e.getMessage()));
+                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.ERROR, "错误", e.getMessage()),syn);
             }
         }
     }
 
-    private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, String json) {
+    private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, String json,boolean syn) {
         try {
             if (httpDealMethod != null){
                 String str = httpDealMethod.dealCallBack(json);
@@ -669,19 +669,19 @@ public class OkHttpManger {
             }
             if (dataCallBack != null) {
                 if (dataCallBack.getType().equals(String.class)) {
-                    dataCallBack.postUISuccess(json);
+                    dataCallBack.postUISuccess(json,syn);
                 } else if (dataCallBack.getType().equals(Object.class)) {
-                    dataCallBack.postUISuccess(json);
+                    dataCallBack.postUISuccess(json,syn);
                 } else {
                     if (dataCallBack.getType() == null){
-                        dataCallBack.postUISuccess(JSONObject.parseObject(json, String.class));
+                        dataCallBack.postUISuccess(JSONObject.parseObject(json, String.class),syn);
                     } else {
-                        dataCallBack.postUISuccess(JSONObject.parseObject(json, dataCallBack.getType()));
+                        dataCallBack.postUISuccess(JSONObject.parseObject(json, dataCallBack.getType()),syn);
                     }
                 }
             }
         } catch (Exception e) {
-            dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()));
+            dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()),syn);
         }
     }
 

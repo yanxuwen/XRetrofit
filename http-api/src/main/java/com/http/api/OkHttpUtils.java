@@ -12,28 +12,28 @@ import okhttp3.RequestBody;
 
 public class OkHttpUtils {
 
-    public void request(String baseUrl , String url, int requestType, Map<String, String> map, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    public void request(String baseUrl , String url, int requestType, Map<String, String> map, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
         if (!url.startsWith("http")){
             url = baseUrl + url;
         }
         switch (requestType) {
             case MethodMeta.TYPE.TYPE_GET:
-                get(url, headers, httpDealMethod, dataCallBack);
+                get(url, headers, httpDealMethod, dataCallBack,syn);
                 break;
             case MethodMeta.TYPE.TYPE_POST:
                 if (json != null) {
-                    post(url, json, params, headers, httpDealMethod, dataCallBack);
+                    post(url, json, params, headers, httpDealMethod, dataCallBack,syn);
                 } else if (map != null) {
-                    post(url, map, params, headers, httpDealMethod, dataCallBack);
+                    post(url, map, params, headers, httpDealMethod, dataCallBack,syn);
                 } else if (params != null) {
                     //先走json逻辑
-                    post(url, "", params, headers, httpDealMethod, dataCallBack);
+                    post(url, "", params, headers, httpDealMethod, dataCallBack,syn);
                 }
                 break;
         }
     }
 
-    private void get(String url, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    private void get(String url, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
         DealParams dealParams = new DealParams();
         dealParams.setRequestType(MethodMeta.TYPE.TYPE_GET);
         dealParams.setUrl(url);
@@ -44,10 +44,10 @@ public class OkHttpUtils {
             url = dealParams.getUrl();
             headers = dealParams.getHeaders();
         }
-        OkHttpManger.getInstance().get(url, headers,httpDealMethod, dataCallBack);
+        OkHttpManger.getInstance().get(url, headers,httpDealMethod, dataCallBack,syn);
     }
 
-    private void post(String url, Map<String, String> map, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    private void post(String url, Map<String, String> map, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
         DealParams dealParams = new DealParams();
         dealParams.setRequestType(MethodMeta.TYPE.TYPE_POST);
         dealParams.setUrl(url);
@@ -62,10 +62,10 @@ public class OkHttpUtils {
             headers = dealParams.getHeaders();
             params = dealParams.getParams();
         }
-        OkHttpManger.getInstance().post(url, map, headers,httpDealMethod, dataCallBack);
+        OkHttpManger.getInstance().post(url, map, headers,httpDealMethod, dataCallBack,syn);
     }
 
-    private void post(String url, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
+    private void post(String url, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
         DealParams dealParams = new DealParams();
         dealParams.setRequestType(MethodMeta.TYPE.TYPE_POST);
         dealParams.setUrl(url);
@@ -91,10 +91,10 @@ public class OkHttpUtils {
             }
             json = jb.toString();
         }
-        OkHttpManger.getInstance().post(url, json, headers,httpDealMethod, dataCallBack);
+        OkHttpManger.getInstance().post(url, json, headers,httpDealMethod, dataCallBack,syn);
     }
 
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack) {
-        OkHttpManger.getInstance().post(url, requestBody, headers, httpDealMethod,dataCallBack);
+    public void post(String url, RequestBody requestBody, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
+        OkHttpManger.getInstance().post(url, requestBody, headers, httpDealMethod,dataCallBack,syn);
     }
 }

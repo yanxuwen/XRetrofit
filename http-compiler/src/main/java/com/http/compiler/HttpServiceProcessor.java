@@ -148,8 +148,8 @@ public class HttpServiceProcessor extends AbstractProcessor {
                             break;
                     }
                 }
-                pw.println("\n    private void request(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final DataCallBack callback) {");
-                pw.format("        new OkHttpUtils().request(baseUrl,url, requestType,map ,json ,params,headers,%s,callback);\n", "dealMethod");
+                pw.println("\n    private void request(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final DataCallBack callback,boolean syn) {");
+                pw.format("        new OkHttpUtils().request(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
                 pw.format("}");
 
@@ -454,19 +454,24 @@ public class HttpServiceProcessor extends AbstractProcessor {
     }
 
     private void setPwRequest(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_field, String json_name, StringBuilder str_params, boolean isHeaders, boolean hasCallback) {
-        String callback = "callback";
+        String callback = hasCallback ? "callback" : "null";
         if (!(methodMeta.getReturnType() + "").equals("void")) {
             callback = "callback_";
         }
 
-        pw.format("        request( url, %d, %s, %s ,%s, %s,%s,%s);\n"
+        boolean syn = false;
+        if (!(methodMeta.getReturnType() + "").equals("void")) {
+            syn = true;
+        }
+        pw.format("        request( url, %d, %s, %s ,%s, %s,%s,%s,%s);\n"
                 , methodMeta.getRequestType()
                 , str_field == null ? null : "_map"
                 , json_name
                 , str_params == null ? null : "_params"
                 , isHeaders ? "_headers" : null
                 , methodMeta.isDeal() ? "httpDealMethod" : "null"
-                , hasCallback ? callback : "null");
+                , callback
+                ,syn);
     }
 
 
