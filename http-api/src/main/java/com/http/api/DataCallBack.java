@@ -30,11 +30,6 @@ public abstract class DataCallBack<T> {
      */
     public void postUISuccess(final T t,boolean syn) {
         if (syn){
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             onHttpSuccess(t);
         } else {
             mHandler.post(new Runnable() {
