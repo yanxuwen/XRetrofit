@@ -100,7 +100,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             try {
                 PrintWriter pw = new PrintWriter(w);
                 pw.println("package " + ElementUtils.packageName + ";\n");
-                pw.println("import android.util.ArrayMap;");
+                pw.println("import java.util.HashMap;");
                 pw.println("import java.util.Map;");
                 pw.println("import com.http.api.OkHttpUtils;");
                 pw.println("import java.util.concurrent.CountDownLatch;");
@@ -401,7 +401,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
     private void setPwUrl(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_query) {
         if (str_query != null) {
             //拼接url
-            pw.println("        Map<String, String> urlJoint = new ArrayMap<>();");
+            pw.println("        Map<String, String> urlJoint = new HashMap<>();");
             pw.println("        try {");
             pw.println(str_query.toString());
             pw.println("        } catch (Exception e) {");
@@ -415,7 +415,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
 
     private void setPwField(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_field) {
         if (str_field == null) return;
-        pw.println("         Map<String, String> _map = new ArrayMap<>();");
+        pw.println("         Map<String, String> _map = new HashMap<>();");
         pw.println("        try {");
         pw.println(str_field.toString());
         pw.println("        } catch (Exception e) {");
@@ -425,7 +425,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
 
     private void setPwParams(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_params) {
         if (str_params == null) return;
-        pw.println("         Map<String, String> _params = new ArrayMap<>();");
+        pw.println("         Map<String, String> _params = new HashMap<>();");
         pw.println("        try {");
         pw.println(str_params.toString());
         pw.println("        } catch (Exception e) {");
@@ -435,7 +435,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
 
     private boolean setPwHeaders(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_headers) {
         if (methodMeta.getHeaders() == null && str_headers == null) return false;
-        pw.println("         Map<String, String> _headers = new ArrayMap<>();\n");
+        pw.println("         Map<String, String> _headers = new HashMap<>();\n");
         pw.println("        try {");
         //先添加方法注解里面的Header
         if (methodMeta.getHeaders() != null) {

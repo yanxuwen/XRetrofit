@@ -1,10 +1,10 @@
 package com.yanxuwen.myhttpservice;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.http.api.DealParams;
 import com.http.api.HttpDealMethod;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -32,7 +32,7 @@ public class HttpDealMethodImpl implements HttpDealMethod {
     public String dealCallBack(String str) {
         String json = null;
         try {
-            JSONObject jsonObject = new JSONObject(str);
+            JSONObject jsonObject = JSON.parseObject(str);
             json = jsonObject.getString("body");
         } catch (JSONException e) {
             e.printStackTrace();
