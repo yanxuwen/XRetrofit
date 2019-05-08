@@ -95,7 +95,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
         try {
             String className = serviceMeta.getSampleName() + "$" + "Impl";
             JavaFileObject f = this.mFiler.createSourceFile(className);
-            mMessager.printMessage(Diagnostic.Kind.NOTE, "Printing: " + f.toUri());
+//            mMessager.printMessage(Diagnostic.Kind.NOTE, "Printing: " + f.toUri());
             Writer w = f.openWriter();
             try {
                 PrintWriter pw = new PrintWriter(w);
@@ -159,7 +159,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             }
 
         } catch (Exception e) {
-            mMessager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
+//            mMessager.printMessage(Diagnostic.Kind.ERROR, e.getMessage());
         }
     }
 
@@ -476,15 +476,15 @@ public class HttpServiceProcessor extends AbstractProcessor {
 
 
     private void error(Element e, String msg, Object... args) {
-        mMessager.printMessage(
-                Diagnostic.Kind.ERROR,
-                String.format(msg, args),
-                e);
+//        mMessager.printMessage(
+//                Diagnostic.Kind.ERROR,
+//                String.format(msg, args),
+//                e);
     }
 
     private void info(String msg, Object... args) {
-        mMessager.printMessage(
-                Diagnostic.Kind.NOTE,
-                String.format(msg, args));
+//        mMessager.printMessage(
+//                Diagnostic.Kind.NOTE,
+//                String.format(msg, args));
     }
 }
