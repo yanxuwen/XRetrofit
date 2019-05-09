@@ -4,6 +4,7 @@ import com.http.api.DataCallBack;
 import com.http.api.HttpDealMethod;
 import com.http.compiler.annotation.Body;
 import com.http.compiler.annotation.Deal;
+import com.http.compiler.annotation.DealClass;
 import com.http.compiler.annotation.Field;
 import com.http.compiler.annotation.GET;
 import com.http.compiler.annotation.NetServiceClass;
@@ -14,6 +15,7 @@ import com.http.compiler.annotation.Query;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 
 @NetServiceClass("")
+//@DealClass
 public interface NetService {
     /**
      * get的简单请求
