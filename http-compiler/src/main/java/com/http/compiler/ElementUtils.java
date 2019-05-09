@@ -16,7 +16,6 @@ import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -31,7 +30,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
-import javax.tools.Diagnostic;
 
 @SuppressWarnings("unchecked")
 public class ElementUtils {
@@ -52,7 +50,7 @@ public class ElementUtils {
                 DealClass dealClass = (DealClass) element.getAnnotation(DealClass.class);
                 if (service != null) {
                     TypeMirror tm = element.asType();
-                    messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found class [" + tm.toString() + "] <<<");
+//                    messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found class [" + tm.toString() + "] <<<");
                     TypeElement teService = elementUtils.getTypeElement(tm.toString());
                     ServiceMeta meta = new ServiceMeta();
                     meta.setBaseUrl(service.value());
@@ -102,7 +100,7 @@ public class ElementUtils {
                 }
 
                 String methodName = element.getSimpleName().toString();
-                messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found method [" + methodName + " " + element.asType().toString() + "] <<<");
+//                messager.printMessage(Diagnostic.Kind.NOTE, ">>> Found method [" + methodName + " " + element.asType().toString() + "] <<<");
                 Deal apiDeal = (Deal) element.getAnnotation(Deal.class);
                 if (dealAll || apiDeal != null) {
                     meta.setDeal(true);
