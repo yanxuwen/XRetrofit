@@ -27,10 +27,7 @@ public class OkHttpUtils {
         dealParams.setHeaders(headers);
         dealParams.setParams(params);
         if (httpDealMethod != null) {
-            dealParams = httpDealMethod.dealRequest((DealParams) dealParams.clone());
-        }
-        if (httpDealMethod != null) {
-            DealParams deal = httpDealMethod.dealRequest(dealParams);
+            DealParams deal = httpDealMethod.dealRequest((DealParams) dealParams.deepClone());
             if (deal != null) {
                 dealParams = deal;
             }

@@ -19,6 +19,11 @@ public class HttpDealMethodImpl implements HttpDealMethod {
 
     }
 
+    /**
+     * 处理请求
+     * 如果处理后，各种字段都有，则会优先表单请求，然后再者json请求
+     * 注意一定要return dealParams 不然不处理
+     */
     @Override
     public DealParams dealRequest(DealParams dealParams) {
         //设置Cookie
@@ -46,6 +51,9 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         return dealParams;
     }
 
+    /**
+     * 处理回调
+     */
     @Override
     public String dealCallBack(String str) {
         String json = null;

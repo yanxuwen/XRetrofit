@@ -2,10 +2,17 @@ package com.http.api;
 
 import com.http.compiler.bean.MethodMeta;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OptionalDataException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DealParams implements Cloneable{
+public class DealParams implements Serializable {
     private int requestType = MethodMeta.TYPE.TYPE_GET;
     private String url;
     private String json;
@@ -60,15 +67,25 @@ public class DealParams implements Cloneable{
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
     }
-
-    @Override
-    public Object clone() {
-        DealParams bean = null;
-        try{
-            bean = (DealParams)super.clone();
-        }catch(CloneNotSupportedException e) {
+    
+    public Object deepClone() {
+        ObjectInputStream oi = null;
+        Object o = null;
+        try {
+            // 将对象写到流里
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            ObjectOutputStream oo = new ObjectOutputStream(bo);
+            oo.writeObject(this);
+            // 从流里读出来
+            ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
+            oi = new ObjectInputStream(bi);
+            o = oi.readObject();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        return bean;
+        if (o == null){
+            o = new DealParams();
+        }
+        return o;
     }
 }
