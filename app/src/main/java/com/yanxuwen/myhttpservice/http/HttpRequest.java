@@ -1,6 +1,5 @@
-package com.yanxuwen.myhttpservice;
+package com.yanxuwen.myhttpservice.http;
 import com.http.compiler.ElementUtils;
-
 public class HttpRequest {
 
     private static NetService netService;

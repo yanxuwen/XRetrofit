@@ -1,7 +1,6 @@
 package com.http.api;
 
 
-
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.http.compiler.bean.MethodMeta;
@@ -12,89 +11,63 @@ import okhttp3.RequestBody;
 
 public class OkHttpUtils {
 
-    public void request(String baseUrl , String url, int requestType, Map<String, String> map, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
-        if (!url.startsWith("http")){
+    public void request(String baseUrl, String url, int requestType, Map<String, String> mapField, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, boolean syn) {
+        if (!url.startsWith("http")) {
             url = baseUrl + url;
+        }
+        onDeal(requestType , url ,json ,mapField ,headers ,params,httpDealMethod,dataCallBack,syn);
+    }
+
+    private void onDeal(int requestType, String url, String json, Map<String, String> mapField, Map<String, String> headers, Map<String, String> params, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, boolean syn) {
+        DealParams dealParams = new DealParams();
+        dealParams.setRequestType(requestType);
+        dealParams.setUrl(url);
+        dealParams.setJson(json);
+        dealParams.setMapField(mapField);
+        dealParams.setHeaders(headers);
+        dealParams.setParams(params);
+        if (httpDealMethod != null) {
+            dealParams = httpDealMethod.dealRequest((DealParams) dealParams.clone());
+        }
+        if (httpDealMethod != null) {
+            DealParams deal = httpDealMethod.dealRequest(dealParams);
+            if (deal != null) {
+                dealParams = deal;
+            }
         }
         switch (requestType) {
             case MethodMeta.TYPE.TYPE_GET:
-                get(url, headers, httpDealMethod, dataCallBack,syn);
+                OkHttpManger.getInstance().get(dealParams.getUrl(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
                 break;
             case MethodMeta.TYPE.TYPE_POST:
-                if (json != null) {
-                    post(url, json, params, headers, httpDealMethod, dataCallBack,syn);
-                } else if (map != null) {
-                    post(url, map, params, headers, httpDealMethod, dataCallBack,syn);
-                } else if (params != null) {
-                    //先走json逻辑
-                    post(url, "", params, headers, httpDealMethod, dataCallBack,syn);
+                if (dealParams.getMapField() != null && !dealParams.getMapField().isEmpty()) {
+                    //表单提交
+                    OkHttpManger.getInstance().post(dealParams.getUrl(), dealParams.getMapField(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+
+                } else if (dealParams.getJson() != null && !dealParams.getJson().equals("")) {
+                    //json提交
+                    OkHttpManger.getInstance().post(dealParams.getUrl(), dealParams.getJson(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+
+                } else if (dealParams.getParams() != null && !dealParams.getParams().isEmpty()) {
+                    //json提交
+                    JSONObject jb = new JSONObject();
+                    for (Map.Entry<String, String> entry : params.entrySet()) {
+                        try {
+                            jb.put(entry.getKey(), entry.getValue());
+                        } catch (JSONException e) {
+                        }
+                    }
+                    json = jb.toString();
+                    OkHttpManger.getInstance().post(dealParams.getUrl(), json, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+
+                } else {
+                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
                 }
                 break;
+            default:
+                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
+                break;
         }
-    }
 
-    private void get(String url, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
-        DealParams dealParams = new DealParams();
-        dealParams.setRequestType(MethodMeta.TYPE.TYPE_GET);
-        dealParams.setUrl(url);
-        if (httpDealMethod != null) {
-            dealParams = httpDealMethod.dealRequest(dealParams);
-        }
-        if (httpDealMethod != null && dealParams != null) {
-            url = dealParams.getUrl();
-            headers = dealParams.getHeaders();
-        }
-        OkHttpManger.getInstance().get(url, headers,httpDealMethod, dataCallBack,syn);
-    }
-
-    private void post(String url, Map<String, String> map, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
-        DealParams dealParams = new DealParams();
-        dealParams.setRequestType(MethodMeta.TYPE.TYPE_POST);
-        dealParams.setUrl(url);
-        dealParams.setMap(map);
-        dealParams.setParams(params);
-        if (httpDealMethod != null) {
-            dealParams = httpDealMethod.dealRequest(dealParams);
-        }
-        if (httpDealMethod != null && dealParams != null) {
-            url = dealParams.getUrl();
-            map = dealParams.getMap();
-            headers = dealParams.getHeaders();
-            params = dealParams.getParams();
-        }
-        OkHttpManger.getInstance().post(url, map, headers,httpDealMethod, dataCallBack,syn);
-    }
-
-    private void post(String url, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
-        DealParams dealParams = new DealParams();
-        dealParams.setRequestType(MethodMeta.TYPE.TYPE_POST);
-        dealParams.setUrl(url);
-        dealParams.setJson(json);
-        dealParams.setParams(params);
-        if (httpDealMethod != null) {
-            dealParams = httpDealMethod.dealRequest(dealParams);
-        }
-        if (httpDealMethod != null && dealParams != null) {
-            url = dealParams.getUrl();
-            json = dealParams.getJson();
-            headers = dealParams.getHeaders();
-            params = dealParams.getParams();
-        }
-        //json为空，params不为空，当json来使用
-        if ((json == null || json.equals("")) && params != null) {
-            JSONObject jb = new JSONObject();
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                try {
-                    jb.put(entry.getKey(), entry.getValue());
-                } catch (JSONException e) {
-                }
-            }
-            json = jb.toString();
-        }
-        OkHttpManger.getInstance().post(url, json, headers,httpDealMethod, dataCallBack,syn);
-    }
-
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
-        OkHttpManger.getInstance().post(url, requestBody, headers, httpDealMethod,dataCallBack,syn);
     }
 }

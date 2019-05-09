@@ -214,7 +214,6 @@ public class HttpServiceProcessor extends AbstractProcessor {
         if (!(methodMeta.getReturnType() + "").equals("void") && !hasCallback) {
             pw.println(setReturnMethod(methodMeta).toString());
         }
-        pw.println("\n    @Override");
         setPwUrl(methodMeta, pw, str_query);
         boolean isHeaders = setPwHeaders(methodMeta, pw, str_headers);
         if (str_path != null) {

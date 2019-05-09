@@ -5,12 +5,12 @@ import com.http.compiler.bean.MethodMeta;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DealParams {
+public class DealParams implements Cloneable{
     private int requestType = MethodMeta.TYPE.TYPE_GET;
-    private String json;
-    private Map<String, String> map;
-    private Map<String, String> headers;
     private String url;
+    private String json;
+    private Map<String, String> mapField;
+    private Map<String, String> headers;
     private Map<String, String> params;
 
     public String getJson() {
@@ -21,12 +21,12 @@ public class DealParams {
         this.json = json;
     }
 
-    public Map<String, String> getMap() {
-        return map;
+    public Map<String, String> getMapField() {
+        return mapField == null ?  new HashMap<String, String>() : mapField;
     }
 
-    public void setMap(Map<String, String> map) {
-        this.map = map;
+    public void setMapField(Map<String, String> mapField) {
+        this.mapField = mapField;
     }
 
     public String getUrl() {
@@ -46,7 +46,7 @@ public class DealParams {
     }
 
     public Map<String, String> getParams() {
-        return params;
+        return params == null ?  new HashMap<String, String>() : params;
     }
 
     public void setParams(Map<String, String> params) {
@@ -59,5 +59,16 @@ public class DealParams {
 
     public void setHeaders(Map<String, String> headers) {
         this.headers = headers;
+    }
+
+    @Override
+    public Object clone() {
+        DealParams bean = null;
+        try{
+            bean = (DealParams)super.clone();
+        }catch(CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return bean;
     }
 }
