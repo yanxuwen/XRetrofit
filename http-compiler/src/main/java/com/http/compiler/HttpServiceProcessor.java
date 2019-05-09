@@ -111,7 +111,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.println("import com.http.api.HttpDealMethod;");
                 pw.format("import %s;\n\n", serviceMeta.getPackageName());
                 pw.println("/**");
-                pw.println(" * Created by circlq");
+                pw.println(" * Created by yanxuwen");
                 pw.println(" * Created at 2019/4/17 9:18");
                 pw.println(" * 这个文件是自动生成的，请不要去编辑它");
                 pw.println(" */");
