@@ -141,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
         String pageNo = "1";
         String pageSize = "20";
         String schoolId = "XWQMI77m9Fbv1GWkBba";
+        //String.class代表返回类型，可以任何类型，记得要跟json的格式进行匹配。
         HttpRequest.getNetService().onDeal(reqcode,pageNo,pageSize,schoolId , new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
