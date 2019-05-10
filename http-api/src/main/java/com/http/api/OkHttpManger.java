@@ -663,17 +663,16 @@ public class OkHttpManger {
         try {
             if (httpDealMethod != null){
                 CallBack callBack = httpDealMethod.dealCallBack(json);
-                if (callBack == null){
-                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "数据错误", null),syn);
-                    return;
+                if (callBack != null){
+                    if (callBack.getReturnCode() != 0){
+                        dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
+                        return;
+                    }
+                    if (callBack.getMsg() != null && !callBack.getMsg().equals("")){
+                        json = callBack.getMsg();
+                    }
                 }
-                if (callBack.getReturnCode() != 0){
-                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
-                    return;
-                }
-                if (callBack.getMsg() != null && !callBack.getMsg().equals("")){
-                    json = callBack.getMsg();
-                }
+
             }
             if (dataCallBack != null) {
                 if (dataCallBack.getType().equals(String.class)) {

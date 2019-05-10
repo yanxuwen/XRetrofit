@@ -13,6 +13,7 @@ public interface HttpDealMethod {
     /**
      * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
      * 如果要请求成功，直接 new CallBack(json)
+     * return null 则不做任何处理
      */
     public CallBack dealCallBack(String str);
 }
