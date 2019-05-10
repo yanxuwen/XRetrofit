@@ -3,21 +3,15 @@ package com.yanxuwen.myhttpservice.http;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.http.api.CallBack;
 import com.http.api.DealParams;
 import com.http.api.HttpDealMethod;
-
 import java.util.Map;
-
-import okhttp3.OkHttpClient;
 
 /**
  * 统一处理方法跟回调
  */
 public class HttpDealMethodImpl implements HttpDealMethod {
-    @Override
-    public void init(OkHttpClient okHttpClient) {
-
-    }
 
     /**
      * 处理请求
@@ -52,10 +46,12 @@ public class HttpDealMethodImpl implements HttpDealMethod {
     }
 
     /**
-     * 处理回调
+     * 处理回调,
+     * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
+     * 如果要请求成功，直接 new CallBack(json)
      */
     @Override
-    public String dealCallBack(String str) {
+    public CallBack dealCallBack(String str) {
         String json = null;
         try {
             JSONObject jsonObject = JSON.parseObject(str);
@@ -63,6 +59,7 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return json;
+//        return  new CallBack(-1,"请求失败");
+        return new CallBack(json);
     }
 }

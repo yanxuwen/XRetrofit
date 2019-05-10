@@ -662,9 +662,17 @@ public class OkHttpManger {
     private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, String json,boolean syn) {
         try {
             if (httpDealMethod != null){
-                String str = httpDealMethod.dealCallBack(json);
-                if (str != null && !str.equals("")){
-                    json = str;
+                CallBack callBack = httpDealMethod.dealCallBack(json);
+                if (callBack == null){
+                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "数据错误", null),syn);
+                    return;
+                }
+                if (callBack.getReturnCode() != 0){
+                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
+                    return;
+                }
+                if (callBack.getMsg() != null && !callBack.getMsg().equals("")){
+                    json = callBack.getMsg();
                 }
             }
             if (dataCallBack != null) {
