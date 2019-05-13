@@ -41,10 +41,10 @@ public interface NetService {
 ***
 
 ## 下面讲解下，如何使用。
-#####1、添加依赖
+##### 1、添加依赖
 ~~~
- implementation 'com.yanxuwen:http-api:1.0.4'
- annotationProcessor 'com.yanxuwen:http-compiler:1.0.4'
+ implementation 'com.yanxuwen:http-api:1.0.5'
+ annotationProcessor 'com.yanxuwen:http-compiler:1.0.5'
 ~~~
 ##### 2、定义接口
  如一张图，创建一个接口类，下面给一个完整接口定义，包含（get提交，表单提交，json提交，还有统一接口处理）
@@ -221,6 +221,7 @@ public class HttpDealMethodImpl implements HttpDealMethod {
      * 处理回调,
      * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
      * 如果要请求成功，直接 new CallBack(json)
+     * return null 则不做任何处理
      */
     @Override
     public CallBack dealCallBack(String str) {
