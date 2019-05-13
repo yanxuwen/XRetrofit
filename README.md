@@ -1,4 +1,4 @@
-#前言
+# 前言
 极简HTTP请求，基于OkHttp,仿retrofit的注解方式，适用于Android跟java的使用。如果是测试感兴趣的话，我会在提供一个连接教你们如何导入，后续会提供
 
 #### 只需要简单的2步骤就能实现请求。
@@ -24,6 +24,7 @@ public interface NetService {
         String auid = "2c93e148674de85b01674ebc7e760018";
         String step = "2";
         String formId = "4f0e43a7c6095adfc0e5b216d9914f9e";
+        //String.class代表返回类型，可以任何类型，记得要跟json的格式进行匹配。
         HttpRequest.getNetService().postForm(token, auid, step, formId, new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
@@ -42,10 +43,10 @@ public interface NetService {
 ## 下面讲解下，如何使用。
 #####1、添加依赖
 ~~~
- implementation 'com.yanxuwen:http-api:1.0.0'
- annotationProcessor 'com.yanxuwen:http-compiler:1.0.0'
+ implementation 'com.yanxuwen:http-api:1.0.4'
+ annotationProcessor 'com.yanxuwen:http-compiler:1.0.4'
 ~~~
-#####2、定义接口
+##### 2、定义接口
  如一张图，创建一个接口类，下面给一个完整接口定义，包含（get提交，表单提交，json提交，还有统一接口处理）
 ~~~
 /**
@@ -93,7 +94,7 @@ public interface NetService {
 
     void setHttpDealMethod(HttpDealMethod l);
 ~~~
-#####3、初始化NetService 类
+##### 3、初始化NetService 类
 ~~~
 public class HttpRequest {
 
@@ -119,9 +120,9 @@ public class HttpRequest {
 }
 
 ~~~
-#####4、然后就是用上面的的类直接获取NetService 来调用请求，HttpRequest.getNetService().postForm()
+##### 4、然后就是用上面的的类直接获取NetService 来调用请求，HttpRequest.getNetService().postForm()
 ***
-#####5、注解的使用，我们按照第2点的定义接口的图片按顺序一个个解释，
+##### 5、注解的使用，我们按照第2点的定义接口的图片按顺序一个个解释，
 ###### NetServiceClass
 @NetServiceClass("") ： 创建接口类的时候，这句话是必备的，括号里面可以填写你们公司的域名，如：
 @NetServiceClass("http://a.szy.com:4480/")
@@ -217,10 +218,12 @@ public class HttpDealMethodImpl implements HttpDealMethod {
     }
 
     /**
-     * 处理回调
+     * 处理回调,
+     * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
+     * 如果要请求成功，直接 new CallBack(json)
      */
     @Override
-    public String dealCallBack(String str) {
+    public CallBack dealCallBack(String str) {
         String json = null;
         try {
             JSONObject jsonObject = JSON.parseObject(str);
@@ -228,7 +231,8 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return json;
+//        return  new CallBack(-1,"请求失败");
+        return new CallBack(json);
     }
 }
 
@@ -270,7 +274,7 @@ body里面就有的复杂了，我们再来看下是怎么定义接口，跟请�
 我们可以看到dealRequest里面dealParams.getParams();获取@Param里的所以字段值，然后循环取出里面的字段，转换成json串，然后添加到body的里面，然后在dealParams.setMapField(mapField);设置表单的值，，这样我们请求不必要写的就不需要写了，，简单的传递几个参数就可以，，具体的逻辑按你们公司的来，这里只是简单的举个我们公司的例子。
 
 ### dealCallBack
-然后还要一个dealCallBack用于处理回调，就是我们返回格式肯定用一种样式，这边处理就是接口会返回body的，然后我们只需要取出里面的值就可以，其他字段就不需要了。
+然后还要一个dealCallBack用于处理回调，比如我们可以在这里面统一处理下服务器返回的字段下是正确还是错误，然后取出你指定下的字段值，比如我们公司的，我只取出body里面的参数进行返回，其他参数不需要。
 #### init用于初始化，目前功能暂未开放，下次版本再弄，就是初始化一些参数，比如超时时间之类的设置
 
 
@@ -288,7 +292,7 @@ body里面就有的复杂了，我们再来看下是怎么定义接口，跟请�
     void get(@Header("Content-Type")String headType, @Query("cid") String cid, @Query("token") String token, DataCallBack callBack);
 ~~~
 ***
-如果不需要异步，需要同步的话，那就是吧void改成返回类型，去掉参数DataCallBack callBack
+如果不需要异步，需要同步的话，那就是吧void改成返回类型，当然不只限定String类型，会根据你写的类型，进行将json转换，去掉参数DataCallBack callBack
 如：
 ~~~
     @GET("https://qybeta.321go.com/api/v1/home/index")
@@ -296,7 +300,7 @@ body里面就有的复杂了，我们再来看下是怎么定义接口，跟请�
 ~~~
 ***
 # 本章到此结束，还是不太懂的话，看下代码，代码没几行，看一下就懂了.
-### 博客[点击跳转](https://www.jianshu.com/p/96ef31f6c56c)
+### github  [点击跳转](https://github.com/yanxuwen/okhttp)
 ### 如果你喜欢就去 github 帮我star下,非常感谢o(∩_∩)o~~~
 
 
