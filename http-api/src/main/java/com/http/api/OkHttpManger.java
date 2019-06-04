@@ -11,20 +11,13 @@ import java.net.ConnectException;
 import java.net.FileNameMap;
 import java.net.SocketTimeoutException;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
-import okhttp3.Cookie;
-import okhttp3.CookieJar;
 import okhttp3.FormBody;
 import okhttp3.Headers;
-import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -37,16 +30,13 @@ public class OkHttpManger {
     private OkHttpClient okHttpClient;
     private OkHttpClient.Builder builder;
     private volatile static OkHttpManger instance;
-    private static long connectTimeout = 10 * 1000;
-    private static long readTimeout = 10 * 1000;
-    private static long writeTimeout = 10 * 1000;
+    private Timeout timeout;
 
     //提交json数据
     private static final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
     //提交字符串数据
     private static final MediaType MEDIA_TYPE_MARKDOWN = MediaType.parse("text/x-markdown;charset=utf-8");
 
-    private final HashMap<String, List<Cookie>> cookieStore = new HashMap<>();
     // 使用getCacheDir()来作为缓存文件的存放路径（/data/data/包名/cache） ，
 // 如果你想看到缓存文件可以临时使用 getExternalCacheDir()（/sdcard/Android/data/包名/cache）。
     private static File cacheFile;
@@ -72,8 +62,8 @@ public class OkHttpManger {
      * 设置认证，根据需求从SslUtils类里面取
      */
     public OkHttpManger setSslSocketFactory(SslUtils.SSLParams sslParams) {
-        if (sslParams != null) {
-            getBuilder().sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
+        if (sslParams != null && builder != null) {
+            builder.sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
         }
         return this;
     }
@@ -82,9 +72,7 @@ public class OkHttpManger {
      * 设置超时时间，单位毫秒
      */
     public OkHttpManger setTimeOut(long connectTimeout, long readTimeout, long writeTimeout) {
-        this.connectTimeout = connectTimeout;
-        this.readTimeout = readTimeout;
-        this.writeTimeout = writeTimeout;
+        timeout = new Timeout(connectTimeout,readTimeout,writeTimeout);
         return this;
     }
 
@@ -92,34 +80,10 @@ public class OkHttpManger {
         this.okHttpClient = okHttpClient;
     }
 
-    public OkHttpClient.Builder getBuilder() {
-        if (builder == null) {
-            builder = new OkHttpClient.Builder()
-                    .connectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
-                    .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
-                    .writeTimeout(writeTimeout, TimeUnit.MILLISECONDS)
-                    .cookieJar(new CookieJar() {
-                        @Override
-                        public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-                            cookieStore.put(url.host(), cookies);
-                        }
-
-                        @Override
-                        public List<Cookie> loadForRequest(HttpUrl url) {
-                            List<Cookie> cookies = cookieStore.get(url.host());
-                            return cookies != null ? cookies : new ArrayList<Cookie>();
-//自动管理Cookie发送Request都不用管Cookie这个参数也不用去response获取新Cookie什么的了。还能通过cookieStore获取当前保存的Cookie。
-                        }
-                    });
-            SslUtils.SSLParams sslParams = SslUtils.getSslSocketFactory();
-            builder.sslSocketFactory(SslUtils.getSslSocketFactory().sSLSocketFactory, sslParams.trustManager);
-        }
-        return builder;
-    }
-
     public OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
-            okHttpClient = getBuilder().build();
+            builder = new BuilderUtils().getBuilder(timeout);
+            okHttpClient = builder.build();
         }
         return okHttpClient;
     }
