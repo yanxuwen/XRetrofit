@@ -212,7 +212,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
         pw.println("\n    @Override");
         pw.format("    public %s %s(%s) {\n", methodMeta.getReturnType(), methodMeta.getName(), params.toString());
         //如果有返回值方法，则设置里面
-        if (!(methodMeta.getReturnType() + "").equals("void") && !hasCallback) {
+        if (!(methodMeta.getReturnType() + "").equals("void")) {
             pw.println(setReturnMethod(methodMeta).toString());
         }
         setPwUrl(methodMeta, pw, str_query);
@@ -230,8 +230,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             params_try.append("            e.printStackTrace();\n");
             params_try.append("        }\n");
             params_try.append("        return returnResult[0];\n");
-            params_try.append("}");
-            pw.println(params_try.toString());
+            pw.print(params_try.toString());
         }
     }
 
