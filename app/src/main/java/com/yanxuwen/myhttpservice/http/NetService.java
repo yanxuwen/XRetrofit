@@ -1,9 +1,9 @@
 package com.yanxuwen.myhttpservice.http;
 
 import com.http.api.DataCallBack;
-import com.http.api.HttpDealMethod;
 import com.http.compiler.annotation.Body;
 import com.http.compiler.annotation.Deal;
+import com.http.compiler.annotation.DealAll;
 import com.http.compiler.annotation.DealClass;
 import com.http.compiler.annotation.Field;
 import com.http.compiler.annotation.GET;
@@ -14,8 +14,9 @@ import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 
+//@DealAll
+@DealClass(HttpDealMethodImpl.class)
 @NetServiceClass("")
-//@DealClass
 public interface NetService {
     /**
      * get的简单请求
@@ -60,5 +61,4 @@ public interface NetService {
     @Deal
     void onDeal(@Field("reqcode")String reqcode,@Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
 
-    void setHttpDealMethod(HttpDealMethod l);
 }

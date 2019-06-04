@@ -15,6 +15,7 @@ public class ServiceMeta {
     private String packageName;
     private String sampleName;
     private List<MethodMeta> methodMetas;
+    private String dealclassName;//处理类的路径名
 
     public ServiceMeta() {
     }
@@ -49,5 +50,13 @@ public class ServiceMeta {
 
     public void setBaseUrl(String baseUrl) {
         this.baseUrl = baseUrl;
+    }
+
+    public String getDealclassName() {
+        return dealclassName;
+    }
+
+    public void setDealclassName(String dealclassName) {
+        this.dealclassName = dealclassName;
     }
 }

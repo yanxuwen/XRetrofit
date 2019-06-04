@@ -108,7 +108,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.println("import com.http.api.DataCallBack;");
                 pw.println("import com.alibaba.fastjson.JSONObject;");
                 pw.println("import com.http.api.UrlUtils;");
-                pw.println("import com.http.api.HttpDealMethod;");
+                pw.println("import com.http.compiler.HttpDealMethod;");
                 pw.format("import %s;\n\n", serviceMeta.getPackageName());
                 pw.println("/**");
                 pw.println(" * Created by yanxuwen");
@@ -132,27 +132,28 @@ public class HttpServiceProcessor extends AbstractProcessor {
                         default:
                             pw.println("\n    @Override");
                             boolean firstItem = true;
-                            String httpDealMethod = null;
                             StringBuilder params = new StringBuilder("");
                             for (Iterator var14 = methodMeta.getParams().iterator(); var14.hasNext(); firstItem = false) {
                                 ParamMeta meta = (ParamMeta) var14.next();
-                                if (meta.getTypeMirror().toString().startsWith("com.http.api.HttpDealMethod")) {
-                                    httpDealMethod = meta.getOrginName();
-                                }
                                 setParams(meta, params, firstItem);
                             }
                             pw.format("    public %s %s(%s) {\n", methodMeta.getReturnType(), methodMeta.getName(), params.toString());
-                            if (httpDealMethod != null) {
-                                pw.format("        this.httpDealMethod = %s;\n", httpDealMethod);
-                            }
                             break;
                     }
                 }
                 pw.println("\n    private void request(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final DataCallBack callback,boolean syn) {");
                 pw.format("        new OkHttpUtils().request(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
-                pw.format("}");
 
+                pw.println("\n    private HttpDealMethod getHttpDealMethod(){");
+                pw.println("        try {");
+                pw.println("            if (httpDealMethod == null){");
+                pw.format("                httpDealMethod = (HttpDealMethod) Class.forName(\"%s\").getConstructor().newInstance();\n" , serviceMeta.getDealclassName() );
+                pw.println("            }");
+                pw.println("        } catch (Exception e) {}");
+                pw.format("         return httpDealMethod;\n");
+                pw.println("     }");
+                pw.println("}");
                 pw.flush();
             } finally {
                 w.close();
@@ -329,7 +330,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             pw.format("          new OkHttpUtils().post(url,%s,%s,%s,callback);\n"
                     , requestBody
                     , isHeaders ? "_headers" : null
-                    , methodMeta.isDeal() ? "httpDealMethod" : "null");
+                    , methodMeta.isDeal() ? "getHttpDealMethod()" : "null");
         } else {
             setPwRequest(methodMeta, pw, str_field, json_name, str_params, isHeaders, hasCallback);
         }
@@ -468,7 +469,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 , json_name
                 , str_params == null ? null : "_params"
                 , isHeaders ? "_headers" : null
-                , methodMeta.isDeal() ? "httpDealMethod" : "null"
+                , methodMeta.isDeal() ? "getHttpDealMethod()" : "null"
                 , callback
                 ,syn);
     }

@@ -2,6 +2,7 @@ package com.http.compiler;
 
 import com.http.compiler.annotation.Body;
 import com.http.compiler.annotation.Deal;
+import com.http.compiler.annotation.DealAll;
 import com.http.compiler.annotation.DealClass;
 import com.http.compiler.annotation.Field;
 import com.http.compiler.annotation.GET;
@@ -28,6 +29,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 
@@ -47,6 +49,7 @@ public class ElementUtils {
             while (var3.hasNext()) {
                 Element element = (Element) var3.next();
                 NetServiceClass service = (NetServiceClass) element.getAnnotation(NetServiceClass.class);
+                DealAll dealAll = (DealAll) element.getAnnotation(DealAll.class);
                 DealClass dealClass = (DealClass) element.getAnnotation(DealClass.class);
                 if (service != null) {
                     TypeMirror tm = element.asType();
@@ -56,7 +59,16 @@ public class ElementUtils {
                     meta.setBaseUrl(service.value());
                     meta.setPackageName(tm.toString());
                     meta.setSampleName(element.getSimpleName().toString());
-                    meta.setMethodMetas(parseMethod(meta,teService.getEnclosedElements(), elementUtils, messager, dealClass != null));
+                    if (dealClass != null) {
+                        Class<HttpDealMethod> ds = HttpDealMethod.class;
+                        try {
+                            meta.setDealclassName(dealClass.value().getName());
+                        } catch (MirroredTypeException mte) {
+                            TypeMirror value = mte.getTypeMirror();
+                            meta.setDealclassName(value.toString());
+                        }
+                    }
+                    meta.setMethodMetas(parseMethod(meta, teService.getEnclosedElements(), elementUtils, messager, dealAll != null));
                     list.add(meta);
                 }
             }
@@ -64,7 +76,7 @@ public class ElementUtils {
         return list;
     }
 
-    public static List<MethodMeta> parseMethod(ServiceMeta serviceMeta,List<? extends Element> routeElements, Elements elementUtils, Messager messager, boolean dealAll) {
+    public static List<MethodMeta> parseMethod(ServiceMeta serviceMeta, List<? extends Element> routeElements, Elements elementUtils, Messager messager, boolean dealAll) {
         List<MethodMeta> list = new ArrayList();
         if (routeElements != null && !routeElements.isEmpty()) {
             Iterator var3 = routeElements.iterator();

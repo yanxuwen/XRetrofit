@@ -3,11 +3,11 @@ package com.http.api;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.http.compiler.HttpDealMethod;
+import com.http.compiler.bean.DealParams;
 import com.http.compiler.bean.MethodMeta;
 
 import java.util.Map;
-
-import okhttp3.RequestBody;
 
 public class OkHttpUtils {
 

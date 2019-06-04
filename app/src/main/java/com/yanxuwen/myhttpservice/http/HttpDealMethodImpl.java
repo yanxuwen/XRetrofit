@@ -3,9 +3,10 @@ package com.yanxuwen.myhttpservice.http;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.http.api.CallBack;
-import com.http.api.DealParams;
-import com.http.api.HttpDealMethod;
+import com.http.compiler.HttpDealMethod;
+import com.http.compiler.bean.CallBack;
+import com.http.compiler.bean.DealParams;
+
 import java.util.Map;
 
 /**

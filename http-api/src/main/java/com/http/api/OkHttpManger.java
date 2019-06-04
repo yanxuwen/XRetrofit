@@ -1,6 +1,8 @@
 package com.http.api;
 
 import com.alibaba.fastjson.JSONObject;
+import com.http.compiler.HttpDealMethod;
+import com.http.compiler.bean.CallBack;
 
 import java.io.File;
 import java.io.FileOutputStream;

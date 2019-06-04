@@ -11,7 +11,6 @@ public class HttpRequest {
                     if (netService == null) {
                         netService = (NetService) Class.forName(ElementUtils.getImplName(NetService.class))
                                 .getConstructor().newInstance();
-                        netService.setHttpDealMethod(new HttpDealMethodImpl());
                     }
                 }
             }

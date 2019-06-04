@@ -1,4 +1,7 @@
-package com.http.api;
+package com.http.compiler;
+
+import com.http.compiler.bean.CallBack;
+import com.http.compiler.bean.DealParams;
 
 /**
  *  统一处理方法跟回调

@@ -1,4 +1,4 @@
-package com.http.api;
+package com.http.compiler.bean;
 
 public class CallBack {
 

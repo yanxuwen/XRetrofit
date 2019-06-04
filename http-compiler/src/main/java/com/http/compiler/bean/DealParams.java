@@ -1,13 +1,9 @@
-package com.http.api;
-
-import com.http.compiler.bean.MethodMeta;
+package com.http.compiler.bean;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OptionalDataException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
