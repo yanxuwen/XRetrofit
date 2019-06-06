@@ -1,5 +1,5 @@
 # 前言
-极简HTTP请求，基于OkHttp,仿retrofit的注解方式，适用于Android跟java的使用。如果是测试感兴趣的话，我会在提供一个连接教你们如何导入，后续会提供
+极简HTTP请求，基于OkHttp,仿retrofit的注解方式，适用于Android跟java的使用。如果是测试人员感兴趣的话，我会在提供一个连接教你们如何导入，后续会提供
 
 #### 只需要简单的2步骤就能实现请求。
 #### 定义接口
@@ -43,13 +43,18 @@ public interface NetService {
 ## 下面讲解下，如何使用。
 ##### 1、添加依赖
 ~~~
- implementation 'com.yanxuwen:http-api:1.0.5'
- annotationProcessor 'com.yanxuwen:http-compiler:1.0.5'
+    implementation 'com.yanxuwen:http-api:1.1.0'
+    annotationProcessor 'com.yanxuwen:http-compiler:1.1.0'
 ~~~
 ##### 2、定义接口
  如一张图，创建一个接口类，下面给一个完整接口定义，包含（get提交，表单提交，json提交，还有统一接口处理）
 ~~~
-/**
+
+@DealClass(HttpDealMethodImpl.class)
+//@DealAll
+@NetServiceClass("")
+public interface NetService {
+    /**
      * get的简单请求
      */
     @GET("https://qybeta.321go.com/api/v1/home/index")
@@ -90,9 +95,10 @@ public interface NetService {
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
     @Deal
-    void onDeal(@Field("reqcode")String reqcode,@Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
+    void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
 
-    void setHttpDealMethod(HttpDealMethod l);
+}
+
 ~~~
 ##### 3、初始化NetService 类
 ~~~
@@ -107,8 +113,6 @@ public class HttpRequest {
                     if (netService == null) {
                         netService = (NetService) Class.forName(ElementUtils.getImplName(NetService.class))
                                 .getConstructor().newInstance();
-                        //需要接口统一处理，在打开
-//                        netService.setHttpDealMethod(new HttpDealMethodImpl());
                     }
                 }
             }
@@ -157,12 +161,11 @@ $\color{red}{他还有一个很好用的用法，就是统一接口处理，不�
 ![](https://upload-images.jianshu.io/upload_images/6835615-df1ea78c695aac0a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![](https://upload-images.jianshu.io/upload_images/6835615-968319098373cf6c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 我们每个接口都要自带一个Cookies,然后提交是表单提交，然后有固定的值，又有变化的值，然后每个接口都需要，那我岂不是每次写接口的时候，每次都要写这些参数，是不是很复杂，，最关键的body里面的值竟然是json传。这种接口不封装下岂能忍。
-我们看到第2点的定义接口图，最后一行代码，如果不需统一处理，这句话可以不用写，方法名字也不需要按照图片的来，只要参数HttpDealMethod 有这个就可以
+我们看到第2点的定义接口图，最上面一行代码，如果不需统一处理，这句话可以不用写，【注意这个类一定要实现HttpDealMethod接口，不然他会提示你报错。】
 ~~~
-void setHttpDealMethod(HttpDealMethod l);
+@DealClass(HttpDealMethodImpl.class)
 ~~~
-然后第3点的图片有一个注释代码，那句话打开，就是设置统一处理类，
-然后在我们的定义接口的方法，打上@Deal这样的标记，就是代表该接口请求的时候要处理下，如果你需要每个接口都需要处理，那就在类上面打上@DealClass  代表该类下，所以的接口请求，都需要统一处理。
+然后在我们的定义接口的方法，打上@Deal这样的标记，就是代表该接口请求的时候要处理下，如果你需要每个接口都需要处理，那就在类上面打上@DealAll  代表该类下，所以的接口请求，都需要统一处理。
 如：
 ~~~
  @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
@@ -171,7 +174,8 @@ void setHttpDealMethod(HttpDealMethod l);
 ~~~
 ~~~
 @NetServiceClass("")
-@DealClass
+@DealClass(HttpDealMethodImpl.class)
+@DealAll
 public interface NetService {
 ~~~
 然后我们看下HttpDealMethodImpl类，就实现统一处理的类。
@@ -301,11 +305,9 @@ body里面就有的复杂了，我们再来看下是怎么定义接口，跟请�
 ~~~
 ***
 # 本章到此结束，还是不太懂的话，看下代码，代码没几行，看一下就懂了.
+### demo [点击下载](https://pan.baidu.com/s/1_ndRmq6vM_9-sfoRGsQ36w)
+### 提取码：4qm7
+### 简单版简书 [点击跳转](https://www.jianshu.com/p/bae138c032c3)
 ### github  [点击跳转](https://github.com/yanxuwen/okhttp)
 ### 如果你喜欢就去 github 帮我star下,非常感谢o(∩_∩)o~~~
-
-
-
-
-
 
