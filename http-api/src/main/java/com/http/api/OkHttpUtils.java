@@ -58,11 +58,11 @@ public class OkHttpUtils {
                     OkHttpManger.getInstance().post(dealParams.getUrl(), json, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
 
                 } else {
-                    dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
+                    dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
                 }
                 break;
             default:
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
+                dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
                 break;
         }
 

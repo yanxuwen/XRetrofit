@@ -22,6 +22,14 @@ public class NetError {
         this.code = code;
     }
 
+    public int getHttpCode() {
+        return httpCode;
+    }
+
+    public void setHttpCode(int httpCode) {
+        this.httpCode = httpCode;
+    }
+
     public interface HttpErrorCode {
         int ERROR= 10001;
         int DATA_EMPTY = 3;
@@ -29,23 +37,16 @@ public class NetError {
         int DATA_ERROR = 5;
         int NET_TIMEOUT = 6;
     }
+    private int httpCode;
     private int code;
     private String message;
     private String errorMessage;
 
-    public NetError(int code, String message,String errorMessage) {
+    public NetError(int httpCode ,int code, String message,String errorMessage) {
+        this.httpCode = httpCode;
         this.code = code;
         this.message = message;
         this.errorMessage = errorMessage;
-    }
-
-    public NetError(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public NetError(int code) {
-        this(code, "","");
     }
 
     public String getErrorMessage() {

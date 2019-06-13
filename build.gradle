@@ -2,22 +2,25 @@
 
 buildscript {
     repositories {
-        jcenter()
+        // 添加阿里云 maven 地址
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.3.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.2'
-        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
     }
 
 }
 
 allprojects {
     repositories {
-        jcenter()
+        // 添加阿里云 maven 地址
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
+        maven { url 'http://maven.aliyun.com/nexus/content/repositories/jcenter' }
         google()
-        maven { url "https://jitpack.io" }
     }
 }
 task clean(type: Delete) {

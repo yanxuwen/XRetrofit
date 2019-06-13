@@ -374,7 +374,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             params.append("            }\n");
             params.append("            @Override\n");
             params.append("            public void onHttpFail(NetError netError) {\n");
-            params.append("                returnResult[0] = null;\n");
+            params.append("                returnResult[0] = JSONObject.toJSONString(netError);\n");
             params.append("                countDownLatch.countDown();\n");
             params.append("            }\n");
             params.append("        };\n");

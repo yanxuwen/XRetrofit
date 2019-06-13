@@ -209,7 +209,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
+                        postUISuccess(dataCallBack,httpDealMethod, response,syn);
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
@@ -264,7 +264,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
+                        postUISuccess(dataCallBack,httpDealMethod, response,syn);
 
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e,syn);
@@ -306,7 +306,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
+                        postUISuccess(dataCallBack,httpDealMethod, response,syn);
 
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e,syn);
@@ -351,7 +351,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,httpDealMethod, response.body().string(),syn);
+                        postUISuccess(dataCallBack,httpDealMethod, response,syn);
 
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e,syn);
@@ -398,7 +398,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
-                        postUISuccess(dataCallBack,null, response.body().string(),syn);
+                        postUISuccess(dataCallBack,null, response,syn);
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e,syn);
                         e.printStackTrace();
@@ -463,7 +463,7 @@ public class OkHttpManger {
                 @Override
                 public void onResponse(Call call, Response response) {
                     try {
-                        postUISuccess(dataCallBack,null, response.body().string(),syn);
+                        postUISuccess(dataCallBack,null, response,syn);
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -533,7 +533,7 @@ public class OkHttpManger {
                     }
 
                 }
-                postUISuccess(dataCallBack, null,response.body().toString(),syn);
+                postUISuccess(dataCallBack, null,response,syn);
 
             }
         });
@@ -616,22 +616,27 @@ public class OkHttpManger {
         if (dataCallBack != null) {
             if (e instanceof SocketTimeoutException) {
                 //超时
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()),syn);
+                dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()),syn);
             } else if (e instanceof ConnectException) {
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()),syn);
+                dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()),syn);
             } else {
-                dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.ERROR, "错误", e.getMessage()),syn);
+                dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.ERROR, "错误", e.getMessage()),syn);
             }
         }
     }
 
-    private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, String json,boolean syn) {
+    private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, Response response,boolean syn) {
         try {
+            if (response.code() != 200){
+                dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", null),syn);
+                return;
+            }
+            String json = response.body().string();
             if (httpDealMethod != null){
                 CallBack callBack = httpDealMethod.dealCallBack(json);
                 if (callBack != null){
                     if (callBack.getReturnCode() != 0){
-                        dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
+                        dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
                         return;
                     }
                     if (callBack.getMsg() != null && !callBack.getMsg().equals("")){
@@ -654,7 +659,7 @@ public class OkHttpManger {
                 }
             }
         } catch (Exception e) {
-            dataCallBack.postUIFail(new NetError(NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()),syn);
+            dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()),syn);
         }
     }
 
