@@ -59,25 +59,30 @@ public class JsonUtils {
     }
     private static <T>T parseObject (String text, Class<T> clazz){
         try {
-            return JSONObject.parseObject(text, clazz);
+            T result = JSONObject.parseObject(text, clazz);
+            if (result == null){
+                text = null;
+                throw new NullPointerException("");  //直接手动抛出异常
+            }
+            return result;
         } catch (Exception e){
             Object o = null;
             if (clazz.equals(String.class)){
-                return (T) text;
+                return (T) (text == null ? "" : text);
             } else if (clazz.equals(Integer.class)){
-                o = Integer.parseInt(text);
+                o = Integer.parseInt(text == null ? "0" : text);
                 return (T) o;
             } else if (clazz.equals(Long.class)){
-                o = Long.parseLong(text);
+                o = Long.parseLong(text == null ? "0" : text);
                 return (T) o;
             } else if (clazz.equals(Boolean.class)){
-                o = Boolean.parseBoolean(text);
+                o = Boolean.parseBoolean(text == null ? "false" : text);
                 return (T) o;
             } else if (clazz.equals(Double.class)){
-                o = Double.parseDouble(text);
+                o = Double.parseDouble(text == null ? "0" : text);
                 return (T) o;
             } else if (clazz.equals(Float.class)){
-                o = Float.parseFloat(text);
+                o = Float.parseFloat(text == null ? "0" : text);
                 return (T) o;
             } else {
                 return null;

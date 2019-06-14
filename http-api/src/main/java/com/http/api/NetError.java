@@ -31,11 +31,11 @@ public class NetError {
     }
 
     public interface HttpErrorCode {
-        int ERROR= 10001;
-        int DATA_EMPTY = 3;
-        int NET_DISCONNECT = 4;
-        int DATA_ERROR = 5;
-        int NET_TIMEOUT = 6;
+        int ERROR= -10001;
+        int DATA_EMPTY = -10002;
+        int NET_DISCONNECT = -10003;
+        int DATA_ERROR = -10004;
+        int NET_TIMEOUT = -10005;
     }
     private int httpCode;
     private int code;
