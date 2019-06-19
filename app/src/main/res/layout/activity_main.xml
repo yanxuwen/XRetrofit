@@ -53,14 +53,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="put 提交"
-        android:onClick="postPut"
+        android:onClick="onPut"
         />
     <Button
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="delete 提交"
-        android:onClick="postDelete"
+        android:onClick="onDelete"
         />
     <Button
         android:layout_centerInParent="true"

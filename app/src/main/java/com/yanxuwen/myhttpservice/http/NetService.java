@@ -61,13 +61,13 @@ public interface NetService {
      * put 提交
      */
     @PUT("http://api.sdwhcn.com:5056/v1/member")
-    void postPut(@Header("Authorization") String header, @Query("nickname") String nickname,@Query("signature") String signature,@Query("area") String area,DataCallBack callBack);
+    void put(@Header("Authorization") String header, @Query("nickname") String nickname,@Query("signature") String signature,@Query("area") String area,DataCallBack callBack);
 
     /**
      * delete 提交
      */
     @DELETE("http://api.sdwhcn.com:5056/v1/member_collect_article/{id}")
-    void postDelete(@Header("Authorization") String header, @Path("id") String id,DataCallBack callBack);
+    void delete(@Header("Authorization") String header, @Path("id") String id,DataCallBack callBack);
 
     /**
      * 请求跟返回经过统一特殊处理。

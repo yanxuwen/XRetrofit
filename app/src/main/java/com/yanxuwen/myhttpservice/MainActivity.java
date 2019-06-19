@@ -137,8 +137,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * put 提交
      */
-    public void postPut(View view) {
-      HttpRequest.getNetService().postPut("header","测试","signature","area", new DataCallBack<String>(String.class) {
+    public void onPut(View view) {
+      HttpRequest.getNetService().put("header","测试","signature","area", new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
@@ -154,8 +154,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * delete 提交
      */
-    public void postDelete(View view) {
-       HttpRequest.getNetService().postDelete("header","123231" ,new DataCallBack<String>(String.class) {
+    public void onDelete(View view) {
+       HttpRequest.getNetService().delete("header","123231" ,new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
