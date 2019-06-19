@@ -5,10 +5,9 @@
 
 package com.http.api;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.yanxuwen.json.JsonUtils;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class NetError {
     public String getMessage() {
@@ -63,8 +62,8 @@ public class NetError {
         String message = JsonUtils.parse(json,String.class,"message");
         if (message != null && !message.equals("") && JsonUtils.isJson(message)){
             try {
-                JSONObject jsonObject = new JSONObject(json);
-                JSONObject jmessage = new JSONObject(message);
+                JSONObject jsonObject = JSON.parseObject(json);
+                JSONObject jmessage = JSON.parseObject(message);
                 jsonObject.put("message",jmessage);
                 return jsonObject.toString();
             } catch (Exception e) {
