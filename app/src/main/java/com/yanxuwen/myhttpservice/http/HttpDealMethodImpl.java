@@ -43,25 +43,25 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         mapField.put("body",json);
 
         dealParams.setMapField(mapField);
-        return dealParams;
+        return null;
     }
 
     /**
      * 处理回调,
      * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
-     * 如果要请求成功，直接 new CallBack(json)
+     * 如果要请求成功，直接 new CallBack(jsonStr)
      * return null 则不做任何处理
      */
     @Override
-    public CallBack dealCallBack(String str) {
-        String json = null;
+    public CallBack dealCallBack(int httpCode , String json) {
+        String jsonStr = null;
         try {
-            JSONObject jsonObject = JSON.parseObject(str);
-            json = jsonObject.getString("body");
+            JSONObject jsonObject = JSON.parseObject(json);
+            jsonStr = jsonObject.getString("body");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 //        return  new CallBack(-1,"请求失败");
-        return new CallBack(json);
+        return new CallBack(jsonStr);
     }
 }

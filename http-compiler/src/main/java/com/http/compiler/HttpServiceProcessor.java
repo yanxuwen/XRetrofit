@@ -127,6 +127,8 @@ public class HttpServiceProcessor extends AbstractProcessor {
                             get(methodMeta, pw);
                             break;
                         case MethodMeta.TYPE.TYPE_POST:
+                        case MethodMeta.TYPE.TYPE_PUT:
+                        case MethodMeta.TYPE.TYPE_DELETE:
                             post(methodMeta, pw);
                             break;
                         default:
@@ -196,7 +198,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_query == null) {
                     str_query = new StringBuilder();
                 }
-                str_query.append(String.format("           urlJoint.put(\"%s\", %s);", meta.getName(), meta.getOrginName()));
+                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
 
             } else if (meta.getType() == ParamMeta.TYPE.Header) {
                 setParams(meta, params, firstItem);
@@ -281,7 +283,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_query == null) {
                     str_query = new StringBuilder();
                 }
-                str_query.append(String.format("           urlJoint.put(\"%s\", %s);", meta.getName(), meta.getOrginName()));
+                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
             } else if (meta.getType() == ParamMeta.TYPE.Param) {
                 setParams(meta, params, firstItem);
                 //参数
@@ -374,7 +376,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
             params.append("            }\n");
             params.append("            @Override\n");
             params.append("            public void onHttpFail(NetError netError) {\n");
-            params.append("                returnResult[0] = JSONObject.toJSONString(netError);\n");
+            params.append("                returnResult[0] = netError.toString();\n");
             params.append("                countDownLatch.countDown();\n");
             params.append("            }\n");
             params.append("        };\n");

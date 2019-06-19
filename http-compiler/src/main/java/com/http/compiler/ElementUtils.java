@@ -1,6 +1,7 @@
 package com.http.compiler;
 
 import com.http.compiler.annotation.Body;
+import com.http.compiler.annotation.DELETE;
 import com.http.compiler.annotation.Deal;
 import com.http.compiler.annotation.DealAll;
 import com.http.compiler.annotation.DealClass;
@@ -10,6 +11,7 @@ import com.http.compiler.annotation.Header;
 import com.http.compiler.annotation.Headers;
 import com.http.compiler.annotation.NetServiceClass;
 import com.http.compiler.annotation.POST;
+import com.http.compiler.annotation.PUT;
 import com.http.compiler.annotation.Param;
 import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
@@ -101,6 +103,9 @@ public class ElementUtils {
                 }
                 GET apiGET = (GET) element.getAnnotation(GET.class);
                 POST apiPOST = (POST) element.getAnnotation(POST.class);
+                PUT apiPUT = (PUT) element.getAnnotation(PUT.class);
+                DELETE apiDELETE = (DELETE) element.getAnnotation(DELETE.class);
+
                 int requestType = 0;
                 if (apiGET != null) {
                     requestType = MethodMeta.TYPE.TYPE_GET;
@@ -109,6 +114,14 @@ public class ElementUtils {
                 if (apiPOST != null) {
                     requestType = MethodMeta.TYPE.TYPE_POST;
                     meta.setUrl(apiPOST.value());
+                }
+                if (apiPUT != null) {
+                    requestType = MethodMeta.TYPE.TYPE_PUT;
+                    meta.setUrl(apiPUT.value());
+                }
+                if (apiDELETE != null) {
+                    requestType = MethodMeta.TYPE.TYPE_DELETE;
+                    meta.setUrl(apiDELETE.value());
                 }
 
                 String methodName = element.getSimpleName().toString();

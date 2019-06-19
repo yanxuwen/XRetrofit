@@ -5,13 +5,14 @@
 
 package com.http.api;
 
+import com.yanxuwen.json.JsonUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class NetError {
     public String getMessage() {
         return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
     }
 
     public int getCode() {
@@ -45,8 +46,8 @@ public class NetError {
     public NetError(int httpCode ,int code, String message,String errorMessage) {
         this.httpCode = httpCode;
         this.code = code;
-        this.message = message;
         this.errorMessage = errorMessage;
+        this.message = message;
     }
 
     public String getErrorMessage() {
@@ -55,5 +56,21 @@ public class NetError {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public String toString(){
+        String json = JsonUtils.toString(this);
+        String message = JsonUtils.parse(json,String.class,"message");
+        if (message != null && !message.equals("") && JsonUtils.isJson(message)){
+            try {
+                JSONObject jsonObject = new JSONObject(json);
+                JSONObject jmessage = new JSONObject(message);
+                jsonObject.put("message",jmessage);
+                return jsonObject.toString();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return json;
     }
 }

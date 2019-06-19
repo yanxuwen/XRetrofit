@@ -34,16 +34,18 @@ public class OkHttpUtils {
         }
         switch (requestType) {
             case MethodMeta.TYPE.TYPE_GET:
-                OkHttpManger.getInstance().get(dealParams.getUrl(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+                OkHttpManger.getInstance().get(dealParams.getUrl(), requestType, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
                 break;
             case MethodMeta.TYPE.TYPE_POST:
+            case MethodMeta.TYPE.TYPE_PUT:
+            case MethodMeta.TYPE.TYPE_DELETE:
                 if (dealParams.getMapField() != null && !dealParams.getMapField().isEmpty()) {
                     //表单提交
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), dealParams.getMapField(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+                    OkHttpManger.getInstance().post(dealParams.getUrl(),requestType , dealParams.getMapField(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
 
                 } else if (dealParams.getJson() != null && !dealParams.getJson().equals("")) {
                     //json提交
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), dealParams.getJson(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+                    OkHttpManger.getInstance().post(dealParams.getUrl(),requestType , dealParams.getJson(), dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
 
                 } else if (dealParams.getParams() != null && !dealParams.getParams().isEmpty()) {
                     //json提交
@@ -55,10 +57,10 @@ public class OkHttpUtils {
                         }
                     }
                     json = jb.toString();
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), json, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
+                    OkHttpManger.getInstance().post(dealParams.getUrl(),requestType, json, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
 
                 } else {
-                    dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
+                    OkHttpManger.getInstance().post(dealParams.getUrl(), requestType ,"", dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
                 }
                 break;
             default:

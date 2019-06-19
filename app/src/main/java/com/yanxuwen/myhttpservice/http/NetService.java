@@ -2,13 +2,16 @@ package com.yanxuwen.myhttpservice.http;
 
 import com.http.api.DataCallBack;
 import com.http.compiler.annotation.Body;
+import com.http.compiler.annotation.DELETE;
 import com.http.compiler.annotation.Deal;
 import com.http.compiler.annotation.DealAll;
 import com.http.compiler.annotation.DealClass;
 import com.http.compiler.annotation.Field;
 import com.http.compiler.annotation.GET;
+import com.http.compiler.annotation.Header;
 import com.http.compiler.annotation.NetServiceClass;
 import com.http.compiler.annotation.POST;
+import com.http.compiler.annotation.PUT;
 import com.http.compiler.annotation.Param;
 import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
@@ -53,6 +56,18 @@ public interface NetService {
      */
     @POST("http://public.api.fashionworldcn.com/api/my/login")
     void postJson(@Body LoginBuild json, DataCallBack callBack);
+
+    /**
+     * put 提交
+     */
+    @PUT("http://api.sdwhcn.com:5056/v1/member")
+    void postPut(@Header("Authorization") String header, @Query("nickname") String nickname,@Query("signature") String signature,@Query("area") String area,DataCallBack callBack);
+
+    /**
+     * delete 提交
+     */
+    @DELETE("http://api.sdwhcn.com:5056/v1/member_collect_article/{id}")
+    void postDelete(@Header("Authorization") String header, @Path("id") String id,DataCallBack callBack);
 
     /**
      * 请求跟返回经过统一特殊处理。

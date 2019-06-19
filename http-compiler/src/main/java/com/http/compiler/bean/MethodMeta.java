@@ -42,6 +42,9 @@ public class MethodMeta {
     public @interface TYPE {
         int TYPE_GET = 1;
         int TYPE_POST = 2;
+        int TYPE_PUT = 3;
+        int TYPE_DELETE = 4;
+
     }
     private String url;
     private String name;

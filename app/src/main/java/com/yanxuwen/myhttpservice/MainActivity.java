@@ -3,18 +3,15 @@ package com.yanxuwen.myhttpservice;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.http.api.DataCallBack;
-import com.http.api.JsonUtils;
 import com.http.api.NetError;
+import com.yanxuwen.json.JsonUtils;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 import com.yanxuwen.myhttpservice.http.HttpRequest;
 
 public class MainActivity extends AppCompatActivity {
-
-    private TextView tv_status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +122,40 @@ public class MainActivity extends AppCompatActivity {
         mLoginBuild.setMobile("15060568265");
         mLoginBuild.setPassword("e10adc3949ba59abbe56e057f20f883e");
         HttpRequest.getNetService().postJson(mLoginBuild, new DataCallBack<String>(String.class) {
+            @Override
+            public void onHttpSuccess(String result) {
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onHttpFail(NetError netError) {
+                Toast.makeText(MainActivity.this, netError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * put 提交
+     */
+    public void postPut(View view) {
+      HttpRequest.getNetService().postPut("header","测试","signature","area", new DataCallBack<String>(String.class) {
+            @Override
+            public void onHttpSuccess(String result) {
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onHttpFail(NetError netError) {
+                Toast.makeText(MainActivity.this, netError.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * delete 提交
+     */
+    public void postDelete(View view) {
+       HttpRequest.getNetService().postDelete("header","123231" ,new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();

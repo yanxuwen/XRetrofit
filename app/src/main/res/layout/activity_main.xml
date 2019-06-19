@@ -52,6 +52,20 @@
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="put 提交"
+        android:onClick="postPut"
+        />
+    <Button
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="delete 提交"
+        android:onClick="postDelete"
+        />
+    <Button
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="请求跟返回经过统一特殊处理。"
         android:onClick="onTest"
         />

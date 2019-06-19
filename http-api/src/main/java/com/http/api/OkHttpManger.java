@@ -3,6 +3,7 @@ package com.http.api;
 import com.alibaba.fastjson.JSONObject;
 import com.http.compiler.HttpDealMethod;
 import com.http.compiler.bean.CallBack;
+import com.http.compiler.bean.MethodMeta;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -13,6 +14,7 @@ import java.net.ConnectException;
 import java.net.FileNameMap;
 import java.net.SocketTimeoutException;
 import java.net.URLConnection;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import okhttp3.Cache;
@@ -190,12 +192,12 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void get(String url, Map<String, String> headers, final DataCallBack dataCallBack,boolean syn) {
-        get(url, headers, null, dataCallBack,syn);
+    public void get(String url, int requestType, Map<String, String> headers, final DataCallBack dataCallBack,boolean syn) {
+        get(url,requestType, headers, null, dataCallBack,syn);
     }
 
-    public void get(String url, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, final boolean syn) {
-        final Request request = buildRequest(url, null, headers);
+    public void get(String url, int requestType, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, final boolean syn) {
+        final Request request = buildRequest(url,requestType , null, headers);
         Call call = getOkHttpClient().newCall(request);
         try {
             // 请求加入调度
@@ -231,11 +233,11 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
-        post(url, params, headers, null, dataCallBack,syn);
+    public void post(String url,int requestType , Map<String, String> params, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url, requestType ,params, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
+    public void post(String url,int requestType, Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         RequestBody requestBody;
         if (params == null) {
             params = new HashMap<>();
@@ -249,7 +251,7 @@ public class OkHttpManger {
         requestBody = builder.build();
         String realURL = UrlUtils.urlJoint(url, null);
         //结果返回
-        final Request request = buildRequest(realURL, requestBody, headers);
+        final Request request = buildRequest(realURL, requestType,requestBody, headers);
 
         Call call = getOkHttpClient().newCall(request);
         try {
@@ -286,13 +288,13 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, String json, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
-        post(url, json, headers, null, dataCallBack,syn);
+    public void post(String url,int requestType, String json, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url,requestType , json, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, String json, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
+    public void post(String url, int requestType, String json, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         final String realURL = UrlUtils.urlJoint(url, null);
-        final Request request = buildJsonPostRequest(realURL, json, headers);
+        final Request request = buildJsonPostRequest(realURL,requestType, json, headers);
         Call call = getOkHttpClient().newCall(request);
         try {
             // 请求加入调度
@@ -330,14 +332,14 @@ public class OkHttpManger {
      * @param url
      * @return
      */
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
-        post(url, requestBody, headers, null, dataCallBack,syn);
+    public void post(String url,int requestType, RequestBody requestBody, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
+        post(url, requestType ,requestBody, headers, null, dataCallBack,syn);
     }
 
-    public void post(String url, RequestBody requestBody, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
+    public void post(String url,int requestType , RequestBody requestBody, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,final boolean syn) {
         String realURL = UrlUtils.urlJoint(url, null);
         //结果返回
-        final Request request = buildRequest(realURL, requestBody, headers);
+        final Request request = buildRequest(realURL,requestType, requestBody, headers);
         Call call = getOkHttpClient().newCall(request);
         try {
             // 请求加入调度
@@ -383,7 +385,7 @@ public class OkHttpManger {
                 .addFormDataPart(fileKey, filePath, fileBody)
                 .build();
         final String realURL = UrlUtils.urlJoint(url, null);
-        final Request request = buildRequest(realURL, requestBody, headers);
+        final Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_POST , requestBody, headers);
 
         Call call = getOkHttpClient().newCall(request);
         try {
@@ -448,7 +450,7 @@ public class OkHttpManger {
 
         }
 
-        final Request request = buildRequest(realURL, multipartBody.build(), headers);
+        final Request request = buildRequest(realURL,  MethodMeta.TYPE.TYPE_POST ,multipartBody.build(), headers);
 
         Call call = getOkHttpClient().newCall(request);
         try {
@@ -488,7 +490,7 @@ public class OkHttpManger {
      */
     private void downLoadFile(final String url, final String destFileDir, Map<String, String> headers, final DataCallBack dataCallBack,final boolean syn) {
         String realURL = UrlUtils.urlJoint(url, null);
-        Request request = buildRequest(realURL, null, headers);
+        Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_POST ,null, headers);
         Call call = getOkHttpClient().newCall(request);
         call.enqueue(new Callback() {
             @Override
@@ -558,11 +560,23 @@ public class OkHttpManger {
         }
     }
 
-    private Request buildRequest(String url, RequestBody body, Map<String, String> headers) {
+    private Request buildRequest(String url, int requestType ,RequestBody body, Map<String, String> headers) {
         Request.Builder builder = new Request.Builder();
         builder.url(url);
         if (body != null) {
-            builder.post(body);
+            switch (requestType){
+                case MethodMeta.TYPE.TYPE_POST:
+                    builder.post(body);
+                    break;
+                case MethodMeta.TYPE.TYPE_PUT:
+                    builder.put(body);
+                    break;
+                case MethodMeta.TYPE.TYPE_DELETE:
+                    builder.delete(body);
+                    break;
+            }
+        } else if (requestType == MethodMeta.TYPE.TYPE_GET){
+            builder.get();
         }
         if (headers != null) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -579,9 +593,9 @@ public class OkHttpManger {
      * @param json json
      * @return requestBody
      */
-    private Request buildStringPostRequest(String url, String json, Map<String, String> headers) {
+    private Request buildStringPostRequest(String url, int requestType, String json, Map<String, String> headers) {
         RequestBody requestBody = RequestBody.create(MEDIA_TYPE_MARKDOWN, json);
-        return buildRequest(url, requestBody, headers);
+        return buildRequest(url,requestType, requestBody, headers);
     }
 
     /**
@@ -591,10 +605,10 @@ public class OkHttpManger {
      * @param json json
      * @return requestBody
      */
-    private Request buildJsonPostRequest(String url, String json, Map<String, String> headers) {
+    private Request buildJsonPostRequest(String url,int requestType , String json, Map<String, String> headers) {
 //        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
         RequestBody requestBody = RequestBody.create(JSON, json);
-        return buildRequest(url, requestBody, headers);
+        return buildRequest(url,requestType , requestBody, headers);
     }
 
     private String getFileName(String url) {
@@ -617,7 +631,7 @@ public class OkHttpManger {
             if (e instanceof SocketTimeoutException) {
                 //超时
                 dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()),syn);
-            } else if (e instanceof ConnectException) {
+            } else if (e instanceof ConnectException || e instanceof UnknownHostException) {
                 dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()),syn);
             } else {
                 dataCallBack.postUIFail(new NetError(0,NetError.HttpErrorCode.ERROR, "错误", e.getMessage()),syn);
@@ -627,13 +641,9 @@ public class OkHttpManger {
 
     private void postUISuccess(final DataCallBack dataCallBack, HttpDealMethod httpDealMethod, Response response,boolean syn) {
         try {
-            if (response.code() != 200){
-                dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", null),syn);
-                return;
-            }
             String json = response.body().string();
             if (httpDealMethod != null){
-                CallBack callBack = httpDealMethod.dealCallBack(json);
+                CallBack callBack = httpDealMethod.dealCallBack(response.code() , json);
                 if (callBack != null){
                     if (callBack.getReturnCode() != 0){
                         dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null),syn);
@@ -644,6 +654,10 @@ public class OkHttpManger {
                     }
                 }
 
+            }
+            if (response.code() != 200){
+                dataCallBack.postUIFail(new NetError(response.code(),NetError.HttpErrorCode.NET_DISCONNECT,json,null),syn);
+                return;
             }
             if (dataCallBack != null) {
                 if (dataCallBack.getType().equals(String.class)) {

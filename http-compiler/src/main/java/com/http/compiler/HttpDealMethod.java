@@ -15,8 +15,10 @@ public interface HttpDealMethod {
     public DealParams dealRequest(DealParams dealParams);
     /**
      * 如果要设置返回错误，则new CallBack(-1,"请求失败") ，第一个参数不能为0即可，0代表成功
-     * 如果要请求成功，直接 new CallBack(json)
+     * 如果要请求成功，直接 new CallBack(json),
+     * 但是如果你的httpCode不是200，那么不管这边设置成功，还是会返回错误，
+     * 但是设置错误的话 优先级 new CallBack(-1,"请求失败") > httpCode 的错误
      * return null 则不做任何处理
      */
-    public CallBack dealCallBack(String str);
+    public CallBack dealCallBack(int httpCode , String json);
 }
