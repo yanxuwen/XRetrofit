@@ -1,8 +1,8 @@
 
 ##### 1、添加依赖
 ~~~
-    implementation 'com.yanxuwen:http-api:1.1.5'
-    annotationProcessor 'com.yanxuwen:http-compiler:1.1.5'
+    implementation 'com.yanxuwen:http-api:1.1.7'
+    annotationProcessor 'com.yanxuwen:http-compiler:1.1.7'
 ~~~
 #### 只需要简单的2步骤就能实现请求。
 
@@ -93,8 +93,7 @@ public interface NetService {
 这样是不是很方便。
 ~~~
 ***
-### demo [点击下载](https://pan.baidu.com/s/1hD31FqJOYeYx6y94zKp4Lw)
-### 提取码：qcce
+### demo [点击下载](https://pan.baidu.com/s/17B5EcF2_b__LCR-wfX8A0A)
+### 提取码：4p2y
 ### 完整版简书 [点击跳转](https://www.jianshu.com/p/96ef31f6c56c)
-### github  [点击跳转](https://github.com/yanxuwen/okhttp)
 ### 如果你喜欢就去 github 帮我star下,非常感谢o(∩_∩)o~~~
