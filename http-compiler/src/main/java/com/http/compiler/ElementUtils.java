@@ -2,6 +2,7 @@ package com.http.compiler;
 
 import com.http.compiler.annotation.Body;
 import com.http.compiler.annotation.DELETE;
+import com.http.compiler.annotation.DOWNLOAD;
 import com.http.compiler.annotation.Deal;
 import com.http.compiler.annotation.DealAll;
 import com.http.compiler.annotation.DealClass;
@@ -15,6 +16,7 @@ import com.http.compiler.annotation.PUT;
 import com.http.compiler.annotation.Param;
 import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
+import com.http.compiler.annotation.UPLOAD;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
@@ -105,23 +107,28 @@ public class ElementUtils {
                 POST apiPOST = (POST) element.getAnnotation(POST.class);
                 PUT apiPUT = (PUT) element.getAnnotation(PUT.class);
                 DELETE apiDELETE = (DELETE) element.getAnnotation(DELETE.class);
+                DOWNLOAD apiDOWNLOAD = (DOWNLOAD) element.getAnnotation(DOWNLOAD.class);
+                UPLOAD apiUPLOAD= (UPLOAD) element.getAnnotation(UPLOAD.class);
 
                 int requestType = 0;
                 if (apiGET != null) {
                     requestType = MethodMeta.TYPE.TYPE_GET;
                     meta.setUrl(apiGET.value());
-                }
-                if (apiPOST != null) {
+                } else if (apiPOST != null) {
                     requestType = MethodMeta.TYPE.TYPE_POST;
                     meta.setUrl(apiPOST.value());
-                }
-                if (apiPUT != null) {
+                } else if (apiPUT != null) {
                     requestType = MethodMeta.TYPE.TYPE_PUT;
                     meta.setUrl(apiPUT.value());
-                }
-                if (apiDELETE != null) {
+                } else if (apiDELETE != null) {
                     requestType = MethodMeta.TYPE.TYPE_DELETE;
                     meta.setUrl(apiDELETE.value());
+                } else if (apiDOWNLOAD != null) {
+                    requestType = MethodMeta.TYPE.TYPE_DOWNLOAD;
+                    meta.setUrl(apiDOWNLOAD.value());
+                } else if (apiUPLOAD != null) {
+                    requestType = MethodMeta.TYPE.TYPE_UPLOAD;
+                    meta.setUrl(apiUPLOAD.value());
                 }
 
                 String methodName = element.getSimpleName().toString();

@@ -19,6 +19,9 @@ public interface HttpDealMethod {
      * 但是如果你的httpCode不是200，那么不管这边设置成功，还是会返回错误，
      * 但是设置错误的话 优先级 new CallBack(-1,"请求失败") > httpCode 的错误
      * return null 则不做任何处理
+     * @param httpCode http 请求code
+     * @param str 接口返回字符串，，如果是文件下载，则返回保存路径
+     * @return
      */
-    public CallBack dealCallBack(int httpCode , String json);
+    public CallBack dealCallBack(int httpCode , String str);
 }

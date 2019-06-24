@@ -69,4 +69,25 @@
         android:text="请求跟返回经过统一特殊处理。"
         android:onClick="onTest"
         />
+    <Button
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="文件下载"
+        android:onClick="onDownload"
+        />
+    <Button
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="文件上传"
+        android:onClick="onUpload"
+        />
+    <Button
+        android:layout_centerInParent="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="单个文件上传"
+        android:onClick="onUpload2"
+        />
 </LinearLayout>

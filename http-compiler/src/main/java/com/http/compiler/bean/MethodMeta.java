@@ -44,6 +44,8 @@ public class MethodMeta {
         int TYPE_POST = 2;
         int TYPE_PUT = 3;
         int TYPE_DELETE = 4;
+        int TYPE_DOWNLOAD = 5;
+        int TYPE_UPLOAD = 6;
 
     }
     private String url;

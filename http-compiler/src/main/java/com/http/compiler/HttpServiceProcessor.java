@@ -109,6 +109,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.println("import com.alibaba.fastjson.JSONObject;");
                 pw.println("import com.http.api.UrlUtils;");
                 pw.println("import com.http.compiler.HttpDealMethod;");
+                pw.println("import com.http.api.ProgressCallBack;");
                 pw.format("import %s;\n\n", serviceMeta.getPackageName());
                 pw.println("/**");
                 pw.println(" * Created by yanxuwen");
@@ -129,7 +130,11 @@ public class HttpServiceProcessor extends AbstractProcessor {
                         case MethodMeta.TYPE.TYPE_POST:
                         case MethodMeta.TYPE.TYPE_PUT:
                         case MethodMeta.TYPE.TYPE_DELETE:
+                        case MethodMeta.TYPE.TYPE_UPLOAD:
                             post(methodMeta, pw);
+                            break;
+                        case MethodMeta.TYPE.TYPE_DOWNLOAD:
+                            download(methodMeta, pw);
                             break;
                         default:
                             pw.println("\n    @Override");
@@ -147,10 +152,18 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.format("        new OkHttpUtils().request(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
 
+                pw.println("\n    private void requestUpload(String url,int requestType,Map<String, String> map, String json ,Map<String, Object[]> params,Map<String, String> headers,HttpDealMethod dealMethod,final ProgressCallBack callback,boolean syn) {");
+                pw.format("        new OkHttpUtils().requestUpload(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
+                pw.println("    }");
+
+                pw.println("\n    private void requestDownload(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final ProgressCallBack callback,boolean syn) {");
+                pw.format("        new OkHttpUtils().requestDownload(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
+                pw.println("    }");
+
                 pw.println("\n    private HttpDealMethod getHttpDealMethod(){");
                 pw.println("        try {");
                 pw.println("            if (httpDealMethod == null){");
-                pw.format("                httpDealMethod = (HttpDealMethod) Class.forName(\"%s\").getConstructor().newInstance();\n" , serviceMeta.getDealclassName() );
+                pw.format("                httpDealMethod = (HttpDealMethod) Class.forName(\"%s\").getConstructor().newInstance();\n", serviceMeta.getDealclassName());
                 pw.println("            }");
                 pw.println("        } catch (Exception e) {}");
                 pw.format("         return httpDealMethod;\n");
@@ -218,10 +231,10 @@ public class HttpServiceProcessor extends AbstractProcessor {
             pw.println(setReturnMethod(methodMeta).toString());
         }
         setPwUrl(methodMeta, pw, str_query);
-        boolean isHeaders = setPwHeaders(methodMeta, pw, str_headers);
         if (str_path != null) {
             pw.println(str_path.toString());
         }
+        boolean isHeaders = setPwHeaders(methodMeta, pw, str_headers);
         setPwRequest(methodMeta, pw, null, null, null, isHeaders, hasCallback);
         //如果有返回值方法，则设置里面
         if (!(methodMeta.getReturnType() + "").equals("void")) {
@@ -271,6 +284,14 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 hasCallback = true;
                 params.append(meta.getTypeMirror().toString());
                 params.append(" callback");
+            } else if (meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
+                //设置监听器
+                if (!firstItem) {
+                    params.append(", ");
+                }
+                hasCallback = true;
+                params.append(meta.getTypeMirror().toString());
+                params.append(" callback");
             } else if (meta.getType() == ParamMeta.TYPE.Path) {
                 setParams(meta, params, firstItem);
                 if (str_path == null) {
@@ -290,14 +311,24 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_params == null) {
                     str_params = new StringBuilder();
                 }
-                str_params.append(String.format("            _params.put(\"%s\",String.valueOf(%s));", meta.getName(), meta.getOrginName()));
+                if (methodMeta.getRequestType() == MethodMeta.TYPE.TYPE_UPLOAD) {
+                    //如果是上传模式，则该成数组形式
+                    if (meta.getTypeMirror().toString().contains("[]")) {
+                        str_params.append(String.format("            _params.put(\"%s\",%s);\n", meta.getName(), meta.getOrginName()));
+                    } else {
+                        str_params.append(String.format("            _params.put(\"%s\",new Object[]{%s});\n", meta.getName(), meta.getOrginName()));
+                    }
+                } else {
+                    //post ，put,delete
+                    str_params.append(String.format("            _params.put(\"%s\",String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
+                }
             } else if (meta.getType() == ParamMeta.TYPE.Header) {
                 setParams(meta, params, firstItem);
                 //头部
                 if (str_headers == null) {
                     str_headers = new StringBuilder();
                 }
-                str_headers.append(String.format("            _headers.put(\"%s\", String.valueOf(%s));", meta.getName(), meta.getOrginName()));
+                str_headers.append(String.format("            _headers.put(\"%s\", String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
             } else if (json_name == null) {
                 setParams(meta, params, firstItem);
                 if (meta.getType() == ParamMeta.TYPE.Field) {
@@ -349,6 +380,85 @@ public class HttpServiceProcessor extends AbstractProcessor {
     }
 
     /**
+     * 文件下载
+     */
+    private void download(MethodMeta methodMeta, PrintWriter pw) {
+        StringBuilder params = new StringBuilder("");
+        StringBuilder str_query = null;
+        StringBuilder str_path = null;
+        StringBuilder str_headers = null;
+        StringBuilder str_params = null;
+        boolean firstItem = true;
+        boolean hasCallback = false;        //参数
+        for (Iterator var14 = methodMeta.getParams().iterator(); var14.hasNext(); firstItem = false) {
+            ParamMeta meta = (ParamMeta) var14.next();
+            if (meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
+                //设置监听器
+                if (!firstItem) {
+                    params.append(", ");
+                }
+                hasCallback = true;
+                params.append(meta.getTypeMirror().toString());
+                params.append(" callback");
+            } else if (meta.getType() == ParamMeta.TYPE.Path) {
+                setParams(meta, params, firstItem);
+                if (str_path == null) {
+                    str_path = new StringBuilder();
+                }
+                str_path.append(setPath(methodMeta, meta));
+            } else if (meta.getType() == ParamMeta.TYPE.Query) {
+                setParams(meta, params, firstItem);
+                //添加拼接url
+                if (str_query == null) {
+                    str_query = new StringBuilder();
+                }
+                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
+
+            } else if (meta.getType() == ParamMeta.TYPE.Header) {
+                setParams(meta, params, firstItem);
+                //头部
+                if (str_headers == null) {
+                    str_headers = new StringBuilder();
+                }
+                str_headers.append(String.format("            _headers.put(\"%s\", String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
+            } else if (meta.getType() == ParamMeta.TYPE.Param) {
+                setParams(meta, params, firstItem);
+                //参数
+                if (str_params == null) {
+                    str_params = new StringBuilder();
+                }
+                str_params.append(String.format("            _params.put(\"%s\",String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
+            } else {
+                setParams(meta, params, firstItem);
+            }
+        }
+        pw.println("\n    @Override");
+        pw.format("    public %s %s(%s) {\n", methodMeta.getReturnType(), methodMeta.getName(), params.toString());
+        //如果有返回值方法，则设置里面
+        if (!(methodMeta.getReturnType() + "").equals("void")) {
+            pw.println(setReturnMethod(methodMeta).toString());
+        }
+        setPwUrl(methodMeta, pw, str_query);
+        if (str_path != null) {
+            pw.println(str_path.toString());
+        }
+        setPwParams(methodMeta, pw, str_params);
+        boolean isHeaders = setPwHeaders(methodMeta, pw, str_headers);
+        setPwRequest(methodMeta, pw, null, null, str_params, isHeaders, hasCallback);
+        //如果有返回值方法，则设置里面
+        if (!(methodMeta.getReturnType() + "").equals("void")) {
+            StringBuilder params_try = new StringBuilder();
+            params_try.append("        try {\n");
+            params_try.append("            countDownLatch.await();\n");
+            params_try.append("        } catch (InterruptedException e) {\n");
+            params_try.append("            e.printStackTrace();\n");
+            params_try.append("        }\n");
+            params_try.append("        return returnResult[0];\n");
+            pw.print(params_try.toString());
+        }
+    }
+
+    /**
      * 设置参数
      */
     private void setParams(ParamMeta meta, StringBuilder params, boolean firstItem) {
@@ -364,22 +474,42 @@ public class HttpServiceProcessor extends AbstractProcessor {
      * 设置有返回值的方法
      */
     public StringBuilder setReturnMethod(MethodMeta methodMeta) {
+
         StringBuilder params = new StringBuilder();
         if (!(methodMeta.getReturnType() + "").equals("void")) {
-            params.append(String.format("        final %s[] returnResult = new %s[1];\n", methodMeta.getReturnType(), methodMeta.getReturnType()));
-            params.append("        final CountDownLatch countDownLatch = new CountDownLatch(1);\n");
-            params.append(String.format("        DataCallBack  callback_ = new DataCallBack<%s>(%s.class) {\n", methodMeta.getReturnType(), methodMeta.getReturnType()));
-            params.append("            @Override\n");
-            params.append(String.format("            public void onHttpSuccess(%s result) {\n", methodMeta.getReturnType()));
-            params.append("                returnResult[0] = result;\n");
-            params.append("                countDownLatch.countDown();\n");
-            params.append("            }\n");
-            params.append("            @Override\n");
-            params.append("            public void onHttpFail(NetError netError) {\n");
-            params.append("                returnResult[0] = netError.toString();\n");
-            params.append("                countDownLatch.countDown();\n");
-            params.append("            }\n");
-            params.append("        };\n");
+            if (methodMeta.getRequestType() == MethodMeta.TYPE.TYPE_DOWNLOAD || methodMeta.getRequestType() == MethodMeta.TYPE.TYPE_UPLOAD) {
+                params.append(String.format("        final %s[] returnResult = new %s[1];\n", methodMeta.getReturnType(), methodMeta.getReturnType()));
+                params.append("        final CountDownLatch countDownLatch = new CountDownLatch(1);\n");
+                params.append(String.format("        ProgressCallBack  callback_ = new ProgressCallBack<%s>(%s.class) {\n",methodMeta.getReturnType(), methodMeta.getReturnType()));
+                params.append("            @Override\n");
+                params.append(String.format("            public void onHttpSuccess(%s result) {\n", methodMeta.getReturnType()));
+                params.append("                returnResult[0] = result;\n");
+                params.append("                countDownLatch.countDown();\n");
+                params.append("            }\n");
+                params.append("            @Override\n");
+                params.append("            public void onHttpFail(NetError netError) {\n");
+                params.append("                returnResult[0] = netError.toString();\n");
+                params.append("                countDownLatch.countDown();\n");
+                params.append("            }\n");
+                params.append("             public void onLoadProgress(float progress) {\n");
+                params.append("            }\n");
+                params.append("        };\n");
+            } else {
+                params.append(String.format("        final %s[] returnResult = new %s[1];\n", methodMeta.getReturnType(), methodMeta.getReturnType()));
+                params.append("        final CountDownLatch countDownLatch = new CountDownLatch(1);\n");
+                params.append(String.format("        DataCallBack  callback_ = new DataCallBack<%s>(%s.class) {\n", methodMeta.getReturnType(), methodMeta.getReturnType()));
+                params.append("            @Override\n");
+                params.append(String.format("            public void onHttpSuccess(%s result) {\n", methodMeta.getReturnType()));
+                params.append("                returnResult[0] = result;\n");
+                params.append("                countDownLatch.countDown();\n");
+                params.append("            }\n");
+                params.append("            @Override\n");
+                params.append("            public void onHttpFail(NetError netError) {\n");
+                params.append("                returnResult[0] = netError.toString();\n");
+                params.append("                countDownLatch.countDown();\n");
+                params.append("            }\n");
+                params.append("        };\n");
+            }
         }
         return params;
     }
@@ -426,7 +556,12 @@ public class HttpServiceProcessor extends AbstractProcessor {
 
     private void setPwParams(MethodMeta methodMeta, PrintWriter pw, StringBuilder str_params) {
         if (str_params == null) return;
-        pw.println("         Map<String, String> _params = new HashMap<>();");
+        if (methodMeta.getRequestType() == MethodMeta.TYPE.TYPE_UPLOAD) {
+            //如果是上传缓存数组模式
+            pw.println("         Map<String, Object[]> _params = new HashMap<>();");
+        } else {
+            pw.println("         Map<String, String> _params = new HashMap<>();");
+        }
         pw.println("        try {");
         pw.println(str_params.toString());
         pw.println("        } catch (Exception e) {");
@@ -464,7 +599,20 @@ public class HttpServiceProcessor extends AbstractProcessor {
         if (!(methodMeta.getReturnType() + "").equals("void")) {
             syn = true;
         }
-        pw.format("        request( url, %d, %s, %s ,%s, %s,%s,%s,%s);\n"
+        String request = "request";
+        switch (methodMeta.getRequestType()){
+            case  MethodMeta.TYPE.TYPE_DOWNLOAD:
+                request = "requestDownload";
+                break;
+            case  MethodMeta.TYPE.TYPE_UPLOAD:
+                request = "requestUpload";
+                break;
+            default:
+                request = "request";
+                break;
+        }
+        pw.format("        %s( url, %d, %s, %s ,%s, %s,%s,%s,%s);\n"
+                , request
                 , methodMeta.getRequestType()
                 , str_field == null ? null : "_map"
                 , json_name
@@ -472,7 +620,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 , isHeaders ? "_headers" : null
                 , methodMeta.isDeal() ? "getHttpDealMethod()" : "null"
                 , callback
-                ,syn);
+                , syn);
     }
 
 

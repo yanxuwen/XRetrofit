@@ -36,6 +36,9 @@ public class NetError {
         int NET_DISCONNECT = -10003;
         int DATA_ERROR = -10004;
         int NET_TIMEOUT = -10005;
+        /**文件没找到*/
+        int FILE_NOT_FOUND= -10006;
+
     }
     private int httpCode;
     private int code;

@@ -1,6 +1,5 @@
 package com.http.api;
 
-
 import android.os.Handler;
 import android.os.Looper;
 
@@ -8,30 +7,43 @@ import java.lang.reflect.Type;
 
 import okhttp3.Call;
 
-public abstract class DataCallBack<T> {
+public abstract class ProgressCallBack<T> {
 
     private Type mType = String.class;
-
     private Handler mHandler;
 
-    public DataCallBack(Class<T> clazz) {
+    public ProgressCallBack() {
+        mHandler = new Handler(Looper.getMainLooper());
+    }
+
+    public ProgressCallBack(Class<T> clazz) {
         mType = clazz;
         mHandler = new Handler(Looper.getMainLooper());
     }
-
-    public DataCallBack() {
-        mHandler = new Handler(Looper.getMainLooper());
-    }
-
-    public abstract void onHttpSuccess(T result);
-    public abstract void onHttpFail(NetError netError);
+    /**
+     *  开始
+     */
     public void onHttpStart(Call call){}
     /**
-     * 成功-回调到UI线程
-     *
-     * @param t
+     *  进度
      */
-    public final void postUISuccess(final T t,boolean syn) {
+    public abstract void onLoadProgress(float progress);
+    /**
+     *  完成
+     * @param t   如果是下载，则返回路径,只能String类型
+     *             如果是上传，返回的是接口数据
+     */
+    public abstract  void onHttpSuccess(final T t);
+    /**
+     *  失败
+     */
+    public abstract void onHttpFail(final NetError netError);
+
+
+    /**
+     * 成功-回调到UI线程
+     */
+    protected final void postUIComplete(final T t,boolean syn) {
         if (syn){
             onHttpSuccess(t);
         } else {
@@ -51,7 +63,7 @@ public abstract class DataCallBack<T> {
     /**
      * 失败-回调到UI线程
      */
-    public final void postUIFail(final NetError netError,boolean syn) {
+    protected final void postUIFail(final NetError netError,boolean syn) {
         if (syn){
             onHttpFail(netError);
         } else {
@@ -72,7 +84,7 @@ public abstract class DataCallBack<T> {
     /**
      * 开始-回调到UI线程
      */
-    public final void postUIStart(final Call call) {
+    protected final void postUIStart(final Call call) {
         mHandler.post(new Runnable() {
             @Override
             public void run() {
@@ -85,6 +97,25 @@ public abstract class DataCallBack<T> {
         });
     }
 
+    /**
+     * 下载中-回调到UI线程
+     */
+    protected final void postUILoading(final float progress , boolean syn) {
+        if (syn){
+            onLoadProgress(progress);
+        } else {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        onLoadProgress(progress);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+    }
     public Type getType() {
         return mType;
     }
