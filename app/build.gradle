@@ -30,6 +30,11 @@ fileTree(dir: 'libs', include: '**/*.aar').each { File file ->
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:28.0.0'
+    // RxJava
+    implementation  'io.reactivex:rxandroid:1.1.0'
+    implementation  'io.reactivex:rxjava:1.1.0'
+    //权限
+    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
     implementation project(path: ':http-api')
     annotationProcessor project(':http-compiler')
 }
