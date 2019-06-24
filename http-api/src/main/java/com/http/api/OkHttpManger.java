@@ -746,23 +746,10 @@ public class OkHttpManger {
                 dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()), syn);
             } else if (e instanceof SocketException){
                 dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "Socket closed", e.getMessage()), syn);
-            }  else {
-                dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.ERROR, "错误", e.getMessage()), syn);
-            }
-        }
-    }
-
-    private void postUIFail(final ProgressCallBack progressCallBack, Exception e, boolean syn) {
-        if (progressCallBack != null) {
-            if (e instanceof SocketTimeoutException) {
-                //超时
-                progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()), syn);
-            } else if (e instanceof ConnectException || e instanceof UnknownHostException) {
-                progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()), syn);
-            } else if (e instanceof SocketException){
-                progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "Socket closed", e.getMessage()), syn);
+            } else if (e instanceof FileNotFoundException){
+                dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.ERROR, "文件找不到", e.getMessage()), syn);
             } else {
-                progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.ERROR, "错误", e.getMessage()), syn);
+                dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.ERROR, "错误", e.getMessage()), syn);
             }
         }
     }
