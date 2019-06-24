@@ -212,7 +212,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_query == null) {
                     str_query = new StringBuilder();
                 }
-                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
+                str_query.append(String.format("           urlJoint.put(\"%s\",  String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
 
             } else if (meta.getType() == ParamMeta.TYPE.Header) {
                 setParams(meta, params, firstItem);
@@ -298,7 +298,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_query == null) {
                     str_query = new StringBuilder();
                 }
-                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
+                str_query.append(String.format("           urlJoint.put(\"%s\",  String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
             } else if (meta.getType() == ParamMeta.TYPE.Param) {
                 setParams(meta, params, firstItem);
                 //参数
@@ -407,7 +407,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 if (str_query == null) {
                     str_query = new StringBuilder();
                 }
-                str_query.append(String.format("           urlJoint.put(\"%s\", %s);\n", meta.getName(), meta.getOrginName()));
+                str_query.append(String.format("           urlJoint.put(\"%s\",  String.valueOf(%s));\n", meta.getName(), meta.getOrginName()));
 
             } else if (meta.getType() == ParamMeta.TYPE.Header) {
                 setParams(meta, params, firstItem);

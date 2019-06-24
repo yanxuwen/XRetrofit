@@ -11,6 +11,7 @@ import com.http.compiler.annotation.DealClass;
 import com.http.compiler.annotation.Field;
 import com.http.compiler.annotation.GET;
 import com.http.compiler.annotation.Header;
+import com.http.compiler.annotation.Headers;
 import com.http.compiler.annotation.NetServiceClass;
 import com.http.compiler.annotation.POST;
 import com.http.compiler.annotation.PUT;
@@ -27,20 +28,20 @@ public interface NetService {
     /**
      * get的简单请求
      */
-    @GET("https://qybeta.321go.com/api/v1/home/index")
-    void get(@Query("cid") String cid, @Query("token") String token, DataCallBack callBack);
+    @GET("http://api.sdwhcn.com:5056/v1/temple")
+    void get(@Query("page")int page ,@Query("limit")int limit ,@Query("recommend")String recommend,DataCallBack callBack);
 
     /**
      * get请求(URL中带有参数)
      */
-    @GET("https://qybeta.321go.com/api/{version}/home/index")
-    void get(@Path("version") String version, @Query("cid") String cid, @Query("token") String token, DataCallBack callBack);
+    @GET("http://api.sdwhcn.com:5056/{version}/temple")
+    void get(@Path("version") String version, @Query("page")int page ,@Query("limit")int limit ,@Query("recommend")String recommend , DataCallBack callBack);
 
     /**
      * 表单提交
      */
-    @POST("https://marathonbeta.321go.com/api/v5/assis/user")
-    void postForm(@Field("token") String token, @Field("auid") String auid, @Field("step") String step, @Field("formId") String formId, DataCallBack callBack);
+    @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
+    void postForm(@Field("reqcode") String reqcode, DataCallBack callBack);
 
     /**
      * json提交

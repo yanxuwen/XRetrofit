@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
      * get请求
      */
     public void onGet(View view) {
-        HttpRequest.getNetService().get("8a9a488566624d8301667556664e0001", "QpglbXabpgvKa5d1cqjq5Qb6KKldbvz6dmr0AVjXUlljQsVC5gkKA8IkEChX1ssY", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get(0,10,"recommend", new DataCallBack<String>(String.class) {
 
             @Override
             public void onHttpSuccess(String result) {
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
      * get请求(URL中带有参数,也支持post)
      */
     public void onGet2(View view) {
-        HttpRequest.getNetService().get("v1", "8a9a488566624d8301667556664e0001", "QpglbXabpgvKa5d1cqjq5Qb6KKldbvz6dmr0AVjXUlljQsVC5gkKA8IkEChX1ssY", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get("v1" , 0 ,10,"recommend", new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw","onGet2 :" + result);
@@ -64,11 +64,7 @@ public class MainActivity extends AppCompatActivity {
      * 表单提交
      */
     public void postForm(View view) {
-        String token = "QpglbXabpgvKa5d1cqjq5Qb6KKldbvz6dmr0AVjXUlljQsVC5gkKA8IkEChX1ssY";
-        String auid = "2c93e148674de85b01674ebc7e760018";
-        String step = "2";
-        String formId = "4f0e43a7c6095adfc0e5b216d9914f9e";
-        HttpRequest.getNetService().postForm(token, auid, step, formId, new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postForm("10960",new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw","postForm :" + result);
@@ -215,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
                         if (granted) {
                             //允许权限
                             String path = Environment.getExternalStorageDirectory().toString() + "/huawei/MagazineUnlock/magazine-unlock-01-2.3.1344-_132FEBAC9815C7732FE627DD6380E5CA.jpg";//获取跟目录
-                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjFmMDRiYjYzMjEyYzcwNzE3NTI0YzQ4MDJhNjg2NTU0OTQ1NTU0YjI2ZjNmZmZlOGIxN2EzNGFmOGVjNTJlMzVkNWQxNGNmOWFiOTVhZTc3In0.eyJhdWQiOiIyIiwianRpIjoiMWYwNGJiNjMyMTJjNzA3MTc1MjRjNDgwMmE2ODY1NTQ5NDU1NTRiMjZmM2ZmZmU4YjE3YTM0YWY4ZWM1MmUzNWQ1ZDE0Y2Y5YWI5NWFlNzciLCJpYXQiOjE1NjEzNDE0OTgsIm5iZiI6MTU2MTM0MTQ5OCwiZXhwIjoxNTYxNDI3ODk4LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.MFjJOXjQ303UY6h-nXMF0Q4-5pZqcKLbY3OYR2dM0FCNm46KbYNQf0dzLWikZbu7-cguJSHzPk4FfJogus6IAThcz2An_5wjb8y5xjVZGH-Nl1B7P1S6HE8dHX_ulX53nZdyRY-2PaQLxlclihUkesQISY5ul7MFw4TvxNp_hbjt03zDLzHhY93UDYFSvIafUch44BARwNWmuAJ7fk5DmpEGfjaTxkU9p_A9ii1sLDZ8kzSq_QmtgNKBEDkUQXgvrdAjABzcYkcHgbCeZLevN91xPc8EoJi0VsyuLRuncn-1Xz3ifp0ASAQtyYrJiy91NenV_19t5dR1Ltp6sHgwa1_g45kbCKQTJZ44skwtVABgOCw4IQLvzczQGpSRli20qpADU76ADZmnaKmLiCHGQsVWFJYy9_FS4SVW4yrWnztV91FSyg0DyqmH4jatjOl5PnnUMQfqE-N15a5VVhZem3cszkH2OLj34C2KMuR0tbWnWWyFVdhTZ0MN63BGKC0NXQOQ6sFu1gEjwnrRwkz1Yt8GTpZ8fct1CjhTQjd-7brVBW8rhumlvgsw_OE6eszVnransAf4VxMCN5xTDpyZWcKcTyL9PtzRT8d65V88y6iBPHeVVoEXMVUZe4W1DJYjG1bbzG32rLsLdemBNZTEKG2RKrlpHwnrobDAJcFl1x4";
+                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjY4MDFmZjE1NTdlNWJhMzkzY2RlM2U0NjRiMGM0MzQ3MDkwNWYzMDYwZTZhZDFkOTQ4NTIyY2I3NDI2YjY0ZDFmODBiOWJkODY0YmEyM2UxIn0.eyJhdWQiOiIyIiwianRpIjoiNjgwMWZmMTU1N2U1YmEzOTNjZGUzZTQ2NGIwYzQzNDcwOTA1ZjMwNjBlNmFkMWQ5NDg1MjJjYjc0MjZiNjRkMWY4MGI5YmQ4NjRiYTIzZTEiLCJpYXQiOjE1NjEzNjI2ODcsIm5iZiI6MTU2MTM2MjY4NywiZXhwIjoxNTYxNDQ5MDg3LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.RXUUxeLvYkkk1V-pmu-120N5JejjaDmTfG0zO0Zu3lMc5OChjlSvDiKm2jW6geCIp2gZeOrkC4HBNpSngjKue_v1l1UyyYudOofTZV3DUlF-hwhhwMJ2RKxp6yq2ecGfxCcg3ZED1dp0dAjmqmNCGUZViykQctSQC7FI3KXQeL-96wQj6G9YnN0n2sVOkeH2m1AYR2YjkXFW3C-lMujiqbfoH0i_DyRWqmvnH4IS67L8Ec0dWBNgWbDWyrO6Za6z9Im6VHfeqVkVYbvFdKrN8mtNuQQ0oioG_6vvuLE9zV-p2YT1t_WogqieFJHb9C6t9QZCqDopU7QBKiczoSk72tMffL0j_Byn1TlG7TlN0nvtnBB1kScz6tI6SvlkwgPOvHneBX-CHiDHPAlS_GOsnh1j5hVn1eRMbPS728sQpsTlVJ4WOpDP9AO1u4JG2ViU-4gohtpN5Lkc7FFbz30MSpi3aQQxXRjHslA--4Hbc-fqD1TjqgUyNfF4xK_paSUgihHwygIqNUeI6MuCltKKJCUR4eeNXItXPl9_GxSsWPYpetIw-0yFHwdrTWvr4fmy-gdteNrAtOv6DwDvGsgw52vnqoX8Sev_yWg9FBGKnFcRLIyMfkw9_7UQEn0-P9v0kqLxf63xk3QnGtdlhZNLA8l3OapCpHkYeZgcEX9UQFU";
                             HttpRequest.getNetService().upload(header,new String[]{path,path},new String[]{"file","file"},new String[]{"test.jpg","test2.jpg"}, new ProgressCallBack() {
                                 @Override
                                 public void onHttpSuccess(Object result) {
@@ -248,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         if (granted) {
                             //允许权限
                             String path = Environment.getExternalStorageDirectory().toString() + "/huawei/MagazineUnlock/magazine-unlock-01-2.3.1344-_132FEBAC9815C7732FE627DD6380E5CA.jpg";//获取跟目录
-                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjFmMDRiYjYzMjEyYzcwNzE3NTI0YzQ4MDJhNjg2NTU0OTQ1NTU0YjI2ZjNmZmZlOGIxN2EzNGFmOGVjNTJlMzVkNWQxNGNmOWFiOTVhZTc3In0.eyJhdWQiOiIyIiwianRpIjoiMWYwNGJiNjMyMTJjNzA3MTc1MjRjNDgwMmE2ODY1NTQ5NDU1NTRiMjZmM2ZmZmU4YjE3YTM0YWY4ZWM1MmUzNWQ1ZDE0Y2Y5YWI5NWFlNzciLCJpYXQiOjE1NjEzNDE0OTgsIm5iZiI6MTU2MTM0MTQ5OCwiZXhwIjoxNTYxNDI3ODk4LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.MFjJOXjQ303UY6h-nXMF0Q4-5pZqcKLbY3OYR2dM0FCNm46KbYNQf0dzLWikZbu7-cguJSHzPk4FfJogus6IAThcz2An_5wjb8y5xjVZGH-Nl1B7P1S6HE8dHX_ulX53nZdyRY-2PaQLxlclihUkesQISY5ul7MFw4TvxNp_hbjt03zDLzHhY93UDYFSvIafUch44BARwNWmuAJ7fk5DmpEGfjaTxkU9p_A9ii1sLDZ8kzSq_QmtgNKBEDkUQXgvrdAjABzcYkcHgbCeZLevN91xPc8EoJi0VsyuLRuncn-1Xz3ifp0ASAQtyYrJiy91NenV_19t5dR1Ltp6sHgwa1_g45kbCKQTJZ44skwtVABgOCw4IQLvzczQGpSRli20qpADU76ADZmnaKmLiCHGQsVWFJYy9_FS4SVW4yrWnztV91FSyg0DyqmH4jatjOl5PnnUMQfqE-N15a5VVhZem3cszkH2OLj34C2KMuR0tbWnWWyFVdhTZ0MN63BGKC0NXQOQ6sFu1gEjwnrRwkz1Yt8GTpZ8fct1CjhTQjd-7brVBW8rhumlvgsw_OE6eszVnransAf4VxMCN5xTDpyZWcKcTyL9PtzRT8d65V88y6iBPHeVVoEXMVUZe4W1DJYjG1bbzG32rLsLdemBNZTEKG2RKrlpHwnrobDAJcFl1x4";
+                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjY4MDFmZjE1NTdlNWJhMzkzY2RlM2U0NjRiMGM0MzQ3MDkwNWYzMDYwZTZhZDFkOTQ4NTIyY2I3NDI2YjY0ZDFmODBiOWJkODY0YmEyM2UxIn0.eyJhdWQiOiIyIiwianRpIjoiNjgwMWZmMTU1N2U1YmEzOTNjZGUzZTQ2NGIwYzQzNDcwOTA1ZjMwNjBlNmFkMWQ5NDg1MjJjYjc0MjZiNjRkMWY4MGI5YmQ4NjRiYTIzZTEiLCJpYXQiOjE1NjEzNjI2ODcsIm5iZiI6MTU2MTM2MjY4NywiZXhwIjoxNTYxNDQ5MDg3LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.RXUUxeLvYkkk1V-pmu-120N5JejjaDmTfG0zO0Zu3lMc5OChjlSvDiKm2jW6geCIp2gZeOrkC4HBNpSngjKue_v1l1UyyYudOofTZV3DUlF-hwhhwMJ2RKxp6yq2ecGfxCcg3ZED1dp0dAjmqmNCGUZViykQctSQC7FI3KXQeL-96wQj6G9YnN0n2sVOkeH2m1AYR2YjkXFW3C-lMujiqbfoH0i_DyRWqmvnH4IS67L8Ec0dWBNgWbDWyrO6Za6z9Im6VHfeqVkVYbvFdKrN8mtNuQQ0oioG_6vvuLE9zV-p2YT1t_WogqieFJHb9C6t9QZCqDopU7QBKiczoSk72tMffL0j_Byn1TlG7TlN0nvtnBB1kScz6tI6SvlkwgPOvHneBX-CHiDHPAlS_GOsnh1j5hVn1eRMbPS728sQpsTlVJ4WOpDP9AO1u4JG2ViU-4gohtpN5Lkc7FFbz30MSpi3aQQxXRjHslA--4Hbc-fqD1TjqgUyNfF4xK_paSUgihHwygIqNUeI6MuCltKKJCUR4eeNXItXPl9_GxSsWPYpetIw-0yFHwdrTWvr4fmy-gdteNrAtOv6DwDvGsgw52vnqoX8Sev_yWg9FBGKnFcRLIyMfkw9_7UQEn0-P9v0kqLxf63xk3QnGtdlhZNLA8l3OapCpHkYeZgcEX9UQFU";
                             HttpRequest.getNetService().upload(header,path,"file", "test.jpg", new ProgressCallBack() {
                                 @Override
                                 public void onHttpSuccess(Object result) {
