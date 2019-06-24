@@ -152,11 +152,11 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.format("        new OkHttpUtils().request(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
 
-                pw.println("\n    private void requestUpload(String url,int requestType,Map<String, String> map, String json ,Map<String, Object[]> params,Map<String, String> headers,HttpDealMethod dealMethod,final ProgressCallBack callback,boolean syn) {");
+                pw.println("\n    private void requestUpload(String url,int requestType,Map<String, String> map, String json ,Map<String, Object[]> params,Map<String, String> headers,HttpDealMethod dealMethod,final DataCallBack callback,boolean syn) {");
                 pw.format("        new OkHttpUtils().requestUpload(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
 
-                pw.println("\n    private void requestDownload(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final ProgressCallBack callback,boolean syn) {");
+                pw.println("\n    private void requestDownload(String url,int requestType,Map<String, String> map, String json ,Map<String, String> params,Map<String, String> headers,HttpDealMethod dealMethod,final DataCallBack callback,boolean syn) {");
                 pw.format("        new OkHttpUtils().requestDownload(baseUrl,url, requestType,map ,json ,params,headers,%s,callback,syn);\n", "dealMethod");
                 pw.println("    }");
 
@@ -191,7 +191,8 @@ public class HttpServiceProcessor extends AbstractProcessor {
         boolean hasCallback = false;        //参数
         for (Iterator var14 = methodMeta.getParams().iterator(); var14.hasNext(); firstItem = false) {
             ParamMeta meta = (ParamMeta) var14.next();
-            if (meta.getTypeMirror().toString().startsWith("com.http.api.DataCallBack")) {
+            if (meta.getTypeMirror().toString().startsWith("com.http.api.DataCallBack")||
+                    meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
                 //设置监听器
                 if (!firstItem) {
                     params.append(", ");
@@ -276,15 +277,8 @@ public class HttpServiceProcessor extends AbstractProcessor {
                     isGson = true;
                     json_name = " JSONObject.toJSONString(" + json_name + ")";
                 }
-            } else if (meta.getTypeMirror().toString().startsWith("com.http.api.DataCallBack")) {
-                //设置监听器
-                if (!firstItem) {
-                    params.append(", ");
-                }
-                hasCallback = true;
-                params.append(meta.getTypeMirror().toString());
-                params.append(" callback");
-            } else if (meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
+            } else if (meta.getTypeMirror().toString().startsWith("com.http.api.DataCallBack") ||
+                    meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
                 //设置监听器
                 if (!firstItem) {
                     params.append(", ");
@@ -392,7 +386,8 @@ public class HttpServiceProcessor extends AbstractProcessor {
         boolean hasCallback = false;        //参数
         for (Iterator var14 = methodMeta.getParams().iterator(); var14.hasNext(); firstItem = false) {
             ParamMeta meta = (ParamMeta) var14.next();
-            if (meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
+            if (meta.getTypeMirror().toString().startsWith("com.http.api.DataCallBack")||
+                    meta.getTypeMirror().toString().startsWith("com.http.api.ProgressCallBack")) {
                 //设置监听器
                 if (!firstItem) {
                     params.append(", ");

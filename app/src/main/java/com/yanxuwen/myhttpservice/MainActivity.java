@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onGet(View view) {
         HttpRequest.getNetService().get("8a9a488566624d8301667556664e0001", "QpglbXabpgvKa5d1cqjq5Qb6KKldbvz6dmr0AVjXUlljQsVC5gkKA8IkEChX1ssY", new DataCallBack<String>(String.class) {
+
             @Override
             public void onHttpSuccess(String result) {
                 Toast.makeText(MainActivity.this, result, Toast.LENGTH_LONG).show();

@@ -14,6 +14,10 @@ public abstract class DataCallBack<T> {
 
     private Handler mHandler;
 
+    public Handler getHandler() {
+        return mHandler;
+    }
+
     public DataCallBack(Class<T> clazz) {
         mType = clazz;
         mHandler = new Handler(Looper.getMainLooper());

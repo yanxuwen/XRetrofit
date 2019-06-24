@@ -18,14 +18,14 @@ import okio.Okio;
 public class DownloadResponseBody extends ResponseBody {
 
     private Response originalResponse;
-    private ProgressCallBack downloadListener;
+    private DataCallBack downloadListener;
     private long oldPoint = 0;
     private long maxProgress = 0;
     private boolean syn;
     DecimalFormat df = new DecimalFormat("#.00");
 
 
-    public DownloadResponseBody(Response originalResponse, long startsPoint, ProgressCallBack downloadListener, boolean syn){
+    public DownloadResponseBody(Response originalResponse, long startsPoint, DataCallBack downloadListener, boolean syn){
         this.originalResponse = originalResponse;
         this.downloadListener = downloadListener;
         this.oldPoint = startsPoint;
@@ -54,8 +54,8 @@ public class DownloadResponseBody extends ResponseBody {
             public long read(Buffer sink, long byteCount) throws IOException {
                 long bytesRead = super.read(sink, byteCount);
                 bytesReaded += bytesRead == -1 ? 0 : bytesRead;
-                if (downloadListener != null) {
-                    downloadListener.postUILoading(Float.valueOf(df.format((Float.valueOf(bytesReaded+oldPoint) / maxProgress) * 100)),syn);
+                if (downloadListener != null && downloadListener instanceof ProgressCallBack) {
+                    ((ProgressCallBack)downloadListener).postUILoading(Float.valueOf(df.format((Float.valueOf(bytesReaded+oldPoint) / maxProgress) * 100)),syn);
                 }
                 return bytesRead;
             }

@@ -44,7 +44,6 @@ public class OkHttpManger {
     private volatile static OkHttpManger instance;
     private Timeout timeout;
     private HashMap<Call, DataCallBack> callBackHashMap;//正常请求
-    private HashMap<Call, ProgressCallBack> callProgessBackHashMap;//下载跟上传
 
     //提交json数据
     private static final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
@@ -58,7 +57,6 @@ public class OkHttpManger {
 
     public OkHttpManger() {
         callBackHashMap = new HashMap<>();
-        callProgessBackHashMap = new HashMap<>();
     }
 
 
@@ -103,8 +101,6 @@ public class OkHttpManger {
                 public void callStart(Call call) {
                       if (callBackHashMap.containsKey(call)){
                           callBackHashMap.get(call).postUIStart(call);
-                      } else if (callProgessBackHashMap.containsKey(call)){
-                          callProgessBackHashMap.get(call).postUIStart(call);
                       }
                 }
             });
@@ -122,8 +118,6 @@ public class OkHttpManger {
                 public void callStart(Call call) {
                     if (callBackHashMap.containsKey(call)){
                         callBackHashMap.get(call).postUIStart(call);
-                    } else if (callProgessBackHashMap.containsKey(call)){
-                        callProgessBackHashMap.get(call).postUIStart(call);
                     }
                 }
             });
@@ -144,8 +138,6 @@ public class OkHttpManger {
             public void callStart(Call call) {
                 if (callBackHashMap.containsKey(call)){
                     callBackHashMap.get(call).postUIStart(call);
-                } else if (callProgessBackHashMap.containsKey(call)){
-                    callProgessBackHashMap.get(call).postUIStart(call);
                 }
             }
         });
@@ -268,7 +260,6 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    callProgessBackHashMap.remove(call);
                     postUIFail(dataCallBack, e, syn);
                 }
 
@@ -276,7 +267,6 @@ public class OkHttpManger {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         callBackHashMap.remove(call);
-                        callProgessBackHashMap.remove(call);
                         postUISuccess(dataCallBack, httpDealMethod, response, syn);
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e, syn);
@@ -328,7 +318,6 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    callProgessBackHashMap.remove(call);
                     postUIFail(dataCallBack, e, syn);
                 }
 
@@ -336,7 +325,6 @@ public class OkHttpManger {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         callBackHashMap.remove(call);
-                        callProgessBackHashMap.remove(call);
                         postUISuccess(dataCallBack, httpDealMethod, response, syn);
 
                     } catch (Exception e) {
@@ -375,7 +363,6 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    callProgessBackHashMap.remove(call);
                     postUIFail(dataCallBack, e, syn);
                 }
 
@@ -383,7 +370,6 @@ public class OkHttpManger {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         callBackHashMap.remove(call);
-                        callProgessBackHashMap.remove(call);
                         postUISuccess(dataCallBack, httpDealMethod, response, syn);
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e, syn);
@@ -424,7 +410,6 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    callProgessBackHashMap.remove(call);
                     postUIFail(dataCallBack, e, syn);
                 }
 
@@ -432,7 +417,6 @@ public class OkHttpManger {
                 public void onResponse(Call call, Response response) throws IOException {
                     try {
                         callBackHashMap.remove(call);
-                        callProgessBackHashMap.remove(call);
                         postUISuccess(dataCallBack, httpDealMethod, response, syn);
                     } catch (Exception e) {
                         postUIFail(dataCallBack, e, syn);
@@ -460,7 +444,7 @@ public class OkHttpManger {
      *                     将file作为请求体传入到服务端.
      * @param syn
      */
-    public void upLoadFile(String url, final String[] filePath, String[] fileKeys,String[] fileNames,  Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod , final ProgressCallBack progressCallBack, final boolean syn) {
+    public void upLoadFile(String url, final String[] filePath, String[] fileKeys,String[] fileNames,  Map<String, String> params, Map<String, String> headers, final HttpDealMethod httpDealMethod , final DataCallBack progressCallBack, final boolean syn) {
         if (filePath == null || filePath.length == 0){
             progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件不能为空", null), syn);
             return;
@@ -511,7 +495,9 @@ public class OkHttpManger {
                         for (double mProcess : totalProgress) {
                             process += mProcess;
                         }
-                        progressCallBack.postUILoading(Float.valueOf(df.format(process /  files.length) ),syn);
+                        if (progressCallBack instanceof ProgressCallBack) {
+                            ((ProgressCallBack)progressCallBack).postUILoading(Float.valueOf(df.format(process / files.length)), syn);
+                        }
                     }
 
                     @Override
@@ -533,7 +519,6 @@ public class OkHttpManger {
         }
         final Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_POST, multipartBody.build(), headers);
         Call call = getOkHttpClient().newCall(request);
-        callProgessBackHashMap.put(call,progressCallBack);
         try {
             // 请求加入调度
             call.enqueue(new Callback() {
@@ -541,7 +526,6 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    callProgessBackHashMap.remove(call);
                     postUIFail(progressCallBack, e, syn);
                 }
 
@@ -549,7 +533,6 @@ public class OkHttpManger {
                 public void onResponse(Call call, Response response) {
                     try {
                         callBackHashMap.remove(call);
-                        callProgessBackHashMap.remove(call);
                         postLoadSuccess(progressCallBack, httpDealMethod, response,response.body().string(), syn);
                     } catch (Exception e) {
                         postUIFail(progressCallBack, e, syn);
@@ -571,7 +554,7 @@ public class OkHttpManger {
      * @param destFileDir      本地存储的文件夹路径
      * @param progressCallBack 自定义回调接口
      */
-    public void downLoadFile(final String url, final String destFileDir, String fileName, Map<String, String> headers, final HttpDealMethod httpDealMethod, final ProgressCallBack progressCallBack, final boolean syn) {
+    public void downLoadFile(final String url, final String destFileDir, String fileName, Map<String, String> headers, final HttpDealMethod httpDealMethod, final DataCallBack progressCallBack, final boolean syn) {
         final String realURL = UrlUtils.urlJoint(url, null);
         if (destFileDir == null || destFileDir.equals("")) {
             progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件路径不存在", null), syn);
@@ -607,19 +590,16 @@ public class OkHttpManger {
             }
         };
         Call call = getOkHttpSingleClient(interceptor).newCall(request);
-        callProgessBackHashMap.put(call,progressCallBack);
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 callBackHashMap.remove(call);
-                callProgessBackHashMap.remove(call);
                 postUIFail(progressCallBack, e, syn);
             }
 
             @Override
             public void onResponse(Call call, Response response) {
                 callBackHashMap.remove(call);
-                callProgessBackHashMap.remove(call);
                 ResponseBody responseBody = response.body();
                 long length = responseBody.contentLength();
                 if (length == 0 || length == 1) {
@@ -828,7 +808,7 @@ public class OkHttpManger {
     /**
      * 文件上传跟加载
      */
-    private void postLoadSuccess(final ProgressCallBack progressCallBack, HttpDealMethod httpDealMethod, Response response, String str ,boolean syn) {
+    private void postLoadSuccess(final DataCallBack progressCallBack, HttpDealMethod httpDealMethod, Response response, String str ,boolean syn) {
         try {
             if (httpDealMethod != null) {
                 CallBack callBack = httpDealMethod.dealCallBack(response.code(), str);
@@ -849,14 +829,14 @@ public class OkHttpManger {
             }
             if (progressCallBack != null) {
                 if (progressCallBack.getType().equals(String.class)) {
-                    progressCallBack.postUIComplete(str, syn);
+                    progressCallBack.postUISuccess(str, syn);
                 } else if (progressCallBack.getType().equals(Object.class)) {
-                    progressCallBack.postUIComplete(str, syn);
+                    progressCallBack.postUISuccess(str, syn);
                 } else {
                     if (progressCallBack.getType() == null) {
-                        progressCallBack.postUIComplete(JSONObject.parseObject(str, String.class), syn);
+                        progressCallBack.postUISuccess(JSONObject.parseObject(str, String.class), syn);
                     } else {
-                        progressCallBack.postUIComplete(JSONObject.parseObject(str, progressCallBack.getType()), syn);
+                        progressCallBack.postUISuccess(JSONObject.parseObject(str, progressCallBack.getType()), syn);
                     }
                 }
             }

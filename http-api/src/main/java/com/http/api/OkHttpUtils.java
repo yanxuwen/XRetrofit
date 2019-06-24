@@ -15,30 +15,30 @@ public class OkHttpUtils {
         if (!url.startsWith("http")) {
             url = baseUrl + url;
         }
-        onDeal(requestType, url, json, mapField, headers, params, httpDealMethod, dataCallBack, null, syn);
+        onDeal(requestType, url, json, mapField, headers, params, httpDealMethod, dataCallBack, syn);
     }
 
     /**
      * 上传使用
      */
-    public void requestUpload(String baseUrl, String url, int requestType, Map<String, String> mapField, String json, Map<String, Object[]> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final ProgressCallBack dataCallBack, boolean syn) {
+    public void requestUpload(String baseUrl, String url, int requestType, Map<String, String> mapField, String json, Map<String, Object[]> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, boolean syn) {
         if (!url.startsWith("http")) {
             url = baseUrl + url;
         }
-        onDealUpload(requestType, url, json, mapField, headers, params, httpDealMethod, dataCallBack, dataCallBack, syn);
+        onDealUpload(requestType, url, json, mapField, headers, params, httpDealMethod, dataCallBack, syn);
     }
 
     /**
      * 下载
      */
-    public void requestDownload(String baseUrl, String url, int requestType, Map<String, String> mapField, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final ProgressCallBack progressCallBack, boolean syn) {
+    public void requestDownload(String baseUrl, String url, int requestType, Map<String, String> mapField, String json, Map<String, String> params, Map<String, String> headers, HttpDealMethod httpDealMethod, final DataCallBack progressCallBack, boolean syn) {
         if (!url.startsWith("http")) {
             url = baseUrl + url;
         }
-        onDeal(requestType, url, json, mapField, headers, params, httpDealMethod, null, progressCallBack, syn);
+        onDeal(requestType, url, json, mapField, headers, params, httpDealMethod, progressCallBack, syn);
     }
 
-    private void onDeal(int requestType, String url, String json, Map<String, String> mapField, Map<String, String> headers, Map<String, String> params, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack, final ProgressCallBack progressCallBack, boolean syn) {
+    private void onDeal(int requestType, String url, String json, Map<String, String> mapField, Map<String, String> headers, Map<String, String> params, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack,boolean syn) {
         DealParams dealParams = new DealParams();
         dealParams.setRequestType(requestType);
         dealParams.setUrl(url);
@@ -86,7 +86,7 @@ public class OkHttpUtils {
             case MethodMeta.TYPE.TYPE_DOWNLOAD:
                 String filepath = dealParams.getParams().get("filepath");
                 String filename = dealParams.getParams().get("filename");
-                OkHttpManger.getInstance().downLoadFile(dealParams.getUrl(), filepath, filename, dealParams.getHeaders(), httpDealMethod, progressCallBack, syn);
+                OkHttpManger.getInstance().downLoadFile(dealParams.getUrl(), filepath, filename, dealParams.getHeaders(), httpDealMethod, dataCallBack, syn);
                 break;
             default:
                 dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
@@ -95,7 +95,7 @@ public class OkHttpUtils {
 
     }
 
-    private void onDealUpload(int requestType, String url, String json, Map<String, String> mapField, Map<String, String> headers, Map<String, Object[]> params, final HttpDealMethod httpDealMethod, final ProgressCallBack dataCallBack, final ProgressCallBack progressCallBack, boolean syn) {
+    private void onDealUpload(int requestType, String url, String json, Map<String, String> mapField, Map<String, String> headers, Map<String, Object[]> params, final HttpDealMethod httpDealMethod, final DataCallBack dataCallBack ,boolean syn) {
         DealParams dealParams = new DealParams();
         dealParams.setRequestType(requestType);
         dealParams.setUrl(url);
@@ -158,7 +158,7 @@ public class OkHttpUtils {
                         }
                     }
                 }
-                OkHttpManger.getInstance().upLoadFile(dealParams.getUrl(), filepath,  filekey, filename, dealParams.getMapField(), dealParams.getHeaders() , httpDealMethod, progressCallBack, syn);
+                OkHttpManger.getInstance().upLoadFile(dealParams.getUrl(), filepath,  filekey, filename, dealParams.getMapField(), dealParams.getHeaders() , httpDealMethod, dataCallBack, syn);
                 break;
             default:
                 dataCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), syn);
