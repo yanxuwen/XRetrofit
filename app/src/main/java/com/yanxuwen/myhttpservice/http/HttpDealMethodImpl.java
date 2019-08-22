@@ -30,10 +30,10 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         Map<String, String> mapField = dealParams.getMapField();
         mapField.put("reqcodeversion","6.8");
         //获取@Params里的参数，然后设置成json串，设置到表单body里
-        Map<String, String> mapParams = dealParams.getParams();
+        Map<String, Object> mapParams = dealParams.getParams();
         JSONObject jb = new JSONObject();
         String json = "";
-        for (Map.Entry<String, String> entry : mapParams.entrySet()) {
+        for (Map.Entry<String, Object> entry : mapParams.entrySet()) {
             try {
                 jb.put(entry.getKey(), entry.getValue());
             } catch (JSONException e) {

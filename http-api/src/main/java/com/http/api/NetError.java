@@ -31,6 +31,7 @@ public class NetError {
     }
 
     public interface HttpErrorCode {
+        int CANCEL= -10000;
         int ERROR= -10001;
         int DATA_EMPTY = -10002;
         int NET_DISCONNECT = -10003;
@@ -38,7 +39,6 @@ public class NetError {
         int NET_TIMEOUT = -10005;
         /**文件没找到*/
         int FILE_NOT_FOUND= -10006;
-
     }
     private int httpCode;
     private int code;

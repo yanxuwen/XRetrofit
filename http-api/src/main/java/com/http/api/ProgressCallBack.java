@@ -1,6 +1,6 @@
 package com.http.api;
 
-public abstract class ProgressCallBack<T> extends DataCallBack<T>{
+public abstract class ProgressCallBack<T> extends BaseDataCallBack<T>{
 
     public ProgressCallBack() {
         super();

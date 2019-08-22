@@ -4,17 +4,47 @@
 //
 
 package com.http.compiler.bean;
-
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-
 import javax.lang.model.type.TypeMirror;
 
 /**
  * 方法
  */
 public class MethodMeta {
+    private String url;
+    private String name;
+    private boolean deal;//是否特殊处理
+    private long timeout;//超时时间
+    private TypeMirror returnType;
+    /**
+     * 请求类型
+     */
+    private int requestType;
+    private TypeMirror result;
+    private Map<String, String> headers;
+    private List<ParamMeta> params;
+
+    public @interface TYPE {
+        public int TYPE_GET = 1;
+        public int TYPE_POST = 2;
+        public  int TYPE_PUT = 3;
+        public  int TYPE_DELETE = 4;
+        public int TYPE_DOWNLOAD = 5;
+        public int TYPE_UPLOAD = 6;
+    }
+
+    public MethodMeta() {
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
     public boolean isDeal() {
         return deal;
     }
@@ -37,30 +67,6 @@ public class MethodMeta {
 
     public void setReturnType(TypeMirror returnType) {
         this.returnType = returnType;
-    }
-
-    public @interface TYPE {
-        int TYPE_GET = 1;
-        int TYPE_POST = 2;
-        int TYPE_PUT = 3;
-        int TYPE_DELETE = 4;
-        int TYPE_DOWNLOAD = 5;
-        int TYPE_UPLOAD = 6;
-
-    }
-    private String url;
-    private String name;
-    private boolean deal;
-    private TypeMirror returnType;
-    /**
-     * 请求类型
-     */
-    private int requestType;
-    private TypeMirror result;
-    private Map<String,String> headers;
-    private List<ParamMeta> params;
-
-    public MethodMeta() {
     }
 
     public String getName() {

@@ -73,7 +73,7 @@
         android:layout_centerInParent="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="文件上传"
+        android:text="多文件上传"
         android:onClick="onUpload"
         />
     <Button

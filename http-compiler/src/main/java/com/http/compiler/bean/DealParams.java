@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DealParams implements Serializable {
+    @MethodMeta.TYPE
     private int requestType = MethodMeta.TYPE.TYPE_GET;
     private String url;
     private String json;
+    private long timeout;
     private Map<String, String> mapField;
     private Map<String, String> headers;
-    private Map<String, String> params;
+    private Map<String, Object> params;
 
     public String getJson() {
         return json;
@@ -25,7 +27,7 @@ public class DealParams implements Serializable {
     }
 
     public Map<String, String> getMapField() {
-        return mapField == null ?  new HashMap<String, String>() : mapField;
+        return mapField == null ?  new HashMap<>() : mapField;
     }
 
     public void setMapField(Map<String, String> mapField) {
@@ -44,20 +46,21 @@ public class DealParams implements Serializable {
         return requestType;
     }
 
-    public void setRequestType(int requestType) {
+    /**暂时不开放可更改请求类型*/
+    private void setRequestType(int requestType) {
         this.requestType = requestType;
     }
 
-    public Map<String, String> getParams() {
-        return params == null ?  new HashMap<String, String>() : params;
+    public Map<String, Object> getParams() {
+        return params == null ?  new HashMap<>() : params;
     }
 
-    public void setParams(Map<String, String> params) {
+    public void setParams(Map<String, Object> params) {
         this.params = params;
     }
 
     public Map<String, String> getHeaders() {
-        return headers == null ?  new HashMap<String, String>() : headers;
+        return headers == null ?  new HashMap<>() : headers;
     }
 
     public void setHeaders(Map<String, String> headers) {
@@ -83,5 +86,13 @@ public class DealParams implements Serializable {
             o = new DealParams();
         }
         return o;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
+
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
     }
 }

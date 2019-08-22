@@ -16,6 +16,7 @@ import com.http.compiler.annotation.PUT;
 import com.http.compiler.annotation.Param;
 import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
+import com.http.compiler.annotation.TimeOut;
 import com.http.compiler.annotation.UPLOAD;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
@@ -137,6 +138,12 @@ public class ElementUtils {
                 if (dealAll || apiDeal != null) {
                     meta.setDeal(true);
                 }
+
+                TimeOut timeOut = (TimeOut) element.getAnnotation(TimeOut.class);
+                if (timeOut != null) {
+                    meta.setTimeout(timeOut.value());
+                }
+
                 meta.setRequestType(requestType);
                 meta.setName(methodName);
                 meta.setResult(element.asType());

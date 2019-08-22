@@ -1,6 +1,6 @@
 package com.yanxuwen.myhttpservice.http;
 
-import com.http.api.DataCallBack;
+import com.http.DataCallBack;
 import com.http.api.ProgressCallBack;
 import com.http.compiler.annotation.Body;
 import com.http.compiler.annotation.DELETE;
@@ -18,6 +18,7 @@ import com.http.compiler.annotation.PUT;
 import com.http.compiler.annotation.Param;
 import com.http.compiler.annotation.Path;
 import com.http.compiler.annotation.Query;
+import com.http.compiler.annotation.TimeOut;
 import com.http.compiler.annotation.UPLOAD;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 
@@ -29,13 +30,13 @@ public interface NetService {
      * get的简单请求
      */
     @GET("http://api.sdwhcn.com:5056/v1/temple")
-    void get(@Query("page")int page ,@Query("limit")int limit ,@Query("recommend")String recommend,DataCallBack callBack);
+    void get(@Query("page") int page, @Query("limit") int limit, @Query("recommend") String recommend, DataCallBack callBack);
 
     /**
      * get请求(URL中带有参数)
      */
     @GET("http://api.sdwhcn.com:5056/{version}/temple")
-    void get(@Path("version") String version, @Query("page")int page ,@Query("limit")int limit ,@Query("recommend")String recommend , DataCallBack callBack);
+    void get(@Path("version") String version, @Query("page") int page, @Query("limit") int limit, @Query("recommend") String recommend, DataCallBack callBack);
 
     /**
      * 表单提交
@@ -65,13 +66,13 @@ public interface NetService {
      * put 提交
      */
     @PUT("http://api.sdwhcn.com:5056/v1/member")
-    void put(@Header("Authorization") String header, @Query("nickname") String nickname,@Query("signature") String signature,@Query("area") String area,DataCallBack callBack);
+    void put(@Header("Authorization") String header, @Query("nickname") String nickname, @Query("signature") String signature, @Query("area") String area, DataCallBack callBack);
 
     /**
      * delete 提交
      */
     @DELETE("http://api.sdwhcn.com:5056/v1/member_collect_article/{id}")
-    void delete(@Header("Authorization") String header, @Path("id") String id,DataCallBack callBack);
+    void delete(@Header("Authorization") String header, @Path("id") String id, DataCallBack callBack);
 
     /**
      * 文件下载
@@ -86,29 +87,31 @@ public interface NetService {
     /**
      * 多图上传
      * 【注意】 @Param 的key 跟文件下载一样是固定写法
+     *
      * @param filepath 代表文件路径，必填
      * @param filekey  代表文件key，必填
-     * @param filename  代表文件名称 选填
+     * @param filename 代表文件名称 选填
      * @param callBack
      */
     @UPLOAD("http://api.sdwhcn.com:5056/v1/member/avatar")
-    void upload(@Header("Authorization") String header,@Param("filepath") String[] filepath, @Param("filekey") String[] filekey , @Param("filename") String[] filename, ProgressCallBack callBack);
+    void upload(@Header("Authorization") String header, @Param("filepath") String[] filepath, @Param("filekey") String[] filekey, @Param("filename") String[] filename, ProgressCallBack callBack);
 
     /**
      * 单张图片上传
-     *【注意】 @Param 的key 跟文件下载一样是固定写法
+     * 【注意】 @Param 的key 跟文件下载一样是固定写法
+     *
      * @param filepath 代表文件路径，必填
      * @param filekey  代表文件key，必填
-     * @param filename  代表文件名称 选填
+     * @param filename 代表文件名称 选填
      */
     @UPLOAD("http://api.sdwhcn.com:5056/v1/member/avatar")
-    void upload(@Header("Authorization") String header,@Param("filepath") String filepath, @Param("filekey") String filekey , @Param("filename") String filename, ProgressCallBack callBack);
+    void upload(@Header("Authorization") String header, @Param("filepath") String filepath, @Param("filekey") String filekey, @Param("filename") String filename, ProgressCallBack callBack);
 
     /**
      * 请求跟返回经过统一特殊处理。
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
     @Deal
-    void onDeal(@Field("reqcode")String reqcode,@Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
+    void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
 
 }

@@ -8,13 +8,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.http.api.DataCallBack;
+import com.http.DataCallBack;
 import com.http.api.NetError;
 import com.http.api.ProgressCallBack;
 import com.tbruyelle.rxpermissions.RxPermissions;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 import com.yanxuwen.myhttpservice.http.HttpRequest;
 
+import okhttp3.Call;
 import rx.functions.Action1;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,20 +26,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
 
+    long time = 0;
+
     /**
      * get请求
      */
     public void onGet(View view) {
-        HttpRequest.getNetService().get(0,10,"recommend", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get(0, 10, "recommend", new DataCallBack<String>(String.class) {
+
+            @Override
+            public void onHttpStart(final Call call) {
+                super.onHttpStart(call);
+            }
 
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","onGet :" + result);
+                Log.e("yxw", "onGet :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","onGet fail :" + netError.getMessage());
+                Log.e("yxw", "onGet fail :" + netError.getMessage());
             }
         });
     }
@@ -47,15 +55,15 @@ public class MainActivity extends AppCompatActivity {
      * get请求(URL中带有参数,也支持post)
      */
     public void onGet2(View view) {
-        HttpRequest.getNetService().get("v1" , 0 ,10,"recommend", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get("v1", 0, 10, "recommend", new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","onGet2 :" + result);
+                Log.e("yxw", "onGet2 :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","onGet2 fail :" + netError.getMessage());
+                Log.e("yxw", "onGet2 fail :" + netError.getMessage());
             }
         });
     }
@@ -64,15 +72,15 @@ public class MainActivity extends AppCompatActivity {
      * 表单提交
      */
     public void postForm(View view) {
-        HttpRequest.getNetService().postForm("10960",new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postForm("10960", new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","postForm :" + result);
+                Log.e("yxw", "postForm :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","postForm fail :" + netError.getMessage());
+                Log.e("yxw", "postForm fail :" + netError.getMessage());
             }
         });
     }
@@ -86,12 +94,12 @@ public class MainActivity extends AppCompatActivity {
         HttpRequest.getNetService().postJson(mobile, password, new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","postJson :" + result);
+                Log.e("yxw", "postJson :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","postJson fail :" + netError.getMessage());
+                Log.e("yxw", "postJson fail :" + netError.getMessage());
             }
         });
     }
@@ -107,12 +115,12 @@ public class MainActivity extends AppCompatActivity {
         HttpRequest.getNetService().postJson(json, new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","postJson :" + result);
+                Log.e("yxw", "postJson :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","postJson fail :" + netError.getMessage());
+                Log.e("yxw", "postJson fail :" + netError.getMessage());
             }
         });
     }
@@ -127,12 +135,12 @@ public class MainActivity extends AppCompatActivity {
         HttpRequest.getNetService().postJson(mLoginBuild, new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","postJson3 :" + result);
+                Log.e("yxw", "postJson3 :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","postJson3 fail :" + netError.getMessage());
+                Log.e("yxw", "postJson3 fail :" + netError.getMessage());
             }
         });
     }
@@ -141,15 +149,15 @@ public class MainActivity extends AppCompatActivity {
      * put 提交
      */
     public void onPut(View view) {
-      HttpRequest.getNetService().put("header","测试","signature","area", new DataCallBack<String>(String.class) {
-          @Override
+        HttpRequest.getNetService().put("header", "测试", "signature", "area", new DataCallBack<String>(String.class) {
+            @Override
             public void onHttpSuccess(String result) {
-              Log.e("yxw","onPut :" + result);
+                Log.e("yxw", "onPut :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","onPut fail :" + netError.getMessage());
+                Log.e("yxw", "onPut fail :" + netError.getMessage());
             }
         });
     }
@@ -158,20 +166,20 @@ public class MainActivity extends AppCompatActivity {
      * delete 提交
      */
     public void onDelete(View view) {
-       HttpRequest.getNetService().delete("header","123231" ,new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().delete("header", "123231", new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","onDelete :" + result);
+                Log.e("yxw", "onDelete :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","onDelete fail :" + netError.getMessage());
+                Log.e("yxw", "onDelete fail :" + netError.getMessage());
             }
         });
     }
 
-    public void onDownload(View v){
+    public void onDownload(View v) {
         //先权限申请，在请求
         RxPermissions.getInstance(this).request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 .subscribe(new Action1<Boolean>() {
@@ -179,30 +187,31 @@ public class MainActivity extends AppCompatActivity {
                     public void call(Boolean granted) {
                         if (granted) {
                             String path = Environment.getExternalStorageDirectory().toString() + "/测试";//获取目录
-                            HttpRequest.getNetService().download(path,"text.apk", new ProgressCallBack() {
+                            HttpRequest.getNetService().download(path, "text.apk", new ProgressCallBack() {
+
                                 @Override
                                 public void onHttpSuccess(Object result) {
-                                    Log.e("yxw","onDownload :" + result);
+                                    Log.e("yxw", "onDownload :" + result);
                                 }
 
                                 @Override
                                 public void onHttpFail(NetError netError) {
-                                    Log.e("yxw","onDownload fail :" + netError.getMessage());
+                                    Log.e("yxw", "onDownload fail :" + netError.getMessage());
                                 }
 
                                 @Override
                                 public void onLoadProgress(float progress) {
-                                    Log.e("yxw","onDownload progress:" + progress);
+                                    Log.e("yxw", "onDownload progress:" + progress);
                                 }
                             });
                         } else {
-                            Toast.makeText(MainActivity.this,"请打开存储权限",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "请打开存储权限", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public void onUpload(View v){
+    public void onUpload(View v) {
         //先权限申请，在请求
         RxPermissions.getInstance(this).request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe(new Action1<Boolean>() {
@@ -211,31 +220,31 @@ public class MainActivity extends AppCompatActivity {
                         if (granted) {
                             //允许权限
                             String path = Environment.getExternalStorageDirectory().toString() + "/huawei/MagazineUnlock/magazine-unlock-01-2.3.1344-_132FEBAC9815C7732FE627DD6380E5CA.jpg";//获取跟目录
-                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjY4MDFmZjE1NTdlNWJhMzkzY2RlM2U0NjRiMGM0MzQ3MDkwNWYzMDYwZTZhZDFkOTQ4NTIyY2I3NDI2YjY0ZDFmODBiOWJkODY0YmEyM2UxIn0.eyJhdWQiOiIyIiwianRpIjoiNjgwMWZmMTU1N2U1YmEzOTNjZGUzZTQ2NGIwYzQzNDcwOTA1ZjMwNjBlNmFkMWQ5NDg1MjJjYjc0MjZiNjRkMWY4MGI5YmQ4NjRiYTIzZTEiLCJpYXQiOjE1NjEzNjI2ODcsIm5iZiI6MTU2MTM2MjY4NywiZXhwIjoxNTYxNDQ5MDg3LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.RXUUxeLvYkkk1V-pmu-120N5JejjaDmTfG0zO0Zu3lMc5OChjlSvDiKm2jW6geCIp2gZeOrkC4HBNpSngjKue_v1l1UyyYudOofTZV3DUlF-hwhhwMJ2RKxp6yq2ecGfxCcg3ZED1dp0dAjmqmNCGUZViykQctSQC7FI3KXQeL-96wQj6G9YnN0n2sVOkeH2m1AYR2YjkXFW3C-lMujiqbfoH0i_DyRWqmvnH4IS67L8Ec0dWBNgWbDWyrO6Za6z9Im6VHfeqVkVYbvFdKrN8mtNuQQ0oioG_6vvuLE9zV-p2YT1t_WogqieFJHb9C6t9QZCqDopU7QBKiczoSk72tMffL0j_Byn1TlG7TlN0nvtnBB1kScz6tI6SvlkwgPOvHneBX-CHiDHPAlS_GOsnh1j5hVn1eRMbPS728sQpsTlVJ4WOpDP9AO1u4JG2ViU-4gohtpN5Lkc7FFbz30MSpi3aQQxXRjHslA--4Hbc-fqD1TjqgUyNfF4xK_paSUgihHwygIqNUeI6MuCltKKJCUR4eeNXItXPl9_GxSsWPYpetIw-0yFHwdrTWvr4fmy-gdteNrAtOv6DwDvGsgw52vnqoX8Sev_yWg9FBGKnFcRLIyMfkw9_7UQEn0-P9v0kqLxf63xk3QnGtdlhZNLA8l3OapCpHkYeZgcEX9UQFU";
-                            HttpRequest.getNetService().upload(header,new String[]{path,path},new String[]{"file","file"},new String[]{"test.jpg","test2.jpg"}, new ProgressCallBack() {
+                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImEyYmM2NDg0ZWJjZjBmM2M1ZDM2MTc0YzdiMzg0YzQ3NDRhMDVjNmU2NDcyODkwYjViOGIwYzYxOWRhMTYzYTU4NzNmYjdjYzczNTIyYWY1In0.eyJhdWQiOiIyIiwianRpIjoiYTJiYzY0ODRlYmNmMGYzYzVkMzYxNzRjN2IzODRjNDc0NGEwNWM2ZTY0NzI4OTBiNWI4YjBjNjE5ZGExNjNhNTg3M2ZiN2NjNzM1MjJhZjUiLCJpYXQiOjE1NjY0NTk2MDMsIm5iZiI6MTU2NjQ1OTYwMywiZXhwIjoxNTY2NTQ2MDAyLCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.QShI94S6uwOcx4gEhyZyJ9rkmj3BkchoOv1rWFlHcQ2PmfsiNcRMs_1DXFCXxj6QZ7eqCR6noO4AjF67WiYPhr7_oVVtnHUc3BBHJjGYc8KNdkwGA9p14HhjL5Ngvd-Pew0iI1pUD8boETFTGrLP2B4pAxv1kUxEtyKULIPxNM_6cPK1hGA0lBtVissflH0vwmtqQzNvdDfqX7MwA1nSoXaut_BS9zGkNTh9yqlOXBIXmpvW2pPvSWfyVX2la9Z7URToEfzrh8N9kQ_df_v6e0SFXl1lCVqWf61cI_57_s6zKEn93Id0YvEVAYgCeZfLNbvfcVuW32ijU5gvfzsPBu6gqjprIn-9uxfgeXokku_DGMJkILF95_6bxNIa9gmS1umD8TH-7s_nhVZzEs12jtcHPtIuKcEb-a8HER31GJE01TxKVsRlVqdG1CpL6lFn0uYW0EjSeDMlaTCO5LjVYvN8YX87iLRZmiIPGvkvIa2pq50YV-pOioT9ur7CJhaFrhCxW9LLz8XMi8Ps6588ZV5cP8U0sDaLJBHGvuf999IfpeIGUpBE1VHo0ERA8ogn6kfYoOLysqTEucevpODWTZyHNSXO4Qc-3v-kGStjrQvjbzgTTb3JPqMedDFG9qYNvkhTU8xd70hBGXrTwSLpthMipxIsxElm2K93a7sVJBk";
+                            HttpRequest.getNetService().upload(header, new String[]{path, path}, new String[]{"file", "file"}, new String[]{"test.jpg", "test2.jpg"}, new ProgressCallBack() {
                                 @Override
                                 public void onHttpSuccess(Object result) {
-                                    Log.e("yxw","onUpload :" + result);
+                                    Log.e("yxw", "onUpload :" + result);
                                 }
 
                                 @Override
                                 public void onHttpFail(NetError netError) {
-                                    Log.e("yxw","onUpload fail :" + netError.getMessage());
+                                    Log.e("yxw", "onUpload fail :" + netError.getMessage());
                                 }
 
                                 @Override
                                 public void onLoadProgress(float progress) {
-                                    Log.e("yxw","onUpload progress:" + progress);
+                                    Log.e("yxw", "onUpload progress:" + progress);
                                 }
                             });
                         } else {
-                            Toast.makeText(MainActivity.this,"请打开存储权限",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "请打开存储权限", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public void onUpload2(View v){
+    public void onUpload2(View v) {
         //先权限申请，在请求
         RxPermissions.getInstance(this).request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe(new Action1<Boolean>() {
@@ -244,25 +253,31 @@ public class MainActivity extends AppCompatActivity {
                         if (granted) {
                             //允许权限
                             String path = Environment.getExternalStorageDirectory().toString() + "/huawei/MagazineUnlock/magazine-unlock-01-2.3.1344-_132FEBAC9815C7732FE627DD6380E5CA.jpg";//获取跟目录
-                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjY4MDFmZjE1NTdlNWJhMzkzY2RlM2U0NjRiMGM0MzQ3MDkwNWYzMDYwZTZhZDFkOTQ4NTIyY2I3NDI2YjY0ZDFmODBiOWJkODY0YmEyM2UxIn0.eyJhdWQiOiIyIiwianRpIjoiNjgwMWZmMTU1N2U1YmEzOTNjZGUzZTQ2NGIwYzQzNDcwOTA1ZjMwNjBlNmFkMWQ5NDg1MjJjYjc0MjZiNjRkMWY4MGI5YmQ4NjRiYTIzZTEiLCJpYXQiOjE1NjEzNjI2ODcsIm5iZiI6MTU2MTM2MjY4NywiZXhwIjoxNTYxNDQ5MDg3LCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.RXUUxeLvYkkk1V-pmu-120N5JejjaDmTfG0zO0Zu3lMc5OChjlSvDiKm2jW6geCIp2gZeOrkC4HBNpSngjKue_v1l1UyyYudOofTZV3DUlF-hwhhwMJ2RKxp6yq2ecGfxCcg3ZED1dp0dAjmqmNCGUZViykQctSQC7FI3KXQeL-96wQj6G9YnN0n2sVOkeH2m1AYR2YjkXFW3C-lMujiqbfoH0i_DyRWqmvnH4IS67L8Ec0dWBNgWbDWyrO6Za6z9Im6VHfeqVkVYbvFdKrN8mtNuQQ0oioG_6vvuLE9zV-p2YT1t_WogqieFJHb9C6t9QZCqDopU7QBKiczoSk72tMffL0j_Byn1TlG7TlN0nvtnBB1kScz6tI6SvlkwgPOvHneBX-CHiDHPAlS_GOsnh1j5hVn1eRMbPS728sQpsTlVJ4WOpDP9AO1u4JG2ViU-4gohtpN5Lkc7FFbz30MSpi3aQQxXRjHslA--4Hbc-fqD1TjqgUyNfF4xK_paSUgihHwygIqNUeI6MuCltKKJCUR4eeNXItXPl9_GxSsWPYpetIw-0yFHwdrTWvr4fmy-gdteNrAtOv6DwDvGsgw52vnqoX8Sev_yWg9FBGKnFcRLIyMfkw9_7UQEn0-P9v0kqLxf63xk3QnGtdlhZNLA8l3OapCpHkYeZgcEX9UQFU";
-                            HttpRequest.getNetService().upload(header,path,"file", "test.jpg", new ProgressCallBack() {
+                            String header = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImEyYmM2NDg0ZWJjZjBmM2M1ZDM2MTc0YzdiMzg0YzQ3NDRhMDVjNmU2NDcyODkwYjViOGIwYzYxOWRhMTYzYTU4NzNmYjdjYzczNTIyYWY1In0.eyJhdWQiOiIyIiwianRpIjoiYTJiYzY0ODRlYmNmMGYzYzVkMzYxNzRjN2IzODRjNDc0NGEwNWM2ZTY0NzI4OTBiNWI4YjBjNjE5ZGExNjNhNTg3M2ZiN2NjNzM1MjJhZjUiLCJpYXQiOjE1NjY0NTk2MDMsIm5iZiI6MTU2NjQ1OTYwMywiZXhwIjoxNTY2NTQ2MDAyLCJzdWIiOiIxIiwic2NvcGVzIjpbIioiXX0.QShI94S6uwOcx4gEhyZyJ9rkmj3BkchoOv1rWFlHcQ2PmfsiNcRMs_1DXFCXxj6QZ7eqCR6noO4AjF67WiYPhr7_oVVtnHUc3BBHJjGYc8KNdkwGA9p14HhjL5Ngvd-Pew0iI1pUD8boETFTGrLP2B4pAxv1kUxEtyKULIPxNM_6cPK1hGA0lBtVissflH0vwmtqQzNvdDfqX7MwA1nSoXaut_BS9zGkNTh9yqlOXBIXmpvW2pPvSWfyVX2la9Z7URToEfzrh8N9kQ_df_v6e0SFXl1lCVqWf61cI_57_s6zKEn93Id0YvEVAYgCeZfLNbvfcVuW32ijU5gvfzsPBu6gqjprIn-9uxfgeXokku_DGMJkILF95_6bxNIa9gmS1umD8TH-7s_nhVZzEs12jtcHPtIuKcEb-a8HER31GJE01TxKVsRlVqdG1CpL6lFn0uYW0EjSeDMlaTCO5LjVYvN8YX87iLRZmiIPGvkvIa2pq50YV-pOioT9ur7CJhaFrhCxW9LLz8XMi8Ps6588ZV5cP8U0sDaLJBHGvuf999IfpeIGUpBE1VHo0ERA8ogn6kfYoOLysqTEucevpODWTZyHNSXO4Qc-3v-kGStjrQvjbzgTTb3JPqMedDFG9qYNvkhTU8xd70hBGXrTwSLpthMipxIsxElm2K93a7sVJBk";
+                            HttpRequest.getNetService().upload(header, path, "file", "test.jpg", new ProgressCallBack() {
+
+                                public void onHttpStart(final Call call) {
+                                    super.onHttpStart(call);
+                                    time = System.currentTimeMillis();
+                                }
+
                                 @Override
                                 public void onHttpSuccess(Object result) {
-                                    Log.e("yxw","onUpload2 :" + result);
+                                    Log.e("yxw", "onUpload2 :" + result);
                                 }
 
                                 @Override
                                 public void onHttpFail(NetError netError) {
-                                    Log.e("yxw","onUpload2 fail :" + netError.getMessage());
+                                    Log.e("yxw", "onUpload2 fail :" + netError.getMessage()  + ",time:" + (System.currentTimeMillis() - time));
                                 }
 
                                 @Override
                                 public void onLoadProgress(float progress) {
-                                    Log.e("yxw","onUpload2 progress:" + progress);
+                                    Log.e("yxw", "onUpload2 progress:" + progress);
                                 }
                             });
                         } else {
-                            Toast.makeText(MainActivity.this,"请打开存储权限",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "请打开存储权限", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -274,15 +289,15 @@ public class MainActivity extends AppCompatActivity {
         String pageSize = "20";
         String schoolId = "XWQMI77m9Fbv1GWkBba";
         //String.class代表返回类型，可以任何类型，记得要跟json的格式进行匹配。
-        HttpRequest.getNetService().onDeal(reqcode,pageNo,pageSize,schoolId , new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().onDeal(reqcode, pageNo, pageSize, schoolId, new DataCallBack<String>(String.class) {
             @Override
             public void onHttpSuccess(String result) {
-                Log.e("yxw","onTest :" + result);
+                Log.e("yxw", "onTest :" + result);
             }
 
             @Override
             public void onHttpFail(NetError netError) {
-                Log.e("yxw","onTest fail :" + netError.getMessage());
+                Log.e("yxw", "onTest fail :" + netError.getMessage());
             }
         });
     }

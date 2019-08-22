@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--解决安卓P 没有使用https的话会报 CLEARTEXT communication to api.sdwhcn.com not permitted by network security policy-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>
