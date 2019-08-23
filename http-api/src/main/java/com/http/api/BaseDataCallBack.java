@@ -2,6 +2,7 @@ package com.http.api;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -14,6 +15,8 @@ public abstract class BaseDataCallBack<T> implements Serializable {
     private Type mType = String.class;
 
     private Handler mHandler;
+
+    private int retry = 1;//重试次数
 
     protected boolean isCallBack = true;//是否回调
 
@@ -35,6 +38,7 @@ public abstract class BaseDataCallBack<T> implements Serializable {
     public abstract void onHttpFail(NetError netError);
 
     public void onHttpStart(final Call call) {
+
     }
 
     /**
@@ -75,8 +79,16 @@ public abstract class BaseDataCallBack<T> implements Serializable {
     /**
      * 失败-回调到UI线程
      */
-    public final void postUIFail(final NetError netError, boolean syn) {
+    protected final void postUIFail(Call call,int retry,final NetError netError, boolean syn) {
         if (!isCallBack) {
+            return;
+        }
+        if (call != null && this.retry < retry){
+            //重新请求
+            this.retry ++;
+            Log.e("yxw","重试");
+            //这个不能用
+            call.request();
             return;
         }
         if (syn || !isUI()) {

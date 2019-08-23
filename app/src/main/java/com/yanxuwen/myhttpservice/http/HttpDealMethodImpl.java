@@ -21,7 +21,6 @@ public class HttpDealMethodImpl implements HttpDealMethod {
     @Override
     public DealParams dealRequest(DealParams dealParams) {
         //设置Cookie
-        dealParams.setDealMethod(null);
         dealParams.addHeader("Cookie","JSESSIONID=AE7B1C9D73D448EEAECF5EC8363C55B0"
                 + ";ClientVersion=6.8.1");
         //设置表单参数
@@ -56,7 +55,7 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-//        return  new CallBack(-1,"请求失败");
-        return new CallBack(jsonStr);
+        return  new CallBack(-1,"请求失败");
+//        return new CallBack(jsonStr);
     }
 }

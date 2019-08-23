@@ -72,7 +72,7 @@ public class OkHttpUtils {
                 break;
             default:
                 if (requestParams.getCallback() != null) {
-                    requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
                 }
                 break;
         }
@@ -92,7 +92,7 @@ public class OkHttpUtils {
                 String[] filekey = null;
                 String[] filename = null;
                 if (requestParams.getParams() == null) {
-                    requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
                 }
                 //filepath
                 Object o_filepath = requestParams.getParams().get("filepath");
@@ -139,7 +139,7 @@ public class OkHttpUtils {
                 OkHttpManger.getInstance().upLoadFile(requestParams, filepath, filekey, filename);
                 break;
             default:
-                requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
                 break;
         }
     }
