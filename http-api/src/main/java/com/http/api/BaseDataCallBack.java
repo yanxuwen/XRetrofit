@@ -3,12 +3,13 @@ package com.http.api;
 import android.os.Handler;
 import android.os.Looper;
 
+import java.io.Serializable;
 import java.lang.reflect.Type;
 
 import okhttp3.Call;
 
 
-public abstract class BaseDataCallBack<T> {
+public abstract class BaseDataCallBack<T> implements Serializable {
 
     private Type mType = String.class;
 

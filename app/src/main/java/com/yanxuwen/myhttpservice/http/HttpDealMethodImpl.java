@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.http.compiler.HttpDealMethod;
 import com.http.compiler.bean.CallBack;
 import com.http.compiler.bean.DealParams;
-
 import java.util.Map;
 
 /**
@@ -22,13 +21,11 @@ public class HttpDealMethodImpl implements HttpDealMethod {
     @Override
     public DealParams dealRequest(DealParams dealParams) {
         //设置Cookie
-        Map<String, String> headers = dealParams.getHeaders();
-        headers.put("Cookie","JSESSIONID=AE7B1C9D73D448EEAECF5EC8363C55B0"
+        dealParams.setDealMethod(null);
+        dealParams.addHeader("Cookie","JSESSIONID=AE7B1C9D73D448EEAECF5EC8363C55B0"
                 + ";ClientVersion=6.8.1");
-        dealParams.setHeaders(headers);
         //设置表单参数
-        Map<String, String> mapField = dealParams.getMapField();
-        mapField.put("reqcodeversion","6.8");
+        dealParams.addField("reqcodeversion","6.8");
         //获取@Params里的参数，然后设置成json串，设置到表单body里
         Map<String, Object> mapParams = dealParams.getParams();
         JSONObject jb = new JSONObject();
@@ -40,10 +37,8 @@ public class HttpDealMethodImpl implements HttpDealMethod {
             }
         }
         json = jb.toString();
-        mapField.put("body",json);
-
-        dealParams.setMapField(mapField);
-        return null;
+        dealParams.addField("body",json);
+        return dealParams;
     }
 
     /**

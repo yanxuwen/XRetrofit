@@ -40,66 +40,35 @@ public class OkHttpUtils {
     }
 
     private void onDeal(RequestParams requestParams) {
-        DealParams dealParams = new DealParams();
-//        dealParams.setRequestType(requestParams.getRequestType());
-        dealParams.setUrl(requestParams.getUrl());
-        dealParams.setJson(requestParams.getJson());
-        dealParams.setMapField(requestParams.getMapField());
-        dealParams.setHeaders(requestParams.getHeaders());
-        dealParams.setParams(requestParams.getParams());
-        dealParams.setTimeout(requestParams.getTimeout());
         if (requestParams.getDealMethod() != null) {
-            DealParams deal = requestParams.getDealMethod().dealRequest((DealParams) dealParams.deepClone());
+            RequestParams deal = (RequestParams) requestParams.getDealMethod().dealRequest((RequestParams) requestParams.clone());
             if (deal != null) {
-                dealParams = deal;
+                requestParams = deal;
             }
         }
         switch (requestParams.getRequestType()) {
-            //主要提交参数要替换成dealParams的参数
             case MethodMeta.TYPE.TYPE_GET:
-                OkHttpManger.getInstance().get(dealParams.getUrl(), requestParams.getRequestType(), dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
+                OkHttpManger.getInstance().get(requestParams);
                 break;
             case MethodMeta.TYPE.TYPE_POST:
             case MethodMeta.TYPE.TYPE_PUT:
             case MethodMeta.TYPE.TYPE_DELETE:
-                if (dealParams.getMapField() != null && !dealParams.getMapField().isEmpty()) {
-                    //表单提交
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), requestParams.getRequestType(), dealParams.getMapField(), dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
-
-                } else if (dealParams.getJson() != null && !dealParams.getJson().equals("")) {
-                    //json提交
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), requestParams.getRequestType(), dealParams.getJson(), dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
-
-                } else if (dealParams.getParams() != null && !dealParams.getParams().isEmpty()) {
-                    //json提交
-                    JSONObject jb = new JSONObject();
-                    for (Map.Entry<String, Object> entry : dealParams.getParams().entrySet()) {
-                        try {
-                            jb.put(entry.getKey(), entry.getValue());
-                        } catch (JSONException e) {
-                        }
-                    }
-                    String json = jb.toString();
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), requestParams.getRequestType(), json, dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
-
-                } else {
-                    OkHttpManger.getInstance().post(dealParams.getUrl(), requestParams.getRequestType(), "", dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
-                }
+                OkHttpManger.getInstance().post(requestParams);
                 break;
             case MethodMeta.TYPE.TYPE_DOWNLOAD:
                 String filepath = "";
                 String filename = "";
                 //filepath
-                Object o_filepath = dealParams.getParams().get("filepath");
+                Object o_filepath = requestParams.getParams().get("filepath");
                 if (o_filepath instanceof String) {
                     filepath = (String) o_filepath;
                 }
                 //filename
-                Object o_filename = dealParams.getParams().get("filename");
+                Object o_filename = requestParams.getParams().get("filename");
                 if (o_filepath instanceof String) {
                     filename = (String) o_filename;
                 }
-                OkHttpManger.getInstance().downLoadFile(dealParams.getUrl(), filepath, filename, dealParams.getHeaders(), dealParams.getTimeout(), requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
+                OkHttpManger.getInstance().downLoadFile(requestParams, filepath, filename);
                 break;
             default:
                 if (requestParams.getCallback() != null) {
@@ -111,18 +80,10 @@ public class OkHttpUtils {
     }
 
     private void onDealUpload(RequestParams requestParams) {
-        DealParams dealParams = new DealParams();
-//        dealParams.setRequestType(requestParams.getRequestType());
-        dealParams.setUrl(requestParams.getUrl());
-        dealParams.setJson(requestParams.getJson());
-        dealParams.setMapField(requestParams.getMapField());
-        dealParams.setHeaders(requestParams.getHeaders());
-        dealParams.setParams(requestParams.getParams());
-        dealParams.setTimeout(requestParams.getTimeout());
         if (requestParams.getDealMethod() != null) {
-            DealParams deal = requestParams.getDealMethod().dealRequest((DealParams) dealParams.deepClone());
+            RequestParams deal = (RequestParams) requestParams.getDealMethod().dealRequest((RequestParams) requestParams.clone());
             if (deal != null) {
-                dealParams = deal;
+                requestParams = deal;
             }
         }
         switch (requestParams.getRequestType()) {
@@ -130,11 +91,11 @@ public class OkHttpUtils {
                 String[] filepath = null;
                 String[] filekey = null;
                 String[] filename = null;
-                if (dealParams.getParams() == null) {
+                if (requestParams.getParams() == null) {
                     requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
                 }
                 //filepath
-                Object o_filepath = dealParams.getParams().get("filepath");
+                Object o_filepath = requestParams.getParams().get("filepath");
                 if (o_filepath != null && o_filepath instanceof String[]) {
                     filepath = (String[]) o_filepath;
                 } else if (o_filepath != null && o_filepath instanceof Object[]) {
@@ -148,7 +109,7 @@ public class OkHttpUtils {
                     }
                 }
                 //filekey
-                Object o_filekey = dealParams.getParams().get("filekey");
+                Object o_filekey = requestParams.getParams().get("filekey");
                 if (o_filekey != null && o_filekey instanceof String[]) {
                     filekey = (String[]) o_filekey;
                 } else if (o_filekey != null && o_filekey instanceof Object[]) {
@@ -162,7 +123,7 @@ public class OkHttpUtils {
                     }
                 }
                 //filename
-                Object o_filename = dealParams.getParams().get("filename");
+                Object o_filename = requestParams.getParams().get("filename");
                 if (o_filename != null && o_filename instanceof String[]) {
                     filename = (String[]) o_filename;
                 } else if (o_filename != null && o_filename instanceof Object[]) {
@@ -175,8 +136,7 @@ public class OkHttpUtils {
                         }
                     }
                 }
-                OkHttpManger.getInstance().upLoadFile(dealParams.getUrl(), filepath, filekey, filename, dealParams.getMapField(), dealParams.getHeaders(), dealParams.getTimeout()
-                        , requestParams.getDealMethod(), requestParams.getCallback(), requestParams.isSyn());
+                OkHttpManger.getInstance().upLoadFile(requestParams, filepath, filekey, filename);
                 break;
             default:
                 requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());

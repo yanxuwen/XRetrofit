@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package com.http.compiler.annotation;
+package com.http.compiler.annotation.method;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 @Documented
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface GET {
-    String value();
+public @interface Headers {
+    String[] value();
     boolean encoded() default false;
 }

@@ -1,9 +1,10 @@
 package com.http.api;
 
 
-import android.util.Log;
-
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.http.api.Interceptor.DownloadResponseBody;
+import com.http.api.bean.RequestParams;
 import com.http.compiler.HttpDealMethod;
 import com.http.compiler.bean.CallBack;
 import com.http.compiler.bean.MethodMeta;
@@ -79,8 +80,8 @@ public class OkHttpManger {
      * 设置认证，根据需求从SslUtils类里面取
      */
     public OkHttpManger setSslSocketFactory(SslUtils.SSLParams sslParams) {
-        if (sslParams != null && builder != null) {
-            builder.sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
+        if (sslParams != null && getBuilder() != null) {
+            getBuilder().sslSocketFactory(sslParams.sSLSocketFactory, sslParams.trustManager);
         }
         return this;
     }
@@ -99,8 +100,7 @@ public class OkHttpManger {
 
     public OkHttpClient getOkHttpClient() {
         if (okHttpClient == null) {
-            builder = new BuilderUtils().getBuilder(timeout);
-            this.builder.eventListener(new EventListener() {
+            getBuilder().eventListener(new EventListener() {
                 @Override
                 public void callStart(Call call) {
                     if (callBackHashMap.containsKey(call)) {
@@ -108,24 +108,7 @@ public class OkHttpManger {
                     }
                 }
             });
-            okHttpClient = builder.build();
-        }
-        return okHttpClient;
-    }
-
-    public OkHttpClient getOkHttpClient(Interceptor interceptor) {
-        if (okHttpClient == null) {
-            builder = new BuilderUtils().getBuilder(timeout);
-            builder.addNetworkInterceptor(interceptor);
-            this.builder.eventListener(new EventListener() {
-                @Override
-                public void callStart(Call call) {
-                    if (callBackHashMap.containsKey(call)) {
-                        callBackHashMap.get(call).postUIStart(call);
-                    }
-                }
-            });
-            okHttpClient = builder.build();
+            okHttpClient = getBuilder().build();
         }
         return okHttpClient;
     }
@@ -133,11 +116,11 @@ public class OkHttpManger {
     /**
      * 文件下载用的，不能跟其他共享，避免其他错误。
      */
-    private OkHttpClient getOkHttpSingleClient(Interceptor interceptor) {
+    private OkHttpClient getOkHttpDownloadClient(Interceptor interceptor) {
         OkHttpClient okHttpClient;
-        builder = new BuilderUtils().getBuilder(timeout);
+        OkHttpClient.Builder builder = new BuilderUtils().getBuilder(timeout);
         builder.addNetworkInterceptor(interceptor);
-        this.builder.eventListener(new EventListener() {
+        builder.eventListener(new EventListener() {
             @Override
             public void callStart(Call call) {
                 if (callBackHashMap.containsKey(call)) {
@@ -147,6 +130,13 @@ public class OkHttpManger {
         });
         okHttpClient = builder.build();
         return okHttpClient;
+    }
+
+    private OkHttpClient.Builder getBuilder() {
+        if (builder == null) {
+            builder = new BuilderUtils().getBuilder(timeout);
+        }
+        return builder;
     }
 
     /**
@@ -242,24 +232,17 @@ public class OkHttpManger {
     }
 
     /**
-     * get异步请求不传参数
-     * 通过response.body().string()获取返回的字符串
-     * 异步返回值不能更新UI，要开启新线程
+     * get异步请求
      *
-     * @param url
      * @return
      */
-    public void get(String url, @MethodMeta.TYPE int requestType, Map<String, String> headers, long timeout, final BaseDataCallBack baseDataCallBack, boolean syn) {
-        get(url, requestType, headers, timeout, null, baseDataCallBack, syn);
-    }
-
-    public void get(String url, @MethodMeta.TYPE int requestType, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        final Request request = buildRequest(url, requestType, null, headers);
+    public void get(final RequestParams requestParams) {
+        final Request request = buildRequest(requestParams.getUrl(), requestParams.getRequestType(), null, requestParams.getHeaders());
         Call call = getOkHttpClient().newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
+        if (requestParams.getTimeout() > 0) {
+            call.timeout().timeout(requestParams.getTimeout(), TimeUnit.MILLISECONDS);
         }
-        callBackHashMap.put(call, baseDataCallBack);
+        callBackHashMap.put(call, requestParams.getCallback());
         try {
             // 请求加入调度
             call.enqueue(new Callback() {
@@ -267,13 +250,13 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    postUIFail(baseDataCallBack, e, syn);
+                    postUIFail(requestParams.getCallback(), e, requestParams.isSyn());
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     callBackHashMap.remove(call);
-                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
+                    postUISuccess(requestParams.getCallback(), requestParams.getDealMethod(), response, requestParams.isSyn());
                 }
             });
         } catch (Exception e) {
@@ -283,38 +266,47 @@ public class OkHttpManger {
 
 
     /**
-     * post异步请求map传参
-     * 通过response.body().string()获取返回的字符串
-     * 异步返回值不能更新UI，要开启新线程
+     * post异步请求
      *
-     * @param url
      * @return
      */
-    public void post(String url, @MethodMeta.TYPE int requestType, Map<String, String> params, Map<String, String> headers, long timeout, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        post(url, requestType, params, headers, timeout, null, baseDataCallBack, syn);
-    }
-
-    public void post(String url, @MethodMeta.TYPE int requestType, Map<String, String> params, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack baseDataCallBack, final boolean syn) {
+    public void post(final RequestParams requestParams) {
+        String realURL = UrlUtils.urlJoint(requestParams.getUrl(), null);
         RequestBody requestBody;
-        if (params == null) {
-            params = new HashMap<>();
+        Request request;
+        if (requestParams.getMapField() != null && !requestParams.getMapField().isEmpty()) {
+            //表单提交
+            FormBody.Builder builder = new FormBody.Builder();
+            /**
+             * 在这对添加的参数进行遍历
+             */
+            addMapParmsToFromBody(requestParams.getMapField(), builder);
+            requestBody = builder.build();
+            request = buildRequest(realURL, requestParams.getRequestType(), requestBody, requestParams.getHeaders());
+        } else if (requestParams.getJson() != null && !requestParams.getJson().equals("")) {
+            //json提交
+            request = buildJsonPostRequest(realURL, requestParams.getRequestType(), requestParams.getJson(), requestParams.getHeaders());
+        } else if (requestParams.getParams() != null && !requestParams.getParams().isEmpty()) {
+            //json提交
+            JSONObject jb = new JSONObject();
+            for (Map.Entry<String, Object> entry : requestParams.getParams().entrySet()) {
+                try {
+                    jb.put(entry.getKey(), entry.getValue());
+                } catch (JSONException e) {
+                }
+            }
+            String json = jb.toString();
+            request = buildJsonPostRequest(realURL, requestParams.getRequestType(), json, requestParams.getHeaders());
+        } else {
+            request = buildJsonPostRequest(realURL, requestParams.getRequestType(), "", requestParams.getHeaders());
         }
-        FormBody.Builder builder = new FormBody.Builder();
-        /**
-         * 在这对添加的参数进行遍历
-         */
-        addMapParmsToFromBody(params, builder);
 
-        requestBody = builder.build();
-        String realURL = UrlUtils.urlJoint(url, null);
-        //结果返回
-        final Request request = buildRequest(realURL, requestType, requestBody, headers);
 
         Call call = getOkHttpClient().newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
+        if (requestParams.getTimeout() > 0) {
+            call.timeout().timeout(requestParams.getTimeout(), TimeUnit.MILLISECONDS);
         }
-        callBackHashMap.put(call, baseDataCallBack);
+        callBackHashMap.put(call, requestParams.getCallback());
         try {
             // 请求加入调度
             call.enqueue(new Callback() {
@@ -322,98 +314,13 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    postUIFail(baseDataCallBack, e, syn);
+                    postUIFail(requestParams.getCallback(), e, requestParams.isSyn());
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     callBackHashMap.remove(call);
-                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-                }
-            });
-        } catch (Exception e) {
-
-        }
-    }
-
-    /**
-     * post异步请求json传参
-     * 通过response.body().string()获取返回的字符串
-     * 异步返回值不能更新UI，要开启新线程
-     *
-     * @param url
-     * @return
-     */
-    public void post(String url, @MethodMeta.TYPE int requestType, String json, Map<String, String> headers, long timeout, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        post(url, requestType, json, headers, timeout, null, baseDataCallBack, syn);
-    }
-
-    public void post(String url, @MethodMeta.TYPE int requestType, String json, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        final String realURL = UrlUtils.urlJoint(url, null);
-        final Request request = buildJsonPostRequest(realURL, requestType, json, headers);
-        Call call = getOkHttpClient().newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
-        }
-        callBackHashMap.put(call, baseDataCallBack);
-        try {
-            // 请求加入调度
-            call.enqueue(new Callback() {
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    callBackHashMap.remove(call);
-                    postUIFail(baseDataCallBack, e, syn);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) {
-                    callBackHashMap.remove(call);
-                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-                }
-            });
-
-        } catch (Exception e) {
-
-        }
-    }
-
-
-    /**
-     * post异步请求RequestBody传参
-     * 通过response.body().string()获取返回的字符串
-     * 异步返回值不能更新UI，要开启新线程
-     *
-     * @param url
-     * @return
-     */
-    public void post(String url, @MethodMeta.TYPE int requestType, RequestBody requestBody, Map<String, String> headers, long timeout, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        post(url, requestType, requestBody, headers, timeout, null, baseDataCallBack, syn);
-    }
-
-    public void post(String url, @MethodMeta.TYPE int requestType, RequestBody requestBody, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack baseDataCallBack, final boolean syn) {
-        String realURL = UrlUtils.urlJoint(url, null);
-        //结果返回
-        final Request request = buildRequest(realURL, requestType, requestBody, headers);
-        Call call = getOkHttpClient().newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
-        }
-        callBackHashMap.put(call, baseDataCallBack);
-        try {
-            // 请求加入调度
-            call.enqueue(new Callback() {
-
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    callBackHashMap.remove(call);
-                    postUIFail(baseDataCallBack, e, syn);
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) {
-                    callBackHashMap.remove(call);
-                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
+                    postUISuccess(requestParams.getCallback(), requestParams.getDealMethod(), response, requestParams.isSyn());
                 }
             });
         } catch (Exception e) {
@@ -425,35 +332,29 @@ public class OkHttpManger {
      * 基于http的文件上传（传入文件数组和key）混合参数和文件请求
      * 通过addFormDataPart可以添加多个上传的文件
      *
-     * @param url
-     * @param filePath         上传的文件
-     * @param fileKeys         上传的文件key集合
-     * @param fileNames        文件名字，如果没有值，则取路径名字
-     * @param params
-     * @param headers
-     * @param progressCallBack 自定义回调接口
-     *                         将file作为请求体传入到服务端.
-     * @param syn
+     * @param filePath  上传的文件
+     * @param fileKeys  上传的文件key集合
+     * @param fileNames 文件名字，如果没有值，则取路径名字
      */
-    public void upLoadFile(String url, final String[] filePath, String[] fileKeys, String[] fileNames, Map<String, String> params, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack progressCallBack, final boolean syn) {
+    public void upLoadFile(final RequestParams requestParams, final String[] filePath, String[] fileKeys, String[] fileNames) {
         if (filePath == null || filePath.length == 0) {
-            progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件不能为空", null), syn);
+            requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件不能为空", null), requestParams.isSyn());
             return;
         }
         if (fileKeys == null || fileKeys.length == 0) {
-            progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件key不能为空", null), syn);
+            requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件key不能为空", null), requestParams.isSyn());
             return;
         }
         if (filePath.length != fileKeys.length) {
-            progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "文件路径跟文件key个数不相等", null), syn);
+            requestParams.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "文件路径跟文件key个数不相等", null), requestParams.isSyn());
             return;
         }
-        if (params == null) {
-            params = new HashMap<>();
+        if (requestParams.getMapField() == null) {
+            requestParams.setMapField(new HashMap<String, String>());
         }
-        final String realURL = UrlUtils.urlJoint(url, null);
+        final String realURL = UrlUtils.urlJoint(requestParams.getUrl(), null);
         FormBody.Builder builder = new FormBody.Builder();
-        addMapParmsToFromBody(params, builder);
+        addMapParmsToFromBody(requestParams.getMapField(), builder);
         RequestBody requestBody = builder.build();
         MultipartBody.Builder multipartBody = new MultipartBody.Builder();
         multipartBody.setType(MultipartBody.FORM)
@@ -486,8 +387,8 @@ public class OkHttpManger {
                         for (double mProcess : totalProgress) {
                             process += mProcess;
                         }
-                        if (progressCallBack instanceof ProgressCallBack) {
-                            ((ProgressCallBack) progressCallBack).postUILoading(Float.valueOf(df.format(process / files.length)), syn);
+                        if (requestParams.getCallback() instanceof ProgressCallBack) {
+                            ((ProgressCallBack) requestParams.getCallback()).postUILoading(Float.valueOf(df.format(process / files.length)), requestParams.isSyn());
                         }
                     }
 
@@ -508,52 +409,46 @@ public class OkHttpManger {
             }
 
         }
-        final Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_POST, multipartBody.build(), headers);
+        final Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_POST, multipartBody.build(), requestParams.getHeaders());
         Call call = getOkHttpClient().newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
+        if (requestParams.getTimeout() > 0) {
+            call.timeout().timeout(requestParams.getTimeout(), TimeUnit.MILLISECONDS);
         }
-        callBackHashMap.put(call, progressCallBack);
-        try {
-            // 请求加入调度
-            call.enqueue(new Callback() {
+        callBackHashMap.put(call, requestParams.getCallback());
+        // 请求加入调度
+        call.enqueue(new Callback() {
 
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    callBackHashMap.remove(call);
-                    postUIFail(progressCallBack, e, syn);
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callBackHashMap.remove(call);
+                postUIFail(requestParams.getCallback(), e, requestParams.isSyn());
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) {
+                callBackHashMap.remove(call);
+                String json;
+                try {
+                    json = response.body().string();
+                    postLoadSuccess(requestParams.getCallback(), requestParams.getDealMethod(), response, json, requestParams.isSyn());
+                } catch (Exception e) {
+                    requestParams.getCallback().postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), requestParams.isSyn());
+                    return;
                 }
-
-                @Override
-                public void onResponse(Call call, Response response) {
-                    callBackHashMap.remove(call);
-                    String json;
-                    try {
-                        json = response.body().string();
-                        postLoadSuccess(progressCallBack, httpDealMethod, response, json, syn);
-                    } catch (Exception e) {
-                        progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), syn);
-                        return;
-                    }
-                }
-            });
-        } catch (Exception e) {
-            postUIFail(progressCallBack, e, syn);
-
-        }
+            }
+        });
     }
 
     /**
      * 文件下载
      *
-     * @param url              path路径
-     * @param destFileDir      本地存储的文件夹路径
-     * @param progressCallBack 自定义回调接口
+     * @param destFileDir 本地存储的文件夹路径
+     * @param fileName    文件名字
      */
-    public void downLoadFile(final String url, final String destFileDir, String fileName, Map<String, String> headers, long timeout, final HttpDealMethod httpDealMethod, final BaseDataCallBack progressCallBack, final boolean syn) {
-        final String realURL = UrlUtils.urlJoint(url, null);
+    public void downLoadFile(final RequestParams requestParamsl, final String destFileDir, String fileName) {
+        final String realURL = UrlUtils.urlJoint(requestParamsl.getUrl(), null);
         if (destFileDir == null || destFileDir.equals("")) {
-            progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件路径不存在", null), syn);
+            requestParamsl.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件路径不存在", null), requestParamsl.isSyn());
             return;
         }
         File folder = new File(destFileDir);
@@ -564,37 +459,34 @@ public class OkHttpManger {
                     throw new FileNotFoundException("java.io.FileNotFoundException: " + folder + ": open failed: ENOENT (No such file or directory)");
                 }
             } catch (Exception e) {
-                progressCallBack.postUIFail(new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件创建失败", e.getMessage()), syn);
+                requestParamsl.getCallback().postUIFail(new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件创建失败", e.getMessage()), requestParamsl.isSyn());
                 return;
             }
         }
-        final File file = new File(folder.getPath(), (fileName == null || fileName.equals("")) ? getFileName(url) : fileName);
+        final File file = new File(folder.getPath(), (fileName == null || fileName.equals("")) ? getFileName(requestParamsl.getUrl()) : fileName);
         final long startsPoint = file.length() > 0 ? file.length() - 1 : file.length();
-        if (headers == null) {
-            headers = new HashMap<>();
-        }
-        headers.put("RANGE", "bytes=" + startsPoint + "-");//断点续传
-        Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_DOWNLOAD, null, headers);
+        requestParamsl.addHeader("RANGE", "bytes=" + startsPoint + "-");//断点续传
+        Request request = buildRequest(realURL, MethodMeta.TYPE.TYPE_DOWNLOAD, null, requestParamsl.getHeaders());
         // 重写ResponseBody监听请求
         Interceptor interceptor = new Interceptor() {
             @Override
             public Response intercept(Chain chain) throws IOException {
                 Response originalResponse = chain.proceed(chain.request());
                 return originalResponse.newBuilder()
-                        .body(new DownloadResponseBody(originalResponse, startsPoint, progressCallBack, syn))
+                        .body(new DownloadResponseBody(originalResponse, startsPoint, requestParamsl.getCallback(), requestParamsl.isSyn()))
                         .build();
             }
         };
-        Call call = getOkHttpSingleClient(interceptor).newCall(request);
-        if (timeout > 0) {
-            call.timeout().timeout(timeout, TimeUnit.MILLISECONDS);
+        Call call = getOkHttpDownloadClient(interceptor).newCall(request);
+        if (requestParamsl.getTimeout() > 0) {
+            call.timeout().timeout(requestParamsl.getTimeout(), TimeUnit.MILLISECONDS);
         }
-        callBackHashMap.put(call, progressCallBack);
+        callBackHashMap.put(call, requestParamsl.getCallback());
         call.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 callBackHashMap.remove(call);
-                postUIFail(progressCallBack, e, syn);
+                postUIFail(requestParamsl.getCallback(), e, requestParamsl.isSyn());
             }
 
             @Override
@@ -604,7 +496,7 @@ public class OkHttpManger {
                 long length = responseBody.contentLength();
                 if (length == 0 || length == 1) {
                     // 说明文件已经下载完，直接跳转安装就好
-                    postLoadSuccess(progressCallBack, httpDealMethod, response, String.valueOf(file.getAbsoluteFile()), syn);
+                    postLoadSuccess(requestParamsl.getCallback(), requestParamsl.getDealMethod(), response, String.valueOf(file.getAbsoluteFile()), requestParamsl.isSyn());
                     return;
                 }
                 if (responseBody instanceof DownloadResponseBody) {
@@ -629,9 +521,9 @@ public class OkHttpManger {
                     }
 
                     // 下载完成
-                    postLoadSuccess(progressCallBack, httpDealMethod, response, String.valueOf(file.getAbsoluteFile()), syn);
+                    postLoadSuccess(requestParamsl.getCallback(), requestParamsl.getDealMethod(), response, String.valueOf(file.getAbsoluteFile()), requestParamsl.isSyn());
                 } catch (Exception e) {
-                    postUIFail(progressCallBack, e, syn);
+                    postUIFail(requestParamsl.getCallback(), e, requestParamsl.isSyn());
                 } finally {
                     try {
                         if (is != null) {

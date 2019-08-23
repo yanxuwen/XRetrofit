@@ -3,10 +3,12 @@ package com.http.compiler;
 import com.http.compiler.bean.CallBack;
 import com.http.compiler.bean.DealParams;
 
+import java.io.Serializable;
+
 /**
  *  统一处理方法跟回调
  */
-public interface HttpDealMethod {
+public interface HttpDealMethod{
     /**
      * 处理请求
      * 如果处理后，各种字段都有，则会优先表单请求，然后再者json请求

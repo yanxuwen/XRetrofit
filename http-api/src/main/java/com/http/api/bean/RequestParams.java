@@ -1,66 +1,16 @@
 package com.http.api.bean;
 
 import com.http.api.BaseDataCallBack;
-import com.http.compiler.HttpDealMethod;
-import com.http.compiler.bean.MethodMeta;
+import com.http.compiler.bean.DealParams;
 
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * 自动生成用的请求参数
  */
-public class RequestParams {
-    private String url;
-    @MethodMeta.TYPE
-    private int requestType;
-    private long timeout;
-    private Map<String, String> mapField;
-    private String json;
-    private Map<String, Object> params;
-    private Map<String, String> headers;
-    private HttpDealMethod dealMethod;
+public class RequestParams extends DealParams implements Cloneable {
+
     private BaseDataCallBack callback;
-    private boolean syn;
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public int getRequestType() {
-        return requestType;
-    }
-
-    public void setRequestType(int requestType) {
-        this.requestType = requestType;
-    }
-
-    public Map<String, Object> getParams() {
-        return params;
-    }
-
-    public void setParams(Map<String, Object> params) {
-        this.params = params;
-    }
-
-    public Map<String, String> getHeaders() {
-        return headers;
-    }
-
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
-    }
-
-    public HttpDealMethod getDealMethod() {
-        return dealMethod;
-    }
-
-    public void setDealMethod(HttpDealMethod dealMethod) {
-        this.dealMethod = dealMethod;
-    }
 
     public BaseDataCallBack getCallback() {
         return callback;
@@ -70,35 +20,25 @@ public class RequestParams {
         this.callback = callback;
     }
 
-    public boolean isSyn() {
-        return syn;
-    }
 
-    public void setSyn(boolean syn) {
-        this.syn = syn;
-    }
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
-    }
-
-    public Map<String, String> getMapField() {
-        return mapField;
-    }
-
-    public void setMapField(Map<String, String> mapField) {
-        this.mapField = mapField;
-    }
-
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
+    @Override
+    public Object clone() {
+        RequestParams bean = null;
+        try {
+            bean = (RequestParams)super.clone();
+//          经测试，ma无法拷贝，所以要在拷贝一次
+            if (bean.getHeaders() instanceof HashMap){
+                bean.setHeaders((HashMap<String, String>) ((HashMap) bean.getHeaders()).clone());
+            }
+            if (bean.getMapField() instanceof HashMap){
+                bean.setMapField((HashMap<String, String>) ((HashMap) bean.getMapField()).clone());
+            }
+            if (bean.getParams() instanceof HashMap){
+                bean.setParams((HashMap<String, Object>) ((HashMap) bean.getParams()).clone());
+            }
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return bean;
     }
 }

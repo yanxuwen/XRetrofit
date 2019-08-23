@@ -3,7 +3,7 @@
 // (powered by Fernflower decompiler)
 //
 
-package com.http.compiler.annotation;
+package com.http.compiler.annotation.param;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -14,7 +14,8 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.PARAMETER})
-public @interface Header {
+public @interface Path {
     String value();
+
     boolean encoded() default false;
 }

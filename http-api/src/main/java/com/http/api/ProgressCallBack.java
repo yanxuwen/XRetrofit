@@ -19,7 +19,7 @@ public abstract class ProgressCallBack<T> extends BaseDataCallBack<T>{
     /**
      * 下载中-回调到UI线程
      */
-    protected final void postUILoading(final float progress , boolean syn) {
+    public final void postUILoading(final float progress , boolean syn) {
         if (syn){
             onLoadProgress(progress);
         } else {

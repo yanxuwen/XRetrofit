@@ -1,23 +1,24 @@
 package com.http.compiler;
 
-import com.http.compiler.annotation.Body;
-import com.http.compiler.annotation.DELETE;
-import com.http.compiler.annotation.DOWNLOAD;
-import com.http.compiler.annotation.Deal;
-import com.http.compiler.annotation.DealAll;
-import com.http.compiler.annotation.DealClass;
-import com.http.compiler.annotation.Field;
-import com.http.compiler.annotation.GET;
-import com.http.compiler.annotation.Header;
-import com.http.compiler.annotation.Headers;
-import com.http.compiler.annotation.NetServiceClass;
-import com.http.compiler.annotation.POST;
-import com.http.compiler.annotation.PUT;
-import com.http.compiler.annotation.Param;
-import com.http.compiler.annotation.Path;
-import com.http.compiler.annotation.Query;
-import com.http.compiler.annotation.TimeOut;
-import com.http.compiler.annotation.UPLOAD;
+import com.http.compiler.annotation.param.Body;
+import com.http.compiler.annotation.method.DELETE;
+import com.http.compiler.annotation.method.DOWNLOAD;
+import com.http.compiler.annotation.method.Deal;
+import com.http.compiler.annotation.service.DealAll;
+import com.http.compiler.annotation.service.DealClass;
+import com.http.compiler.annotation.param.Field;
+import com.http.compiler.annotation.method.GET;
+import com.http.compiler.annotation.param.Header;
+import com.http.compiler.annotation.method.Headers;
+import com.http.compiler.annotation.service.NetServiceClass;
+import com.http.compiler.annotation.method.POST;
+import com.http.compiler.annotation.method.PUT;
+import com.http.compiler.annotation.param.Param;
+import com.http.compiler.annotation.param.Path;
+import com.http.compiler.annotation.param.Query;
+import com.http.compiler.annotation.method.Retry;
+import com.http.compiler.annotation.method.TimeOut;
+import com.http.compiler.annotation.method.UPLOAD;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
@@ -65,7 +66,6 @@ public class ElementUtils {
                     meta.setPackageName(tm.toString());
                     meta.setSampleName(element.getSimpleName().toString());
                     if (dealClass != null) {
-                        Class<HttpDealMethod> ds = HttpDealMethod.class;
                         try {
                             meta.setDealclassName(dealClass.value().getName());
                         } catch (MirroredTypeException mte) {
@@ -142,6 +142,11 @@ public class ElementUtils {
                 TimeOut timeOut = (TimeOut) element.getAnnotation(TimeOut.class);
                 if (timeOut != null) {
                     meta.setTimeout(timeOut.value());
+                }
+
+                Retry retry = (Retry) element.getAnnotation(Retry.class);
+                if (retry != null) {
+                    meta.setRetry(retry.value());
                 }
 
                 meta.setRequestType(requestType);

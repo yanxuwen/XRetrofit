@@ -1,38 +1,25 @@
 package com.http.compiler.bean;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import com.http.compiler.HttpDealMethod;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class DealParams implements Serializable {
+/**
+ * 自动生成用的请求参数
+ */
+public class DealParams {
+    private String url;
     @MethodMeta.TYPE
     private int requestType = MethodMeta.TYPE.TYPE_GET;
-    private String url;
-    private String json;
     private long timeout;
+    private String json;
+    private boolean syn;
+    private int retry;
+    private HttpDealMethod dealMethod;
     private Map<String, String> mapField;
-    private Map<String, String> headers;
     private Map<String, Object> params;
-
-    public String getJson() {
-        return json;
-    }
-
-    public void setJson(String json) {
-        this.json = json;
-    }
-
-    public Map<String, String> getMapField() {
-        return mapField == null ?  new HashMap<>() : mapField;
-    }
-
-    public void setMapField(Map<String, String> mapField) {
-        this.mapField = mapField;
-    }
+    private Map<String, String> headers;
 
     public String getUrl() {
         return url;
@@ -46,46 +33,32 @@ public class DealParams implements Serializable {
         return requestType;
     }
 
-    /**暂时不开放可更改请求类型*/
-    private void setRequestType(int requestType) {
+    public void setRequestType(int requestType) {
         this.requestType = requestType;
     }
 
-    public Map<String, Object> getParams() {
-        return params == null ?  new HashMap<>() : params;
+    public HttpDealMethod getDealMethod() {
+        return dealMethod;
     }
 
-    public void setParams(Map<String, Object> params) {
-        this.params = params;
+    public void setDealMethod(HttpDealMethod dealMethod) {
+        this.dealMethod = dealMethod;
     }
 
-    public Map<String, String> getHeaders() {
-        return headers == null ?  new HashMap<>() : headers;
+    public boolean isSyn() {
+        return syn;
     }
 
-    public void setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public void setSyn(boolean syn) {
+        this.syn = syn;
     }
-    
-    public Object deepClone() {
-        ObjectInputStream oi = null;
-        Object o = null;
-        try {
-            // 将对象写到流里
-            ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            ObjectOutputStream oo = new ObjectOutputStream(bo);
-            oo.writeObject(this);
-            // 从流里读出来
-            ByteArrayInputStream bi = new ByteArrayInputStream(bo.toByteArray());
-            oi = new ObjectInputStream(bi);
-            o = oi.readObject();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        if (o == null){
-            o = new DealParams();
-        }
-        return o;
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
     public long getTimeout() {
@@ -94,5 +67,52 @@ public class DealParams implements Serializable {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
+    }
+
+
+    public Map<String, Object> getParams() {
+        return params = params == null ? new HashMap<>() : params;
+    }
+
+    public void setParams(Map<String, Object> params) {
+        this.params = params;
+    }
+
+
+    public Map<String, String> getHeaders() {
+        return headers = headers == null ? new HashMap<>() : headers;
+    }
+
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public Map<String, String> getMapField() {
+        return mapField = mapField == null ? new HashMap<>() : mapField;
+    }
+
+    public void setMapField(Map<String, String> mapField) {
+        this.mapField = mapField;
+    }
+
+    public void addParams(String key, String value) {
+        getParams().put(key, value);
+    }
+
+    public void addHeader(String key, String value) {
+        getHeaders().put(key, value);
+    }
+
+    public void addField(String key, String value) {
+        getMapField().put(key, value);
     }
 }

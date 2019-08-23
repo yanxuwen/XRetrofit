@@ -16,6 +16,7 @@ public class MethodMeta {
     private String name;
     private boolean deal;//是否特殊处理
     private long timeout;//超时时间
+    private int retry; //重试次数
     private TypeMirror returnType;
     /**
      * 请求类型
@@ -24,6 +25,14 @@ public class MethodMeta {
     private TypeMirror result;
     private Map<String, String> headers;
     private List<ParamMeta> params;
+
+    public int getRetry() {
+        return retry;
+    }
+
+    public void setRetry(int retry) {
+        this.retry = retry;
+    }
 
     public @interface TYPE {
         public int TYPE_GET = 1;

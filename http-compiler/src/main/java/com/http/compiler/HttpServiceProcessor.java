@@ -1,11 +1,10 @@
 package com.http.compiler;
 
-import com.http.compiler.annotation.NetServiceClass;
+import com.http.compiler.annotation.service.NetServiceClass;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Iterator;
@@ -24,7 +23,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 
 public class HttpServiceProcessor extends AbstractProcessor {
@@ -693,6 +691,7 @@ public class HttpServiceProcessor extends AbstractProcessor {
         pw.format("        requestParams.setCallback(%s);\n", callback);
         pw.format("        requestParams.setSyn(%s);\n", syn);
         pw.format("        requestParams.setTimeout(%s);\n", methodMeta.getTimeout());
+        pw.format("        requestParams.setRetry(%s);\n", methodMeta.getRetry());
         pw.format("        %s(%s);\n", request, "requestParams");
     }
 
