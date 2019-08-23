@@ -1,7 +1,10 @@
 package com.http.api;
+
 import android.os.Handler;
 import android.os.Looper;
+
 import java.lang.reflect.Type;
+
 import okhttp3.Call;
 
 
@@ -27,25 +30,36 @@ public abstract class BaseDataCallBack<T> {
     }
 
     public abstract void onHttpSuccess(T result);
+
     public abstract void onHttpFail(NetError netError);
-    public void onHttpStart(final Call call){}
+
+    public void onHttpStart(final Call call) {
+    }
+
+    /**
+     * @return 是否切换到UI线程，默认是UI线程
+     */
+    public boolean isUI() {
+        return true;
+    }
+
     /**
      * 成功-回调到UI线程
      *
      * @param t
      */
-    public final void postUISuccess(final T t,boolean syn) {
-        if (!isCallBack){
+    public final void postUISuccess(final T t, boolean syn) {
+        if (!isCallBack) {
             return;
         }
-        if (syn){
+        if (syn || !isUI()) {
             onHttpSuccess(t);
         } else {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        if (!isCallBack){
+                        if (!isCallBack) {
                             return;
                         }
                         onHttpSuccess(t);
@@ -60,18 +74,18 @@ public abstract class BaseDataCallBack<T> {
     /**
      * 失败-回调到UI线程
      */
-    public final void postUIFail(final NetError netError,boolean syn) {
-        if (!isCallBack){
+    public final void postUIFail(final NetError netError, boolean syn) {
+        if (!isCallBack) {
             return;
         }
-        if (syn){
+        if (syn || !isUI()) {
             onHttpFail(netError);
         } else {
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     try {
-                        if (!isCallBack){
+                        if (!isCallBack) {
                             return;
                         }
                         onHttpFail(netError);
@@ -88,19 +102,26 @@ public abstract class BaseDataCallBack<T> {
      * 开始-回调到UI线程
      */
     public void postUIStart(final Call call) {
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    if (!isCallBack){
-                        return;
+        if (!isCallBack) {
+            return;
+        }
+        if (!isUI()) {
+            onHttpStart(call);
+        } else {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (!isCallBack) {
+                            return;
+                        }
+                        onHttpStart(call);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
-                    onHttpStart(call);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
-            }
-        });
+            });
+        }
     }
 
     public Type getType() {

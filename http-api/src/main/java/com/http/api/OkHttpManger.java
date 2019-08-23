@@ -271,15 +271,9 @@ public class OkHttpManger {
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        callBackHashMap.remove(call);
-                        postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-                    } catch (Exception e) {
-                        postUIFail(baseDataCallBack, e, syn);
-
-                    }
-
+                public void onResponse(Call call, Response response) {
+                    callBackHashMap.remove(call);
+                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
                 }
             });
         } catch (Exception e) {
@@ -332,16 +326,9 @@ public class OkHttpManger {
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        callBackHashMap.remove(call);
-                        postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-
-                    } catch (Exception e) {
-                        postUIFail(baseDataCallBack, e, syn);
-
-                    }
-
+                public void onResponse(Call call, Response response) {
+                    callBackHashMap.remove(call);
+                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
                 }
             });
         } catch (Exception e) {
@@ -380,15 +367,9 @@ public class OkHttpManger {
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        callBackHashMap.remove(call);
-                        postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-                    } catch (Exception e) {
-                        postUIFail(baseDataCallBack, e, syn);
-
-                    }
-
+                public void onResponse(Call call, Response response) {
+                    callBackHashMap.remove(call);
+                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
                 }
             });
 
@@ -430,15 +411,9 @@ public class OkHttpManger {
                 }
 
                 @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    try {
-                        callBackHashMap.remove(call);
-                        postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
-                    } catch (Exception e) {
-                        postUIFail(baseDataCallBack, e, syn);
-
-                    }
-
+                public void onResponse(Call call, Response response) {
+                    callBackHashMap.remove(call);
+                    postUISuccess(baseDataCallBack, httpDealMethod, response, syn);
                 }
             });
         } catch (Exception e) {
@@ -551,14 +526,15 @@ public class OkHttpManger {
 
                 @Override
                 public void onResponse(Call call, Response response) {
+                    callBackHashMap.remove(call);
+                    String json;
                     try {
-                        callBackHashMap.remove(call);
-                        postLoadSuccess(progressCallBack, httpDealMethod, response, response.body().string(), syn);
+                        json = response.body().string();
+                        postLoadSuccess(progressCallBack, httpDealMethod, response, json, syn);
                     } catch (Exception e) {
-                        postUIFail(progressCallBack, e, syn);
-
+                        progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), syn);
+                        return;
                     }
-
                 }
             });
         } catch (Exception e) {
@@ -783,80 +759,79 @@ public class OkHttpManger {
     }
 
     private void postUISuccess(final BaseDataCallBack baseDataCallBack, HttpDealMethod httpDealMethod, Response response, boolean syn) {
+        String json;
         try {
-            String json = response.body().string();
-            if (httpDealMethod != null) {
-                CallBack callBack = httpDealMethod.dealCallBack(response.code(), json);
-                if (callBack != null) {
-                    if (callBack.getReturnCode() != 0) {
-                        baseDataCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), syn);
-                        return;
-                    }
-                    if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
-                        json = callBack.getMsg();
-                    }
-                }
-
-            }
-            if (!String.valueOf(response.code()).startsWith("2")) {
-                baseDataCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, json, null), syn);
-                return;
-            }
-            if (baseDataCallBack != null) {
-                if (baseDataCallBack.getType().equals(String.class)) {
-                    baseDataCallBack.postUISuccess(json, syn);
-                } else if (baseDataCallBack.getType().equals(Object.class)) {
-                    baseDataCallBack.postUISuccess(json, syn);
-                } else {
-                    if (baseDataCallBack.getType() == null) {
-                        baseDataCallBack.postUISuccess(JSONObject.parseObject(json, String.class), syn);
-                    } else {
-                        baseDataCallBack.postUISuccess(JSONObject.parseObject(json, baseDataCallBack.getType()), syn);
-                    }
-                }
-            }
+            json = response.body().string();
         } catch (Exception e) {
             baseDataCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), syn);
+            return;
         }
+        if (httpDealMethod != null) {
+            CallBack callBack = httpDealMethod.dealCallBack(response.code(), json);
+            if (callBack != null) {
+                if (callBack.getReturnCode() != 0) {
+                    baseDataCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), syn);
+                    return;
+                }
+                if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
+                    json = callBack.getMsg();
+                }
+            }
+
+        }
+        if (!String.valueOf(response.code()).startsWith("2")) {
+            baseDataCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, json, null), syn);
+            return;
+        }
+        if (baseDataCallBack != null) {
+            if (baseDataCallBack.getType().equals(String.class)) {
+                baseDataCallBack.postUISuccess(json, syn);
+            } else if (baseDataCallBack.getType().equals(Object.class)) {
+                baseDataCallBack.postUISuccess(json, syn);
+            } else {
+                if (baseDataCallBack.getType() == null) {
+                    baseDataCallBack.postUISuccess(JSONObject.parseObject(json, String.class), syn);
+                } else {
+                    baseDataCallBack.postUISuccess(JSONObject.parseObject(json, baseDataCallBack.getType()), syn);
+                }
+            }
+        }
+
     }
 
     /**
      * 文件上传跟加载
      */
     private void postLoadSuccess(final BaseDataCallBack progressCallBack, HttpDealMethod httpDealMethod, Response response, String str, boolean syn) {
-        try {
-            if (httpDealMethod != null) {
-                CallBack callBack = httpDealMethod.dealCallBack(response.code(), str);
-                if (callBack != null) {
-                    if (callBack.getReturnCode() != 0) {
-                        progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), syn);
-                        return;
-                    }
-                    if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
-                        str = callBack.getMsg();
-                    }
+        if (httpDealMethod != null) {
+            CallBack callBack = httpDealMethod.dealCallBack(response.code(), str);
+            if (callBack != null) {
+                if (callBack.getReturnCode() != 0) {
+                    progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), syn);
+                    return;
                 }
+                if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
+                    str = callBack.getMsg();
+                }
+            }
 
-            }
-            if (!String.valueOf(response.code()).startsWith("2")) {
-                progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, str, null), syn);
-                return;
-            }
-            if (progressCallBack != null) {
-                if (progressCallBack.getType().equals(String.class)) {
-                    progressCallBack.postUISuccess(str, syn);
-                } else if (progressCallBack.getType().equals(Object.class)) {
-                    progressCallBack.postUISuccess(str, syn);
+        }
+        if (!String.valueOf(response.code()).startsWith("2")) {
+            progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, str, null), syn);
+            return;
+        }
+        if (progressCallBack != null) {
+            if (progressCallBack.getType().equals(String.class)) {
+                progressCallBack.postUISuccess(str, syn);
+            } else if (progressCallBack.getType().equals(Object.class)) {
+                progressCallBack.postUISuccess(str, syn);
+            } else {
+                if (progressCallBack.getType() == null) {
+                    progressCallBack.postUISuccess(JSONObject.parseObject(str, String.class), syn);
                 } else {
-                    if (progressCallBack.getType() == null) {
-                        progressCallBack.postUISuccess(JSONObject.parseObject(str, String.class), syn);
-                    } else {
-                        progressCallBack.postUISuccess(JSONObject.parseObject(str, progressCallBack.getType()), syn);
-                    }
+                    progressCallBack.postUISuccess(JSONObject.parseObject(str, progressCallBack.getType()), syn);
                 }
             }
-        } catch (Exception e) {
-            progressCallBack.postUIFail(new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), syn);
         }
     }
 

@@ -33,7 +33,6 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onGet(View view) {
         HttpRequest.getNetService().get(0, 10, "recommend", new DataCallBack<String>(String.class) {
-
             @Override
             public void onHttpStart(final Call call) {
                 super.onHttpStart(call);
