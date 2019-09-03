@@ -3,6 +3,7 @@ package com.yanxuwen.myhttpservice.http;
 import com.http.DataCallBack;
 import com.http.api.ProgressCallBack;
 import com.http.compiler.annotation.method.Retry;
+import com.http.compiler.annotation.method.TimeOut;
 import com.http.compiler.annotation.service.RetryAll;
 import com.http.compiler.annotation.param.Body;
 import com.http.compiler.annotation.method.DELETE;
@@ -112,7 +113,8 @@ public interface NetService {
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
     @Deal
-    @Retry(3)
+    @Retry(3)//重试次数
+    @TimeOut(3000)//超时时间为3s
     void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
 
 }
