@@ -22,8 +22,8 @@ import com.http.compiler.annotation.param.Query;
 import com.http.compiler.annotation.method.UPLOAD;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 
-//@DealAll
-@DealClass(HttpDealMethodImpl.class)
+//@DealAll //打上DealAll标志 所有的接口 请求跟返回经过统一特殊处理。特殊处理将在HttpDealMethodImpl类里面执行
+@DealClass(HttpDealMethodImpl.class) //处理类
 @NetServiceClass("")
 public interface NetService {
     /**
@@ -112,7 +112,7 @@ public interface NetService {
      * 请求跟返回经过统一特殊处理。
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
-    @Deal
+    @Deal //打上Deal标志 请求跟返回经过统一特殊处理。特殊处理将在HttpDealMethodImpl类里面执行
     @Retry(3)//重试次数
     @TimeOut(3000)//超时时间为3s
     void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
