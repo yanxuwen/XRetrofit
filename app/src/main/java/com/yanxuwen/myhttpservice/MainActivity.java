@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
      * get请求
      */
     public void onGet(View view) {
-        HttpRequest.getNetService().get(0, 10, "recommend", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get(0, 10, "recommend", new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpStart(final Call call) {
                 super.onHttpStart(call);
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
      * get请求(URL中带有参数,也支持post)
      */
     public void onGet2(View view) {
-        HttpRequest.getNetService().get("v1", 0, 10, "recommend", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().get("v1", 0, 10, "recommend", new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "onGet2 :" + result);
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
      * 表单提交
      */
     public void postForm(View view) {
-        HttpRequest.getNetService().postForm("10960", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postForm("10960", new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "postForm :" + result);
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
     public void postJson(View view) {
         String mobile = "15060568265";
         String password = "e10adc3949ba59abbe56e057f20f883e";
-        HttpRequest.getNetService().postJson(mobile, password, new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postJson(mobile, password, new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "postJson :" + result);
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 "	\"password\": \"e10adc3949ba59abbe56e057f20f883e\",\r\n" +
                 "	\"mobile\": \"15060568265\"\r\n" +
                 "}";
-        HttpRequest.getNetService().postJson(json, new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postJson(json, new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "postJson :" + result);
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         LoginBuild mLoginBuild = new LoginBuild();
         mLoginBuild.setMobile("15060568265");
         mLoginBuild.setPassword("e10adc3949ba59abbe56e057f20f883e");
-        HttpRequest.getNetService().postJson(mLoginBuild, new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().postJson(mLoginBuild, new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "postJson3 :" + result);
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
      * put 提交
      */
     public void onPut(View view) {
-        HttpRequest.getNetService().put("header", "测试", "signature", "area", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().put("header", "测试", "signature", "area", new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "onPut :" + result);
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
      * delete 提交
      */
     public void onDelete(View view) {
-        HttpRequest.getNetService().delete("header", "123231", new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().delete("header", "123231", new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "onDelete :" + result);
@@ -288,7 +288,7 @@ public class MainActivity extends AppCompatActivity {
         String pageSize = "20";
         String schoolId = "XWQMI77m9Fbv1GWkBba";
         //String.class代表返回类型，可以任何类型，记得要跟json的格式进行匹配。
-        HttpRequest.getNetService().onDeal(reqcode, pageNo, pageSize, schoolId, new DataCallBack<String>(String.class) {
+        HttpRequest.getNetService().onDeal(reqcode, pageNo, pageSize, schoolId, new DataCallBack<String>(String.class,this) {
             @Override
             public void onHttpSuccess(String result) {
                 Log.e("yxw", "onTest :" + result);

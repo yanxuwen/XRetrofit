@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.http.api.Interceptor.DownloadResponseBody;
 import com.http.api.bean.RequestParams;
-import com.http.compiler.HttpDealMethod;
 import com.http.compiler.bean.CallBack;
 import com.http.compiler.bean.MethodMeta;
 
@@ -250,13 +249,13 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    postUIFail(call, e, requestParams);
+                    postUIFail(e, requestParams);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     callBackHashMap.remove(call);
-                    postUISuccess(call, response, requestParams);
+                    postUISuccess(response, requestParams);
                 }
             });
         } catch (Exception e) {
@@ -314,13 +313,13 @@ public class OkHttpManger {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     callBackHashMap.remove(call);
-                    postUIFail(call, e, requestParams);
+                    postUIFail(e, requestParams);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) {
                     callBackHashMap.remove(call);
-                    postUISuccess(call, response, requestParams);
+                    postUISuccess(response, requestParams);
                 }
             });
         } catch (Exception e) {
@@ -338,15 +337,15 @@ public class OkHttpManger {
      */
     public void upLoadFile(final RequestParams requestParams, final String[] filePath, String[] fileKeys, String[] fileNames) {
         if (filePath == null || filePath.length == 0) {
-            requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件不能为空", null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件不能为空", null), requestParams.isSyn());
             return;
         }
         if (fileKeys == null || fileKeys.length == 0) {
-            requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件key不能为空", null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "上传文件key不能为空", null), requestParams.isSyn());
             return;
         }
         if (filePath.length != fileKeys.length) {
-            requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "文件路径跟文件key个数不相等", null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.DATA_EMPTY, "文件路径跟文件key个数不相等", null), requestParams.isSyn());
             return;
         }
         if (requestParams.getMapField() == null) {
@@ -421,7 +420,7 @@ public class OkHttpManger {
             @Override
             public void onFailure(Call call, IOException e) {
                 callBackHashMap.remove(call);
-                postUIFail(call, e, requestParams);
+                postUIFail(e, requestParams);
             }
 
             @Override
@@ -432,7 +431,7 @@ public class OkHttpManger {
                     json = response.body().string();
                     postLoadSuccess(call, response, json, requestParams);
                 } catch (Exception e) {
-                    requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), requestParams.isSyn());
                     return;
                 }
             }
@@ -448,7 +447,7 @@ public class OkHttpManger {
     public void downLoadFile(final RequestParams requestParams, final String destFileDir, String fileName) {
         final String realURL = UrlUtils.urlJoint(requestParams.getUrl(), null);
         if (destFileDir == null || destFileDir.equals("")) {
-            requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件路径不存在", null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件路径不存在", null), requestParams.isSyn());
             return;
         }
         File folder = new File(destFileDir);
@@ -459,7 +458,7 @@ public class OkHttpManger {
                     throw new FileNotFoundException("java.io.FileNotFoundException: " + folder + ": open failed: ENOENT (No such file or directory)");
                 }
             } catch (Exception e) {
-                requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件创建失败", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.FILE_NOT_FOUND, "文件创建失败", e.getMessage()), requestParams.isSyn());
                 return;
             }
         }
@@ -486,7 +485,7 @@ public class OkHttpManger {
             @Override
             public void onFailure(Call call, IOException e) {
                 callBackHashMap.remove(call);
-                postUIFail(call, e, requestParams);
+                postUIFail(e, requestParams);
             }
 
             @Override
@@ -523,7 +522,7 @@ public class OkHttpManger {
                     // 下载完成
                     postLoadSuccess(call, response, String.valueOf(file.getAbsoluteFile()), requestParams);
                 } catch (Exception e) {
-                    postUIFail(call, e, requestParams);
+                    postUIFail(e, requestParams);
                 } finally {
                     try {
                         if (is != null) {
@@ -629,34 +628,34 @@ public class OkHttpManger {
         return contentTypeFor;
     }
 
-    private void postUIFail(Call call, Exception e, RequestParams requestParams) {
+    private void postUIFail(Exception e, RequestParams requestParams) {
         if (requestParams.getCallback() != null) {
             if (e instanceof SocketTimeoutException || (e instanceof InterruptedIOException && e.getMessage().equals("timeout"))) {
                 //InterruptedIOException 该判断只限制4.1.0判断，如果版本有变更，则换别的判断
                 //超时
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.NET_TIMEOUT, "请求超时", e.getMessage()), requestParams.isSyn());
             } else if (e instanceof ConnectException || e instanceof UnknownHostException) {
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "网络异常", e.getMessage()), requestParams.isSyn());
             } else if (e instanceof SocketException) {
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "Socket closed", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.NET_DISCONNECT, "Socket closed", e.getMessage()), requestParams.isSyn());
             } else if (e instanceof FileNotFoundException) {
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.ERROR, "文件找不到", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.ERROR, "文件找不到", e.getMessage()), requestParams.isSyn());
             } else if (e instanceof java.io.IOException && e.getMessage().equals("Canceled")) {
                 //该判断只限制4.1.0判断，如果版本有变更，则换别的判断
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.CANCEL, "取消", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.CANCEL, "取消", e.getMessage()), requestParams.isSyn());
             } else {
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.ERROR, "错误", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.ERROR, "错误", e.getMessage()), requestParams.isSyn());
             }
         }
     }
 
-    private void postUISuccess(Call call, Response response, RequestParams requestParams) {
+    private void postUISuccess(Response response, RequestParams requestParams) {
         String json;
         try {
             json = response.body().string();
         } catch (Exception e) {
             if (requestParams.getCallback() != null) {
-                requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), requestParams.isSyn());
+                requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, "数据错误", e.getMessage()), requestParams.isSyn());
             }
             return;
         }
@@ -666,7 +665,7 @@ public class OkHttpManger {
             if (callBack != null) {
                 //失败
                 if (callBack.getReturnCode() != 0) {
-                    requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), requestParams.isSyn());
                     return;
                 }
                 if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
@@ -677,7 +676,7 @@ public class OkHttpManger {
         }
         //httpcode 不是2开头的都是失败
         if (!String.valueOf(response.code()).startsWith("2")) {
-            requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, json, null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, json, null), requestParams.isSyn());
             return;
         }
         if (requestParams.getCallback() != null) {
@@ -705,7 +704,7 @@ public class OkHttpManger {
             CallBack callBack = requestParams.getDealMethod().dealCallBack(response.code(), str);
             if (callBack != null) {
                 if (callBack.getReturnCode() != 0) {
-                    requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.DATA_ERROR, callBack.getMsg(), null), requestParams.isSyn());
                     return;
                 }
                 if (callBack.getMsg() != null && !callBack.getMsg().equals("")) {
@@ -715,7 +714,7 @@ public class OkHttpManger {
 
         }
         if (!String.valueOf(response.code()).startsWith("2")) {
-            requestParams.getCallback().postUIFail(call, requestParams.getRetry(), new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, str, null), requestParams.isSyn());
+            requestParams.getCallback().postUIFail(requestParams, new NetError(response.code(), NetError.HttpErrorCode.NET_DISCONNECT, str, null), requestParams.isSyn());
             return;
         }
         if (requestParams.getCallback() != null) {

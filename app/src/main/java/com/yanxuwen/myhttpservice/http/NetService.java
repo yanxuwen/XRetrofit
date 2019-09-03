@@ -3,6 +3,7 @@ package com.yanxuwen.myhttpservice.http;
 import com.http.DataCallBack;
 import com.http.api.ProgressCallBack;
 import com.http.compiler.annotation.method.Retry;
+import com.http.compiler.annotation.service.RetryAll;
 import com.http.compiler.annotation.param.Body;
 import com.http.compiler.annotation.method.DELETE;
 import com.http.compiler.annotation.method.DOWNLOAD;
@@ -40,7 +41,6 @@ public interface NetService {
      * 表单提交
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
-    @Retry(3)
     @Deal
     void postForm(@Field("reqcode") String reqcode, DataCallBack callBack);
 
@@ -112,6 +112,7 @@ public interface NetService {
      */
     @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
     @Deal
+    @Retry(3)
     void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
 
 }

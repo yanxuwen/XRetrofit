@@ -19,26 +19,6 @@ public class OkHttpUtils {
         onDeal(requestParams);
     }
 
-    /**
-     * 上传使用
-     */
-    public void requestUpload(String baseUrl, RequestParams requestParams) {
-        if (!requestParams.getUrl().startsWith("http")) {
-            requestParams.setUrl(baseUrl + requestParams.getUrl());
-        }
-        onDealUpload(requestParams);
-    }
-
-    /**
-     * 下载
-     */
-    public void requestDownload(String baseUrl, RequestParams requestParams) {
-        if (!requestParams.getUrl().startsWith("http")) {
-            requestParams.setUrl(baseUrl + requestParams.getUrl());
-        }
-        onDeal(requestParams);
-    }
-
     private void onDeal(RequestParams requestParams) {
         if (requestParams.getDealMethod() != null) {
             RequestParams deal = (RequestParams) requestParams.getDealMethod().dealRequest((RequestParams) requestParams.clone());
@@ -46,6 +26,10 @@ public class OkHttpUtils {
                 requestParams = deal;
             }
         }
+        onRequest(requestParams);
+    }
+
+    protected void onRequest(RequestParams requestParams) {
         switch (requestParams.getRequestType()) {
             case MethodMeta.TYPE.TYPE_GET:
                 OkHttpManger.getInstance().get(requestParams);
@@ -56,43 +40,26 @@ public class OkHttpUtils {
                 OkHttpManger.getInstance().post(requestParams);
                 break;
             case MethodMeta.TYPE.TYPE_DOWNLOAD:
-                String filepath = "";
-                String filename = "";
+                String dl_filepath = "";
+                String dl_filename = "";
                 //filepath
-                Object o_filepath = requestParams.getParams().get("filepath");
-                if (o_filepath instanceof String) {
-                    filepath = (String) o_filepath;
+                Object dl_o_filepath = requestParams.getParams().get("filepath");
+                if (dl_o_filepath instanceof String) {
+                    dl_filepath = (String) dl_o_filepath;
                 }
                 //filename
-                Object o_filename = requestParams.getParams().get("filename");
-                if (o_filepath instanceof String) {
-                    filename = (String) o_filename;
+                Object dl_o_filename = requestParams.getParams().get("filename");
+                if (dl_o_filepath instanceof String) {
+                    dl_filename = (String) dl_o_filename;
                 }
-                OkHttpManger.getInstance().downLoadFile(requestParams, filepath, filename);
+                OkHttpManger.getInstance().downLoadFile(requestParams, dl_filepath, dl_filename);
                 break;
-            default:
-                if (requestParams.getCallback() != null) {
-                    requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
-                }
-                break;
-        }
-
-    }
-
-    private void onDealUpload(RequestParams requestParams) {
-        if (requestParams.getDealMethod() != null) {
-            RequestParams deal = (RequestParams) requestParams.getDealMethod().dealRequest((RequestParams) requestParams.clone());
-            if (deal != null) {
-                requestParams = deal;
-            }
-        }
-        switch (requestParams.getRequestType()) {
             case MethodMeta.TYPE.TYPE_UPLOAD:
                 String[] filepath = null;
                 String[] filekey = null;
                 String[] filename = null;
                 if (requestParams.getParams() == null) {
-                    requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                    requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
                 }
                 //filepath
                 Object o_filepath = requestParams.getParams().get("filepath");
@@ -139,8 +106,11 @@ public class OkHttpUtils {
                 OkHttpManger.getInstance().upLoadFile(requestParams, filepath, filekey, filename);
                 break;
             default:
-                requestParams.getCallback().postUIFail(null, requestParams.getRetry(), new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                if (requestParams.getCallback() != null) {
+                    requestParams.getCallback().postUIFail(requestParams, new NetError(0, NetError.HttpErrorCode.DATA_ERROR, "参数错误", null), requestParams.isSyn());
+                }
                 break;
         }
+
     }
 }

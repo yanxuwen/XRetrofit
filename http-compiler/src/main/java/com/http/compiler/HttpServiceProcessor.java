@@ -218,14 +218,6 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.println("        new OkHttpUtils().request(baseUrl,requestParams);");
                 pw.println("    }");
 
-                pw.println("\n    private void requestUpload(RequestParams requestParams) {");
-                pw.println("        new OkHttpUtils().requestUpload(baseUrl,requestParams);");
-                pw.println("    }");
-
-                pw.println("\n    private void requestDownload(RequestParams requestParams) {");
-                pw.println("        new OkHttpUtils().requestDownload(baseUrl,requestParams);");
-                pw.println("    }");
-
                 pw.println("\n    private HttpDealMethod getHttpDealMethod(){");
                 pw.println("        try {");
                 pw.println("            if (httpDealMethod == null){");
@@ -669,17 +661,6 @@ public class HttpServiceProcessor extends AbstractProcessor {
             syn = true;
         }
         String request = "request";
-        switch (methodMeta.getRequestType()) {
-            case MethodMeta.TYPE.TYPE_DOWNLOAD:
-                request = "requestDownload";
-                break;
-            case MethodMeta.TYPE.TYPE_UPLOAD:
-                request = "requestUpload";
-                break;
-            default:
-                request = "request";
-                break;
-        }
         pw.println("        RequestParams requestParams = new RequestParams();");
         pw.println("        requestParams.setUrl(url);");
         pw.format("        requestParams.setRequestType(%d);\n", methodMeta.getRequestType());

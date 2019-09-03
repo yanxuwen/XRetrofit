@@ -55,7 +55,6 @@ public class HttpDealMethodImpl implements HttpDealMethod {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return  new CallBack(-1,"请求失败");
-//        return new CallBack(jsonStr);
+        return new CallBack(jsonStr);
     }
 }

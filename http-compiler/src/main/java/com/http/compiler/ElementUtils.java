@@ -19,6 +19,7 @@ import com.http.compiler.annotation.param.Query;
 import com.http.compiler.annotation.method.Retry;
 import com.http.compiler.annotation.method.TimeOut;
 import com.http.compiler.annotation.method.UPLOAD;
+import com.http.compiler.annotation.service.RetryAll;
 import com.http.compiler.bean.MethodMeta;
 import com.http.compiler.bean.ParamMeta;
 import com.http.compiler.bean.ServiceMeta;
@@ -56,6 +57,7 @@ public class ElementUtils {
                 Element element = (Element) var3.next();
                 NetServiceClass service = (NetServiceClass) element.getAnnotation(NetServiceClass.class);
                 DealAll dealAll = (DealAll) element.getAnnotation(DealAll.class);
+                RetryAll retryAll = (RetryAll) element.getAnnotation(RetryAll.class);
                 DealClass dealClass = (DealClass) element.getAnnotation(DealClass.class);
                 if (service != null) {
                     TypeMirror tm = element.asType();
@@ -73,7 +75,7 @@ public class ElementUtils {
                             meta.setDealclassName(value.toString());
                         }
                     }
-                    meta.setMethodMetas(parseMethod(meta, teService.getEnclosedElements(), elementUtils, messager, dealAll != null));
+                    meta.setMethodMetas(parseMethod(meta, teService.getEnclosedElements(), elementUtils, messager, dealAll != null,retryAll));
                     list.add(meta);
                 }
             }
@@ -81,7 +83,7 @@ public class ElementUtils {
         return list;
     }
 
-    public static List<MethodMeta> parseMethod(ServiceMeta serviceMeta, List<? extends Element> routeElements, Elements elementUtils, Messager messager, boolean dealAll) {
+    public static List<MethodMeta> parseMethod(ServiceMeta serviceMeta, List<? extends Element> routeElements, Elements elementUtils, Messager messager, boolean dealAll,RetryAll retryAll) {
         List<MethodMeta> list = new ArrayList();
         if (routeElements != null && !routeElements.isEmpty()) {
             Iterator var3 = routeElements.iterator();
@@ -145,6 +147,9 @@ public class ElementUtils {
                 }
 
                 Retry retry = (Retry) element.getAnnotation(Retry.class);
+                if (retryAll != null){
+                    meta.setRetry(retryAll.value());
+                }
                 if (retry != null) {
                     meta.setRetry(retry.value());
                 }
