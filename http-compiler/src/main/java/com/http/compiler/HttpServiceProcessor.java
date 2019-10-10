@@ -102,10 +102,10 @@ public class HttpServiceProcessor extends AbstractProcessor {
             try {
                 PrintWriter pw = new PrintWriter(w);
                 pw.println("package " + ElementUtils.packageName + ";\n");
-                pw.println("import android.arch.lifecycle.Lifecycle;");
-                pw.println("import android.arch.lifecycle.LifecycleObserver;");
-                pw.println("import android.arch.lifecycle.OnLifecycleEvent;");
-                pw.println("import android.support.v7.app.AppCompatActivity;");
+                pw.println("import androidx.lifecycle.Lifecycle;");
+                pw.println("import androidx.lifecycle.LifecycleObserver;");
+                pw.println("import androidx.lifecycle.OnLifecycleEvent;");
+                pw.println("import androidx.fragment.app.FragmentActivity;");
                 pw.println("import com.http.api.BaseDataCallBack;");
                 pw.println("import okhttp3.Call;\n");
                 pw.println("/**");
@@ -114,15 +114,16 @@ public class HttpServiceProcessor extends AbstractProcessor {
                 pw.println(" * 这个文件是自动生成的，请不要去编辑它");
                 pw.println(" */");
                 pw.println("public abstract class DataCallBack<T> extends BaseDataCallBack<T> {\n");
-                pw.println("     private AppCompatActivity activity;\n");
+                pw.println("     private FragmentActivity activity;\n");
                 pw.println("     public DataCallBack(Class<T> clazz) {\n" +
                         "        super(clazz);\n" +
                         "    }\n");
                 pw.println("     /**\n" +
                         "     * @param clazz\n" +
                         "     * @param activity 传递Activity可监听生命周期，一旦activity销毁则自动取消请求，并且不会回调\n" +
+                        "     * 支持FragmentActivity跟AppCompatActivity ,不支持Activity" +
                         "     */");
-                pw.println("     public DataCallBack(Class<T> clazz, AppCompatActivity activity) {\n" +
+                pw.println("     public DataCallBack(Class<T> clazz, FragmentActivity activity) {\n" +
                         "        super(clazz);\n" +
                         "        this.activity = activity;\n" +
                         "    }\n");

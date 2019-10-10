@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
     defaultConfig {
         applicationId "com.yanxuwen.myhttpservice"
-        minSdkVersion 15
-        targetSdkVersion 28
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -29,12 +30,12 @@ fileTree(dir: 'libs', include: '**/*.aar').each { File file ->
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.android.support:appcompat-v7:28.0.0'
+    api support.app_compat
     // RxJava
-    implementation  'io.reactivex:rxandroid:1.1.0'
-    implementation  'io.reactivex:rxjava:1.1.0'
+    api other.rxandroid
+    api other.rxjava
     //权限
-    implementation 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+    api other.rxpermissions
     implementation project(path: ':http-api')
     annotationProcessor project(':http-compiler')
 }

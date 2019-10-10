@@ -32,9 +32,9 @@ android {
 }
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api 'com.squareup.okhttp3:okhttp:4.1.0'
-    api 'com.alibaba:fastjson:1.2.57'
-    api 'com.yanxuwen:json:1.0.0'
+    api other.okhttp
+    api other.fastjson
+    api other.json
     api project(path: ':http-compiler')
 }
 

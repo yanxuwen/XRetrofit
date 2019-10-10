@@ -3,7 +3,6 @@ package com.yanxuwen.myhttpservice;
 import android.Manifest;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -15,6 +14,7 @@ import com.tbruyelle.rxpermissions.RxPermissions;
 import com.yanxuwen.myhttpservice.bean.LoginBuild;
 import com.yanxuwen.myhttpservice.http.HttpRequest;
 
+import androidx.appcompat.app.AppCompatActivity;
 import okhttp3.Call;
 import rx.functions.Action1;
 
