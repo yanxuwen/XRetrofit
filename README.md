@@ -2,6 +2,10 @@
 
 ##### 1、添加依赖
 ~~~
+//使用的是androidX
+    implementation 'com.yanxuwen:http-api:1.2.5'
+    annotationProcessor 'com.yanxuwen:http-compiler:1.2.5'
+//如果不使用的androidX，添加依赖为
     implementation 'com.yanxuwen:http-api:1.2.3'
     annotationProcessor 'com.yanxuwen:http-compiler:1.2.3'
 ~~~
@@ -137,8 +141,8 @@ public interface NetService {
 这样是不是很方便。
 ~~~
 ***
-### demo [点击下载](https://pan.baidu.com/s/1iQZAA3sSKt3mMeyhGUuTvg)
-### 提取码：7jif 
+### demo [点击下载](https://pan.baidu.com/s/14Vamwy-riN1yLszllpKnqA)
+### 提取码：5t57
 ### 完整版简书 [点击跳转](https://www.jianshu.com/p/96ef31f6c56c)
 ### github  [点击跳转](https://github.com/yanxuwen/okhttp)
 ### 如果你喜欢就去 github 帮我star下,非常感谢o(∩_∩)o~~~
