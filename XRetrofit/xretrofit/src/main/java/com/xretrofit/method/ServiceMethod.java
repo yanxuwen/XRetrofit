@@ -294,7 +294,6 @@ public class ServiceMethod {
         if (!Patterns.WEB_URL.matcher(url).matches() && HttpManager.getInstance().baseUrl != null) {
           url = HttpManager.getInstance().baseUrl + url;
         }
-        Log.e("yxw","url: " + url);
         requestParams.setUrl(url);
     }
 

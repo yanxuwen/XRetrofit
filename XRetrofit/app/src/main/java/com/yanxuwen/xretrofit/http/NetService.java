@@ -32,7 +32,7 @@ public interface NetService {
     /**
      * get请求(URL中带有参数)
      */
-    @GET("https://bxapi.bisinuolan.cn/api/manage-home/v5/home/{version}")
+    @GET("api/manage-home/v5/home/{version}")
     Call<HomeInfoV5> get(@Path("version") String version, @Query("page") int page, @Query("limit") int limit);
 
     /**
