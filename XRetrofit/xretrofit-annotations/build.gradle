@@ -1,0 +1,19 @@
+apply plugin: 'java'
+
+ext {
+    bintrayName = 'xretrofit-annotations'
+    artifact = bintrayName
+    libraryName = 'xretrofit-annotations'
+    libraryDescription = 'this is a  xretrofit-annotations'
+    libraryVersion = main_version
+}
+compileJava {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+}
+
+dependencies {
+}
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'

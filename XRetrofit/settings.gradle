@@ -1,0 +1,2 @@
+include ':xretrofit-annotations'
+include ':app', ':xretrofit', ':xretrofit-compiler'

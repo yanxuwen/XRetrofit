@@ -1,0 +1,52 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion build_versions.target_sdk
+    buildToolsVersion build_versions.build_tools
+    defaultConfig {
+        applicationId "com.yanxuwen.myhttpservice"
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    repositories {
+        flatDir { dirs 'libs' }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+//自动导入libs目录下的aar文件
+fileTree(dir: 'libs', include: '**/*.aar').each { File file ->
+    dependencies.add("implementation", [name: file.name.lastIndexOf('.').with {
+        it != -1 ? file.name[0..<it] : file.name
+    }, ext                                  : 'aar'])
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api support.app_compat
+    // RxJava
+    api other.rxandroid
+    api other.rxjava
+    //自动解绑取代RxLifecycle
+    api other.autoDispose
+    //权限
+    api other.rxpermissions
+
+    api other.fastjson
+
+    implementation project(path: ':xretrofit')
+    annotationProcessor project(':xretrofit-compiler')
+}

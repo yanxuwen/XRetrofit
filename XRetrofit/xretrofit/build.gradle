@@ -1,0 +1,42 @@
+apply plugin: 'com.android.library'
+
+ext {
+    bintrayName = 'xretrofit'
+    artifact = bintrayName
+    libraryName = 'xretrofit api'
+    libraryDescription = 'xretrofit'
+    libraryVersion = main_version
+}
+
+android {
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                includeCompileClasspath true
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            }
+        }
+    }
+}
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api other.okhttp
+    api other.guava
+//    api project(path: ':xretrofit-annotations')
+    api 'com.yanxuwen.xretrofit:xretrofit-annotations:1.0.0'
+}
+
+apply from: '../install.gradle'
+apply from: '../bintray.gradle'
