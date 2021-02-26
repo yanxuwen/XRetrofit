@@ -1,148 +1,205 @@
-#### 支持get、post、put、delete、文件下载断点续传、多图上传等功能。只需要定义方法即可调用接口，不需要任何逻辑。
+#### 介绍
+XRetrofit   是一个极致模仿Retrofit 的风格代码，代码没有Retrofit 复杂，简单易懂。
+####
+ 支持`get`、`post`、`put`、`delete` 请求，这些使用都一样。
+简化文件上传，跟下载 使用`@DOWNLOAD` 跟`@UPLOAD`
+简化` post` 表单请求跟JOSN请求。
+支持转换器，如果需要Gson的转换器，可以去demo那边去复制
+支持适配器，内置跟Retrofit的`Call<String>`，当然了String可以替换任意的类型，跟Retrofit一样
+没有内置`Rxjava的适配器`，如果需要，自己去demo那边复制。
+##### 区别
+`Retrofit`      属于运行时注解,通过动态代理生成一个代码
+`XRetrofit`   属于编译时注解，通过APT生成代码，如果要学习APT，可以操作这篇文章[《带你了解APT》点击传送门](https://www.jianshu.com/p/00dce41e5d00)
 
-##### 1、添加依赖
+##### 依赖,  只支持androidX,没有supper版本
 ~~~
-//使用的是androidX
-    implementation 'com.yanxuwen:http-api:1.2.5'
-    annotationProcessor 'com.yanxuwen:http-compiler:1.2.5'
-//如果不使用的androidX，添加依赖为
-    implementation 'com.yanxuwen:http-api:1.2.3'
-    annotationProcessor 'com.yanxuwen:http-compiler:1.2.3'
+    implementation 'com.yanxuwen.xretrofit:xretrofit:2.0.0'
+    annotationProcessor 'com.yanxuwen.xretrofit:xretrofit-compiler:2.0.0'
 ~~~
-#### 只需要简单的2步骤就能实现请求。
-
-#### 定义接口
+#### 使用方法，跟Retrofit一样，要定义接口，唯一区别在于在类上面要添加注解`@NetServiceClass`
+#### 定义接口，该例子分别写了`Rxjava`  、`Call`  、`同步请求`的使用
 ~~~
-
-//@DealAll 打上DealAll标志 所有的接口 请求跟返回经过统一特殊处理。特殊处理将在HttpDealMethodImpl类里面执行
-@DealClass(HttpDealMethodImpl.class) //处理类
-@NetServiceClass("")
+@NetServiceClass
 public interface NetService {
     /**
-     * get的简单请求
+     * Rxjava  适配器
      */
-    @GET("http://api.sdwhcn.com:5056/v1/temple")
-    void get(@Query("page") int page, @Query("limit") int limit, @Query("recommend") String recommend, DataCallBack callBack);
+    @GET("api/manage-home/v5/home/detail-v2")
+    Observable<HomeInfoV5> get(@Query("page") int page, @Query("limit") int limit);
 
     /**
-     * get请求(URL中带有参数)
+     * 自带Call  适配器
      */
-    @GET("http://api.sdwhcn.com:5056/{version}/temple")
-    void get(@Path("version") String version, @Query("page") int page, @Query("limit") int limit, @Query("recommend") String recommend, DataCallBack callBack);
+    @GET("api/manage-home/v5/home/{version}")
+    Call<HomeInfoV5> get(@Path("version") String version, @Query("page") int page, @Query("limit") int limit);
 
     /**
-     * 表单提交
+     * 同步请求
      */
-    @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
-    @Deal
-    void postForm(@Field("reqcode") String reqcode, DataCallBack callBack);
+    @GET("api/manage-home/v5/home/detail-v2")
+    String get3(@Query("page") int page, @Query("limit") int limit);
+
+}
+~~~
+#### 执行请求，以Call 适配器为例子
+~~~
+   public void onGet2(View view) {
+        Call<HomeInfoV5> call = HttpRequest.getNetService().get("detail-v2", 0, 10);
+        call.enqueue(new MyCallBack<HomeInfoV5>(this) {
+
+            @Override
+            public void success(HomeInfoV5 s) {
+                Log.e("yxw", "onGet:" + s.getMsg());
+            }
+
+            @Override
+            public void fail(String msg) {
+                Log.e("yxw", "onGet:" + msg);
+            }
+
+            @Override
+            public void cancel() {
+                Log.e("yxw", "cancel");
+            }
+        });
+
+    }
+~~~
+#### 执行请求，以Rxjava 适配器为例子
+~~~
 
     /**
-     * json提交
+     * get请求
      */
-    @POST("http://public.api.fashionworldcn.com/api/my/login")
-    void postJson(@Param("mobile") String mobile, @Param("password") String password, DataCallBack callBack);
+    public void onGet(View view) {
+        Observable<HomeInfoV5> observable = HttpRequest.getNetService().get(0, 10);
+        observable.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnDispose(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        Log.e("yxw","取消订阅2");
+                    }
+                })
+                .as(AutoDispose.<HomeInfoV5>autoDisposable(
+                        AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_PAUSE)))//OnDestory时自动解绑
+                .subscribe(new Observer<HomeInfoV5>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        Log.e("yxw", "onGet2 onSubscribe ");
+                    }
 
+                    @Override
+                    public void onNext(@NonNull HomeInfoV5 homeInfoV5) {
+                        Log.e("yxw", "onGet2 onNext " + homeInfoV5.getMsg());
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        Log.e("yxw", "onGet2 fail " + e.getMessage());
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.e("yxw", "onGet2 onComplete ");
+                    }
+                });
+
+    }
+
+    }
+~~~
+#### POST请求如何区分表单跟JOSN，，这里我们抛弃了Retrofit的复杂度
+例子如下：表单请求
+~~~
+    @FORM
+    @POST("https://bx-uat.bisinuolan.cn/api/login/mobile")
+    Call<String> postForm(@Param("mobile") String mobile, @Param("sms_code") String sms_code);
+~~~
+注意2个注解 `@FORM` 跟`@Param`   我们舍弃了Retrofit的 `@Field` 跟`@FormUrlEncoded`  
+ `@FORM` 替换了`@FormUrlEncoded`  来区分是否表单
+ `@Param` 替换了`@Field`    ，
+ `@Param` 有个好处就是：
+1、不管是表单请求还JSON请求，都是可以作为参数来传参
+2、如果用来Json请求的话，他会作为json格式的最外层数据，
+哎这个怎么解释呢。就是如果你用@Param("userId")，那么最终传参是
+~~~
+{
+	"userId": "c053e1a2-7335-4451-9201-e25e805a19f5-1578390821008"
+}
+~~~
+
+ `@Body`    注解，可以这样传
+~~~
     /**
      * json 整串提交
      */
-    @POST("http://public.api.fashionworldcn.com/api/my/login")
-    void postJson(@Body String json, DataCallBack callBack);
+    @POST("api/customer/v1/open/user/level/my")
+    Call<String> postJson2(@Body String json);
 
     /**
      * json 实体类提交
      */
-    @POST("http://public.api.fashionworldcn.com/api/my/login")
-    void postJson(@Body LoginBuild json, DataCallBack callBack);
-
-    /**
-     * put 提交
-     */
-    @PUT("http://api.sdwhcn.com:5056/v1/member")
-    void put(@Header("Authorization") String header, @Query("nickname") String nickname, @Query("signature") String signature, @Query("area") String area, DataCallBack callBack);
-
-    /**
-     * delete 提交
-     */
-    @DELETE("http://api.sdwhcn.com:5056/v1/member_collect_article/{id}")
-    void delete(@Header("Authorization") String header, @Path("id") String id, DataCallBack callBack);
-
-    /**
-     * 文件下载
-     * 【注意】 文件下载的传参比较特殊，@Param 的key是按照服务端的字段来填写的，
-     * 而文件下载不需要，所以@Param 的keykey是固定的，
-     * filepath 代表文件路径，必填
-     * filename 代表文件名称，如果下载没带后缀，可自行加上后缀。
-     */
-    @DOWNLOAD("https://ztjyupdate.ztjy61.com/333897c77ec9a86605006679c7a4b418-ZTJY")
-    void download(@Param("filepath") String filepath, @Param("filename") String filename, ProgressCallBack callBack);
-
-    /**
-     * 多图上传
-     * 【注意】 @Param 的key 跟文件下载一样是固定写法
-     *
-     * @param filepath 代表文件路径，必填
-     * @param filekey  代表文件key，必填
-     * @param filename 代表文件名称 选填
-     * @param callBack
-     */
-    @UPLOAD("http://api.sdwhcn.com:5056/v1/member/avatar")
-    void upload(@Header("Authorization") String header, @Param("filepath") String[] filepath, @Param("filekey") String[] filekey, @Param("filename") String[] filename, ProgressCallBack callBack);
-
-    /**
-     * 单张图片上传
-     * 【注意】 @Param 的key 跟文件下载一样是固定写法
-     *
-     * @param filepath 代表文件路径，必填
-     * @param filekey  代表文件key，必填
-     * @param filename 代表文件名称 选填
-     */
-    @UPLOAD("http://api.sdwhcn.com:5056/v1/member/avatar")
-    void upload(@Header("Authorization") String header, @Param("filepath") String filepath, @Param("filekey") String filekey, @Param("filename") String filename, ProgressCallBack callBack);
-
-    /**
-     * 请求跟返回经过统一特殊处理。
-     */
-    @POST("http://a.szy.com:4480/SignManageServer/sign/appHandle")
-    @Deal //打上Deal标志 请求跟返回经过统一特殊处理。特殊处理将在HttpDealMethodImpl类里面执行
-    @Retry(3)//重试次数
-    @TimeOut(3000)//超时时间为3s
-    void onDeal(@Field("reqcode") String reqcode, @Param("pageNo") String pageNo, @Param("pageSize") String pageSize, @Param("schoolId") String schoolId, DataCallBack callBack);
-
-}
+    @POST("api/customer/v1/open/user/level/my")
+    Call<String> postJson(@Body LoginBuild json);
 ~~~
-#### 执行请求
-~~~
-/**
-     * 表单提交
-     */
-    public void postForm(View view) {
-            HttpRequest.getNetService().postForm("10960",new DataCallBack<String>(String.class,this) {
-            @Override
-            public void onHttpSuccess(String result) {
-                Log.e("yxw","postForm :" + result);
-            }
+ `@Body`  注解跟Retrofit 注解一样，拥有一个功能，那是`转换器`，在添加转换器的时候，我们会通过 `@Body` 注解，判断当前是什么类型，然后通过类型，进行转换你想要的数据。。
+上面的那个实体类提交就是这个原理，判断是Object类型的话，然后将Object类型转换为JSON格式进行提交。
+那么你就可以定义你们公司需要啥类型，做啥处理。反正你们自己想。
 
-            @Override
-            public void onHttpFail(NetError netError) {
-                Log.e("yxw","postForm fail :" + netError.getMessage());
-            }
-        });
-    }
-~~~
-### 提供一个Json解析器
-~~~
- 我们可以看到返回类型支持java实体类跟String类型
-但是有时候直接转换实体类有点麻烦，这里我们提供一个JsonUtils解析
-直接
-  int forum_id = JsonUtils.parse(json,Integer.class,"notice","forum_id");
-我们可以看到直接解析出第二层forum_id里面的数据，直接转换成int类型，
-如果需要转换实体类，直接在第二个参数改成   类名.class  ,然后指定那一层就解析那一层数据转化成实体类。
-这样是不是很方便。
-~~~
 ***
-### demo [点击下载](https://pan.baidu.com/s/14Vamwy-riN1yLszllpKnqA)
-### 提取码：5t57
-### 完整版简书 [点击跳转](https://www.jianshu.com/p/96ef31f6c56c)
-### github  [点击跳转](https://github.com/yanxuwen/okhttp)
+
+#### 配置。这个是跟Retrofit是一样的。。
+
+        OkHttpClient client = new OkHttpClient
+                .Builder()
+                .connectTimeout(15, TimeUnit.SECONDS)//连接超时时间
+                .readTimeout(15, TimeUnit.SECONDS)//读取超时时间
+                .writeTimeout(15, TimeUnit.SECONDS)//写入超时时间
+                .retryOnConnectionFailure(false)//连接不上是否重连,false不重连
+                .hostnameVerifier(new TrustAllHostnameVerifier())//校验名称,这个对象就是信任所有的主机,也就是信任所有https的请求
+                .sslSocketFactory(SslUtils.getSslSocketFactory().sSLSocketFactory, SslUtils.getSslSocketFactory().trustManager)
+                .build();
+        HttpManager.Builder()
+                .baseUrl("https://bxapi.bisinuolan.cn/")
+                .addConverterFactory(GsonConverterFactories.create())//FastJson转换器、可以替换成Gson
+                .addCallAdapterFactory(Rxjava2CallAdapterFactories.create())//Rxjava2适配器，不配置有自带Call适配器
+                .client(client)
+                .build();
+
+#### 出如何初始呢，NetService （类名是随便定义的）接口呢，那就是下面那个
+~~~
+public class HttpRequest {
+
+    private static NetService netService;
+
+    public static NetService getNetService() {
+        try {
+            if (netService == null) {
+                synchronized (HttpRequest.class) {
+                    if (netService == null) {
+                        netService = (NetService) Class.forName(HttpManager.getImplName(NetService.class))
+                                .getConstructor().newInstance();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return netService;
+    }
+}
+
+~~~
+
+然后使用的时候就是直接
+HttpRequest.getNetService().get(0, 10);
+***
+### github  [点击跳转](https://github.com/yanxuwen/XRetrofit)
 ### 如果你喜欢就去 github 帮我star下,非常感谢o(∩_∩)o~~~
+
+
+
+
+
+
