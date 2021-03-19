@@ -33,7 +33,7 @@ artifacts {
 
 javadoc {
     failOnError false
-    options{
+    options {
         encoding "UTF-8"
         charSet 'UTF-8'
         author true

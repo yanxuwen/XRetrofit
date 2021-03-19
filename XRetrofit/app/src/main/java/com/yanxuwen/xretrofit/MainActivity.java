@@ -49,25 +49,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void onGet(View view) {
         Observable<HomeInfoV5> observable = HttpRequest.getNetService().get(0, 10);
-        observable.subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnDispose(new Action() {
-                    @Override
-                    public void run() throws Exception {
-                        Log.e("yxw","取消订阅2");
-                    }
-                })
-                .as(AutoDispose.<HomeInfoV5>autoDisposable(
-                        AndroidLifecycleScopeProvider.from(this, Lifecycle.Event.ON_PAUSE)))//OnDestory时自动解绑
+        observable
+                .as(RxSchedulers.applySchedulers(this))
                 .subscribe(new Observer<HomeInfoV5>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-                        Log.e("yxw", "onGet2 onSubscribe ");
+                        Log.e("yxw", isMainThread() +" onGet2 onSubscribe ");
                     }
 
                     @Override
                     public void onNext(@NonNull HomeInfoV5 homeInfoV5) {
-                        Log.e("yxw", "onGet2 onNext " + homeInfoV5.getMsg());
+                        Log.e("yxw", isMainThread() + " onGet2 onNext " + homeInfoV5.getMsg());
                     }
 
                     @Override
@@ -77,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onComplete() {
-                        Log.e("yxw", "onGet2 onComplete ");
+                        Log.e("yxw", isMainThread() + " onGet2 onComplete ");
                     }
                 });
 

@@ -31,7 +31,7 @@ public abstract class MyCallBack<T> implements CallBack<T> {
     public void onStart(Call<T> call) {
         if (activity != null) {
             activity.getLifecycle().addObserver(new LifecycleObserver() {
-                @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+                @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
                 public void onDestroy() {
                     Log.e("yxw", "????取消请求");
                     call.cancel();

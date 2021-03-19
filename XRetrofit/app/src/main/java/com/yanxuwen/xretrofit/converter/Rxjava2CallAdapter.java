@@ -1,12 +1,11 @@
 package com.yanxuwen.xretrofit.converter;
 
-import android.util.Log;
-
 import com.xretrofit.CallAdapter.CallAdapter;
 import com.xretrofit.HttpException;
 import com.xretrofit.Response;
 import com.xretrofit.call.Call;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 
 import io.reactivex.Observable;
@@ -14,7 +13,6 @@ import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.exceptions.CompositeException;
 import io.reactivex.exceptions.Exceptions;
-import io.reactivex.functions.Action;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -89,19 +87,24 @@ class Rxjava2CallAdapter<T> implements CallAdapter<Observable, T> {
 
 
     private static final class CallDisposable implements Disposable {
-        private final Call<?> call;
         private volatile boolean disposed;
+        private WeakReference<Call> weakCall;
 
         CallDisposable(Call<?> call) {
-            this.call = call;
+            weakCall = new WeakReference<>(call);
+
         }
 
-        @Override public void dispose() {
+        @Override
+        public void dispose() {
             disposed = true;
-            call.cancel();
+            if (weakCall != null) {
+                weakCall.get().cancel();
+            }
         }
 
-        @Override public boolean isDisposed() {
+        @Override
+        public boolean isDisposed() {
             return disposed;
         }
     }
