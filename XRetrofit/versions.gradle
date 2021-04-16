@@ -31,7 +31,7 @@ other.rxpermissions = 'com.github.tbruyelle:rxpermissions:0.10.2'
 other.rxandroid = 'io.reactivex.rxjava2:rxandroid:2.1.1'
 other.rxjava = 'io.reactivex.rxjava2:rxjava:2.2.19'
 other.autoDispose = 'com.uber.autodispose:autodispose-android-archcomponents:1.0.0-RC2'
-other.guava = 'com.google.guava:guava:18.0'
+other.guava = 'com.google.guava:guava:27.0.1-jre'
 
 ext.other = other
 
