@@ -36,5 +36,6 @@ dependencies {
     api project(path: ':xretrofit-annotations')
 }
 
-apply from: '../install.gradle'
-apply from: '../bintray.gradle'
+//apply from: '../install.gradle'
+//apply from: '../bintray.gradle'
+apply from: '../jitpack.gradle'
