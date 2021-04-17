@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 ext {
-    bintrayName = 'xretrofit-annotations'
+    bintrayName = 'annotations'
     artifact = bintrayName
     libraryName = 'xretrofit-annotations'
     libraryDescription = 'this is a  xretrofit-annotations'

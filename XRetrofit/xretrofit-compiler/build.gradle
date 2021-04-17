@@ -1,6 +1,6 @@
 apply plugin: 'java'
 ext {
-    bintrayName = 'xretrofit-compiler'
+    bintrayName = 'compiler'
     artifact = bintrayName
     libraryName = 'xretrofit compiler'
     libraryDescription = 'this is a  xretrofit-compiler'
@@ -17,8 +17,7 @@ dependencies {
 
     implementation 'com.squareup:javapoet:1.10.0'
 
-//    implementation project(path: ':xretrofit-annotations')
-    implementation 'com.yanxuwen.xretrofit:xretrofit-annotations:1.0.0'
+    implementation project(path: ':xretrofit-annotations')
 }
 
 apply from: '../install.gradle'
