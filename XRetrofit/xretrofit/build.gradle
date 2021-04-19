@@ -33,7 +33,7 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     api other.okhttp
     api other.guava
-    api project(path: ':xretrofit-annotations')
+    api project(path: ':annotations')
 }
 
 //apply from: '../install.gradle'

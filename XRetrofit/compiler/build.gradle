@@ -17,7 +17,7 @@ dependencies {
 
     implementation 'com.squareup:javapoet:1.10.0'
 
-    implementation project(path: ':xretrofit-annotations')
+    implementation project(path: ':annotations')
 }
 
 //apply from: '../install.gradle'

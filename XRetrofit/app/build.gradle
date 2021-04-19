@@ -48,5 +48,5 @@ dependencies {
     api other.fastjson
 
     implementation project(path: ':xretrofit')
-    annotationProcessor project(':xretrofit-compiler')
+    annotationProcessor project(':compiler')
 }
