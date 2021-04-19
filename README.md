@@ -16,6 +16,11 @@ XRetrofit   是一个极致模仿Retrofit 的风格代码，代码没有Retrofit
     implementation 'com.yanxuwen.xretrofit:xretrofit:2.0.0'
     annotationProcessor 'com.yanxuwen.xretrofit:xretrofit-compiler:2.0.0'
 ~~~
+##### 依赖,  由于jcenter要跑路了，所以已迁移到jitpack  
+~~~
+    implementation 'com.github.yanxuwen:xretrofit:0.0.8'
+    annotationProcessor 'com.github.yanxuwen.xretrofit:compiler:0.0.8'
+~~~
 #### 使用方法，跟Retrofit一样，要定义接口，唯一区别在于在类上面要添加注解`@NetServiceClass`
 #### 定义接口，该例子分别写了`Rxjava`  、`Call`  、`同步请求`的使用
 ~~~
